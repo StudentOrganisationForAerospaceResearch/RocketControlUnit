@@ -1,10 +1,9 @@
-import RPi.GPIO as GPIO 
-from time import sleep 
+import RPi.GPIO as GPIO
 
 GPIO.setwarnings(False) 
  
 GPIO.setmode(GPIO.BCM) 
-GPIO.setup(17, GPIO.OUT)
+GPIO.setup(40, GPIO.OUT)
 
 while (True):
-    GPIO.output(17, True) 
+    GPIO.output(40, True) 

@@ -54,4 +54,8 @@ Code should use typehints when available to allow for better readability.
 
 - [x] Create repo
 - [ ] Get basic GPIO functionality working
-
+    - [ ] GPIO Read
+    - [ ] GPIO Write
+- [ ] Repo organization
+    - [ ] `main.py`
+    - [ ] sub-directories

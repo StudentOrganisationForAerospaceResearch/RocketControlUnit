@@ -56,6 +56,7 @@ Code should use typehints when available to allow for better readability.
 - [ ] Get basic GPIO functionality working
     - [ ] GPIO Read
     - [ ] GPIO Write
+    - [ ] ADC Integration
 - [ ] Repo organization
     - [ ] `main.py`
     - [ ] sub-directories

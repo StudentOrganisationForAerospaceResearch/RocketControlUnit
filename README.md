@@ -45,9 +45,9 @@ for use on how to get started.
 
 ## Style Guide
 
-All code should adhere to the [PEP8](https://www.python.org/download/releases/3.0/)
+All code should adhere to the [PEP8](https://peps.python.org/pep-0008/)
 code standard.
-There are autoformatters available which can do this for you.
+There are [autoformatters](https://pypi.org/project/autopep8/) available which can do this for you.
 
 ### Type Hinting
 

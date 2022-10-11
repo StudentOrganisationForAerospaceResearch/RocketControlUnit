@@ -1,4 +1,7 @@
-# RocketControlUnit
+<div align="middle">
+<img alt="Avionics" src="https://user-images.githubusercontent.com/78698227/194972541-2e244866-7485-4ec7-a6b4-b8dcc82c1b35.png" width="400"/>
+</div>
+
 
 ## Table of Contents
 

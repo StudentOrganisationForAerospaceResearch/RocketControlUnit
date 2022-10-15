@@ -1,8 +1,10 @@
 <div align="middle">
 <img alt="Avionics" src="https://user-images.githubusercontent.com/78698227/194972541-2e244866-7485-4ec7-a6b4-b8dcc82c1b35.png" width="400"/>
-<img alt="Repository Stats" src"https://github-readme-stats.vercel.app/api?username=StudentOrganisationForAerospaceResearch&show_icons=true"/>
 </div>
 
+![Repo stats](https://github-readme-stats.vercel.app/api?username=StudentOrganisationForAerospaceResearch&show_icons=true)
+![Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=StudentOrganisationForAerospaceResearch&theme=blue-green)
+![Random Joke](https://readme-jokes.vercel.app/api)
 
 ## Table of Contents
 

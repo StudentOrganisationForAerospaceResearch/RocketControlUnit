@@ -41,6 +41,9 @@ Windows users should enable [WSL](https://learn.microsoft.com/en-us/windows/wsl/
 and clone the repo and instal `RPi.GPIO` through pip as above and
 make changes from there.
 
+## ADC Datasheet
+https://www.mouser.ca/datasheet/2/609/AD4111-1501448.pdf
+
 ## Getting Started
 
 See the following [examples directory](https://sourceforge.net/p/raspberry-gpio-python/wiki/Examples/)

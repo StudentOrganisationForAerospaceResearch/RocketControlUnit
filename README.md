@@ -1,4 +1,10 @@
-# RocketControlUnit
+<div align="middle">
+<img alt="Avionics" src="https://user-images.githubusercontent.com/78698227/194972541-2e244866-7485-4ec7-a6b4-b8dcc82c1b35.png" width="400"/>
+</div>
+
+![](https://img.shields.io/github/repo-size/StudentOrganisationForAerospaceResearch/RocketControlUnit?label=Size)
+![](https://img.shields.io/github/commit-activity/m/StudentOrganisationForAerospaceResearch/RocketControlUnit)
+![](https://img.shields.io/github/contributors/StudentOrganisationForAerospaceResearch/RocketControlUnit)
 
 ## Table of Contents
 
@@ -42,9 +48,9 @@ for use on how to get started.
 
 ## Style Guide
 
-All code should adhere to the [PEP8](https://www.python.org/download/releases/3.0/)
+All code should adhere to the [PEP8](https://peps.python.org/pep-0008/)
 code standard.
-There are autoformatters available which can do this for you.
+There are [autoformatters](https://pypi.org/project/autopep8/) available which can do this for you.
 
 ### Type Hinting
 
@@ -54,4 +60,13 @@ Code should use typehints when available to allow for better readability.
 
 - [x] Create repo
 - [ ] Get basic GPIO functionality working
-
+    - [ ] GPIO Read
+    - [ ] GPIO Write
+    - [ ] ADC Integration
+- [ ] Repo organization
+    - [ ] `main.py`
+    - [ ] sub-directories
+- [ ] GitHub Actions/Workflow
+    - [x] First setup
+    - [ ] Testing
+    - [ ] Cool badges

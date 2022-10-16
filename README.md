@@ -2,6 +2,11 @@
 <img alt="Avionics" src="https://user-images.githubusercontent.com/78698227/194972541-2e244866-7485-4ec7-a6b4-b8dcc82c1b35.png" width="400"/>
 </div>
 
+![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+![Raspberry Pi](https://img.shields.io/badge/-RaspberryPi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)
+![Debian](https://img.shields.io/badge/Debian-D70A53?style=for-the-badge&logo=debian&logoColor=white)
+![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)
+
 ![](https://img.shields.io/github/repo-size/StudentOrganisationForAerospaceResearch/RocketControlUnit?label=Size)
 ![](https://img.shields.io/github/commit-activity/m/StudentOrganisationForAerospaceResearch/RocketControlUnit)
 ![](https://img.shields.io/github/contributors/StudentOrganisationForAerospaceResearch/RocketControlUnit)

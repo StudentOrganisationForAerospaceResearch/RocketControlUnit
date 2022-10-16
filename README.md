@@ -2,9 +2,9 @@
 <img alt="Avionics" src="https://user-images.githubusercontent.com/78698227/194972541-2e244866-7485-4ec7-a6b4-b8dcc82c1b35.png" width="400"/>
 </div>
 
-<a href="https://docs.python.org/3/reference/" rel="Python 3 Reference">![Git](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)</a>
-<a href="https://www.raspberrypi.com/products/raspberry-pi-400/" rel="Python 3 Reference">![Git](https://img.shields.io/badge/-RaspberryPi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)</a>
-![Debian](https://img.shields.io/badge/Debian-D70A53?style=for-the-badge&logo=debian&logoColor=white)
+<a href="https://docs.python.org/3/reference/" rel="Python 3 Reference">![Python 3](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)</a>
+<a href="https://www.raspberrypi.com/products/raspberry-pi-400/" rel="RPI 400">![Raspberry Pi](https://img.shields.io/badge/-RaspberryPi-C51A4A?style=for-the-badge&logo=Raspberry-Pi)</a>
+<a href="https://www.raspberrypi.com/software/operating-systems/" rel="Raspbian">![Raspbian](https://img.shields.io/badge/Debian-D70A53?style=for-the-badge&logo=debian&logoColor=white)</a>
 <a href="https://github.com/StudentOrganisationForAerospaceResearch/RocketControlUnit.git" rel="GitHub">![Git](https://img.shields.io/badge/git-%23F05033.svg?style=for-the-badge&logo=git&logoColor=white)</a>
 
 ![](https://img.shields.io/github/repo-size/StudentOrganisationForAerospaceResearch/RocketControlUnit?label=Size)

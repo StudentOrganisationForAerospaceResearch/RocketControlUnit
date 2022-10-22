@@ -65,7 +65,7 @@ Code should use typehints when available to allow for better readability.
 
 - [x] Create repo
 - [ ] Get basic GPIO functionality working
-    - [ ] GPIO Read
+    - [x] GPIO Read
     - [ ] GPIO Write
     - [ ] ADC Integration
 - [ ] Repo organization
@@ -74,4 +74,4 @@ Code should use typehints when available to allow for better readability.
 - [ ] GitHub Actions/Workflow
     - [x] First setup
     - [ ] Testing
-    - [ ] Cool badges
+    - [x] Cool badges

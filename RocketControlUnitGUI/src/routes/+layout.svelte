@@ -88,7 +88,6 @@
 	<svelte:fragment slot="sidebarLeft">
 		<Navigation />
 	</svelte:fragment>
-
 	<!-- Page Route Content -->
 	<slot />
 </AppShell>

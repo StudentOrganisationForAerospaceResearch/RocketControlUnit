@@ -39,7 +39,7 @@
 
   let currentState = states.RS_PRELAUNCH;
 
-  function nextState(state) {
+  function nextState(state:string) {
     currentState = state;
   }
 </script>

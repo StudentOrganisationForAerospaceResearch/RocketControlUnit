@@ -7,10 +7,8 @@
 		Drawer,
 		getDrawerStore,
 		LightSwitch,
-		getModalStore,
 		Modal
 	} from '@skeletonlabs/skeleton';
-	import type { ModalSettings, ModalComponent, ModalStore } from '@skeletonlabs/skeleton';
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
@@ -18,24 +16,13 @@
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
 	import Navigation from '$lib/navigation/navigation.svelte';
-
+	import { currentState } from '../store';
 	initializeStores();
 
 	const drawerStore = getDrawerStore();
 
 	function drawerOpen(): void {
 		drawerStore.open({});
-	}
-	const modalStore = getModalStore();
-
-	function modalConfirm(): void {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: 'Please Confirm',
-			body: 'Are you sure you wish to proceed to the next state?',
-			response: (r: boolean) => console.log('response:', r)
-		};
-		modalStore.trigger(modal);
 	}
 </script>
 
@@ -74,9 +61,7 @@
 			</svelte:fragment>
 
 			<svelte:fragment>
-				<button class="btn variant-filled-surface" on:click={modalConfirm}
-					>Current Rocket State: Abort</button
-				>
+				<h1 class="text-xl">Current Rocket State: {$currentState}</h1>
 			</svelte:fragment>
 
 			<svelte:fragment slot="trail">

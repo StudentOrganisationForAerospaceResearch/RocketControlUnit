@@ -64,7 +64,7 @@
 {:else if $currentState === states.RS_FILL}
 	<button
 		class="btn variant-filled-secondary next-state-btn"
-		style="bottom: 80px;"
+		style="bottom: 30px;"
 		on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
 	>
 	<button

@@ -58,23 +58,23 @@
 	>
 	<button
 		class="btn variant-ghost-error next-state-btn"
-		style="bottom: 130px;"
+		style="bottom: 30px;"
 		on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 	>
 {:else if $currentState === states.RS_FILL}
 	<button
 		class="btn variant-filled-secondary next-state-btn"
-		style="bottom: 30px;"
+		style="bottom: 80px;"
 		on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
 	>
 	<button
 		class="btn variant-filled-secondary next-state-btn"
-		style="bottom: 80px;"
+		style="bottom: 130px;"
 		on:click={() => confirmStateChange(states.RS_ARM)}>Go to Arm</button
 	>
 	<button
 		class="btn variant-ghost-error next-state-btn"
-		style="bottom: 130px;"
+		style="bottom: 30px;"
 		on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 	>
 {:else if $currentState === states.RS_ARM}
@@ -85,7 +85,7 @@
 	>
 	<button
 		class="btn variant-ghost-error next-state-btn"
-		style="bottom: 130px;"
+		style="bottom: 30px;"
 		on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 	>
 {:else if $currentState === states.RS_IGNITION}
@@ -96,13 +96,13 @@
 	>
 	<button
 		class="btn variant-ghost-error next-state-btn"
-		style="bottom: 130px;"
+		style="bottom: 30px;"
 		on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 	>
 {:else if $currentState === states.RS_ABORT}
 	<button
 		class="btn variant-filled-secondary next-state-btn"
-		style="bottom: 80px;"
+		style="bottom: 30px;"
 		on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
 	>
 {:else if $currentState === states.RS_LAUNCH}

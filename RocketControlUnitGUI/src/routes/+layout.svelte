@@ -4,28 +4,26 @@
 		AppShell,
 		AppBar,
 		initializeStores,
-		Drawer,
-		getDrawerStore,
 		LightSwitch,
 		getModalStore,
 		Modal
 	} from '@skeletonlabs/skeleton';
 	import type { ModalSettings, ModalComponent, ModalStore } from '@skeletonlabs/skeleton';
+	import { AppRail, AppRailTile, AppRailAnchor } from '@skeletonlabs/skeleton';
 	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
-
+	import HomeIcon from "$lib/assets/rocket-dark.png";
+	import AboutIcon from "$lib/assets/info-dark.png";
+	import CameraIcon from "$lib/assets/camera-dark.png";
+	import StatsIcon from "$lib/assets/stats-dark.png";
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 
 	import Navigation from '$lib/navigation/navigation.svelte';
+	import type { HTMLAttributes } from 'svelte/elements';
 
 	initializeStores();
 
-	const drawerStore = getDrawerStore();
-
-	function drawerOpen(): void {
-		drawerStore.open({});
-	}
 	const modalStore = getModalStore();
 
 	function modalConfirm(): void {
@@ -37,31 +35,18 @@
 		};
 		modalStore.trigger(modal);
 	}
-</script>
 
-<Drawer>
-	<Navigation />
-</Drawer>
+</script>
 
 <Modal />
 
 <!-- App Shell -->
-<AppShell slotSidebarLeft="bg-surface-500/5 w-0 lg:w-64">
+<AppShell slotSidebarLeft="bg-surface-500/5 w-24">
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
 		<AppBar gridColumns="grid-cols-3" slotDefault="place-self-center" slotTrail="place-content-end">
 			<svelte:fragment slot="lead">
 				<div class="flex items-center">
-					<button class="lg:hidden btn btn-sm mr-4" on:click={drawerOpen}>
-						<span>
-							<svg viewBox="0 0 100 80" class="fill-token w-4 h-4">
-								<rect width="100" height="20" />
-								<rect y="30" width="100" height="20" />
-								<rect y="60" width="100" height="20" />
-							</svg>
-						</span>
-					</button>
-
 					<div class="flex items-center">
 						<img
 							src="/Copy of Clear.png"
@@ -85,9 +70,24 @@
 		</AppBar>
 	</svelte:fragment>
 
-	<svelte:fragment slot="sidebarLeft">
-		<Navigation />
-	</svelte:fragment>
+<AppRail>
+	<AppRailAnchor hover=bg-primary-hover-token href="/"><img src={HomeIcon} alt="background image" class="sideBar-center"/></AppRailAnchor>
+	<AppRailAnchor href="/data"><img src={StatsIcon} alt="background image" class="sideBar-center"/></AppRailAnchor>
+	<AppRailAnchor href="/live-feed"><img src={CameraIcon} alt="background image" class="sideBar-center"/></AppRailAnchor>
+	<AppRailAnchor href="/about"><img src={AboutIcon} alt="background image" class="sideBar-center"/></AppRailAnchor>
+</AppRail>
+
+
 	<!-- Page Route Content -->
 	<slot />
 </AppShell>
+
+<style>
+.sideBar-center {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+	width: 30%;
+	height: width;
+}
+</style>

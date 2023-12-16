@@ -52,16 +52,16 @@
 
 	<AppRail>
 		<AppRailAnchor hover="bg-primary-hover-token" href="/"
-			><img src={HomeIcon} class="sideBar-center" /></AppRailAnchor
+			><img src={HomeIcon} class="sideBar-center" alt="Icon"/></AppRailAnchor
 		>
 		<AppRailAnchor href="/data"
-			><img src={StatsIcon} class="sideBar-center" /></AppRailAnchor
+			><img src={StatsIcon} class="sideBar-center" alt="Icon"/></AppRailAnchor
 		>
 		<AppRailAnchor href="/live-feed"
-			><img src={CameraIcon} class="sideBar-center" /></AppRailAnchor
+			><img src={CameraIcon} class="sideBar-center" alt="Icon"/></AppRailAnchor
 		>
 		<AppRailAnchor href="/about"
-			><img src={AboutIcon} class="sideBar-center" /></AppRailAnchor
+			><img src={AboutIcon} class="sideBar-center" alt="Icon"/></AppRailAnchor
 		>
 	</AppRail>
 

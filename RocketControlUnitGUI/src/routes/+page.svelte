@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { ProgressBar, getModalStore } from '@skeletonlabs/skeleton';
+	import { getModalStore, } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
 
@@ -103,7 +103,7 @@
 <style>
 	.next-state-btn {
 		position: fixed;
-		left: 300px;
+		left: 100px;
 		width: 200px;
 	}
 

@@ -2,39 +2,22 @@
 	import '../app.postcss';
 	import {
 		AppShell,
+		AppRail,
+		AppRailAnchor,
 		AppBar,
 		initializeStores,
 		LightSwitch,
-		Modal
+		Modal,
+		storePopup
 	} from '@skeletonlabs/skeleton';
-	import type { ModalSettings, ModalComponent, ModalStore } from '@skeletonlabs/skeleton';
-	import { AppRail, AppRailTile, AppRailAnchor } from '@skeletonlabs/skeleton';
-	// Floating UI for Popups
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
-	import { storePopup } from '@skeletonlabs/skeleton';
-	import HomeIcon from "$lib/assets/rocket-dark.png";
-	import AboutIcon from "$lib/assets/info-dark.png";
-	import CameraIcon from "$lib/assets/camera-dark.png";
-	import StatsIcon from "$lib/assets/stats-dark.png";
-	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
-
-	import Navigation from '$lib/navigation/navigation.svelte';
-	import type { HTMLAttributes } from 'svelte/elements';
 	import { currentState } from '../store';
+	import HomeIcon from '$lib/assets/rocket-dark.png';
+	import AboutIcon from '$lib/assets/info-dark.png';
+	import CameraIcon from '$lib/assets/camera-dark.png';
+	import StatsIcon from '$lib/assets/stats-dark.png';
+	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 	initializeStores();
-
-	const modalStore = getModalStore();
-
-	function modalConfirm(): void {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: 'Please Confirm',
-			body: 'Are you sure you wish to proceed to the next state?',
-			response: (r: boolean) => console.log('response:', r)
-		};
-		modalStore.trigger(modal);
-	}
-
 </script>
 
 <Modal />
@@ -67,24 +50,30 @@
 		</AppBar>
 	</svelte:fragment>
 
-<AppRail>
-	<AppRailAnchor hover=bg-primary-hover-token href="/"><img src={HomeIcon} alt="background image" class="sideBar-center"/></AppRailAnchor>
-	<AppRailAnchor href="/data"><img src={StatsIcon} alt="background image" class="sideBar-center"/></AppRailAnchor>
-	<AppRailAnchor href="/live-feed"><img src={CameraIcon} alt="background image" class="sideBar-center"/></AppRailAnchor>
-	<AppRailAnchor href="/about"><img src={AboutIcon} alt="background image" class="sideBar-center"/></AppRailAnchor>
-</AppRail>
+	<AppRail>
+		<AppRailAnchor hover="bg-primary-hover-token" href="/"
+			><img src={HomeIcon} alt="background image" class="sideBar-center" /></AppRailAnchor
+		>
+		<AppRailAnchor href="/data"
+			><img src={StatsIcon} alt="background image" class="sideBar-center" /></AppRailAnchor
+		>
+		<AppRailAnchor href="/live-feed"
+			><img src={CameraIcon} alt="background image" class="sideBar-center" /></AppRailAnchor
+		>
+		<AppRailAnchor href="/about"
+			><img src={AboutIcon} alt="background image" class="sideBar-center" /></AppRailAnchor
+		>
+	</AppRail>
 
-
-	<!-- Page Route Content -->
 	<slot />
 </AppShell>
 
 <style>
-.sideBar-center {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-	width: 30%;
-	height: width;
-}
+	.sideBar-center {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		width: 30%;
+		height: width;
+	}
 </style>

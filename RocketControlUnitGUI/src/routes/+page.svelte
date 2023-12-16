@@ -1,13 +1,7 @@
 <script lang="ts">
-	import { getModalStore } from '@skeletonlabs/skeleton';
+	import { ProgressBar, getModalStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
-
-	let isActive = false;
-
-	function toggleActive() {
-		isActive = !isActive;
-	}
 
 	const modalStore = getModalStore();
 
@@ -45,9 +39,6 @@
 		currentState.set(state);
 	}
 </script>
-
-<button on:click={toggleActive}>Toggle Line</button>
-<div class={`line ${isActive ? 'active' : ''}`}></div>
 
 <!-- Render different buttons based on the current state -->
 {#if $currentState === states.RS_PRELAUNCH}
@@ -110,19 +101,6 @@
 {/if}
 
 <style>
-	.line {
-		width: 50%;
-		height: 2px;
-		background: gray;
-		transition: background 0.3s ease;
-		margin: 0 auto; /* Center the line */
-	}
-
-	.line.active {
-		background: #00ff00;
-		animation: glow 1s infinite;
-	}
-
 	.next-state-btn {
 		position: fixed;
 		left: 300px;

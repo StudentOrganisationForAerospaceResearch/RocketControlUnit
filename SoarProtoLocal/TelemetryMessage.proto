@@ -1,0 +1,183 @@
+/**
+ * FILE: Telemetry.proto
+ * BRIEF: Telemetry data from various boards (Data Management Board, Sensor Observation Board, Plumbing Bay Board, etc.)
+ * AUTHOR: Christopher Chan (cjchanx) and Shanna Hollingworth (shanna1408)
+ */
+syntax = "proto3";
+package Proto;
+import "CoreProto.proto";
+
+/* This acts as the telemetry wrapper message for all SOAR Telemetry Messages.
+ * Telemetry messages are considered best-effort NON-CRITICAL messages, and are (currently) not guaranteed to be received (no ACK or Sequence Number)
+ */
+ message TelemetryMessage {
+    // Message Path
+    Node source = 1; // This is the source of the message (the node that sent the message)
+    Node target = 2; // This is the destination of the message, if this is a broadcast message, this should be set to NODE_ANY
+
+    // Message Identifiers
+    uint32 message_id = 3; // This is the message ID of the message, this is used to identify the message type
+
+    // Message Data
+    oneof message {
+        GPS coord = 4;
+        Baro baro = 5;
+        IMU imu = 6;
+        Battery bat = 7;
+        Flash flashInfo = 8;
+        DMBPressure pressdmb = 9;
+        PBBPressure presspbb = 10;
+        PBBTemp temppbb = 11;
+        CombustionControlStatus gpio = 12;
+        RCUPressure pressrcu = 13;
+        RCUTemp temprcu = 14;
+        NOSLoadCell nos = 15;
+        RelayStatus relay = 16;
+        PadBoxStatus padbox = 17;
+        LRLoadCell lr = 18;
+        SOBTemp tempsob = 19;
+        IRTemperature irtemp = 20;
+        MEVState mevstate = 21;
+    }
+}
+
+/* DMB -> RCU Messages ---------------------------------------------------------------- */
+message GPS{
+    LatLong latitude = 1;   // latitude of rocket
+    LatLong longitude = 2;  // longitude of rocket
+    AltitudeType antenna_alt = 3; // altitude of antenna
+    AltitudeType geoidAltitude = 4;
+    AltitudeType total_alt = 5;   // total altitude of rocket
+    uint32 time = 6;        // time of message
+}
+
+message LatLong {
+    int32 degrees = 1; 
+    int32 minutes = 2;
+}
+
+message AltitudeType {
+    int32 altitude = 1;
+    int32 unit = 2;
+}
+
+message Baro{
+    int32 baro_pressure = 1;    // barometer pressure
+    int32 baro_temp = 2;        // barometer temperature
+}
+
+message IMU{
+    int32 accelx = 1;  // x direction of acceleration
+    int32 accely = 2;  // y direction of acceleration
+    int32 accelz = 3;  // z direction of acceleration
+    int32 gyrox = 4;   // x direction of gyroscope
+    int32 gyroy = 5;   // y direction of gyroscope
+    int32 gyroz = 6;   // z direction of gyroscope
+    int32 magx = 7;    // x direction gauss
+    int32 magy = 8;    // y direction gauss
+    int32 magz = 9;    // z direction gauss
+}
+
+message Battery{
+    enum power_source {
+        INVALID = 0;
+        GROUND = 1;
+        ROCKET = 2;
+    }; 
+    power_source p_source = 1; // power source of battery
+    int32 volt = 2; // voltage of battery
+}
+
+message Flash{
+    uint32 sector_address = 1;
+    uint32 logging_rate = 2;
+}
+
+message DMBPressure{
+    int32 upper_pv_pressure = 1; // pressure vessel pressure
+}
+
+/* PBB -> DMB Messages ---------------------------------------------------------------- */
+
+message PBBPressure {
+    int32 ib_pressure = 1; //injector bulk pressure
+    int32 lower_pv_pressure = 2; //pressure vessel pressure
+}
+
+message PBBTemp {
+    int32 ib_temperature = 1; //injector bulk temperature
+    int32 pv_temperature = 2; //pressure vessel temperature
+}
+
+message CombustionControlStatus {
+    bool vent_open = 2;
+    bool drain_open = 3;
+
+    // SoarProto v1.3.2
+    bool mev_power_enable = 4;
+}
+
+message MEVState {
+    bool mev_open = 1;
+}
+/* RCU Messages ---------------------------------------------------------------- */
+
+message RCUPressure {
+    int32 pt1_pressure = 1; //pressure transducer
+    int32 pt2_pressure = 2;
+    int32 pt3_pressure = 3;
+    int32 pt4_pressure = 4;
+}
+
+message RCUTemp {
+    int32 tc1_temp = 1; //thermocouple
+    int32 tc2_temp = 2;
+}
+
+message NOSLoadCell {
+    int32 nos1_mass = 1; //nitrous mass
+    int32 nos2_mass = 2;
+}
+
+message RelayStatus {
+
+    bool ac1_open = 1; // air conditioner state
+    bool ac2_open = 2;
+    bool pbv1_open = 3; //pneumatic ball valev state
+    bool pbv2_open = 4;
+    bool pbv3_open = 5;
+    bool sol1_open = 6; //solenoid states
+    bool sol2_open = 7;
+    bool sol3_open = 8;
+    bool sol4_open = 9;
+    bool sol5_open = 10;
+    bool sol6_open = 11;
+    bool sol7_open = 12;
+    bool sol8a_open = 13;
+    bool sol8b_open = 14;
+
+}
+
+message PadBoxStatus {
+    bool cont1 = 1;  // continuity state 1
+    bool cont2 = 2;  // continuity state 2
+
+    bool box1_on = 3; // box 1 gpio state - may be unused
+    bool box2_on = 4; // box 2 gpio state - may be unused
+}
+
+/* SOB Messages ---------------------------------------------------------------- */
+
+message LRLoadCell {
+    int32 rocket_mass = 1;
+}
+
+message SOBTemp {
+    int32 tc1_temp = 1;
+    int32 tc2_temp = 2;
+}
+
+message IRTemperature {
+    int32 ambient_temp = 1;
+    int32 object_temp = 2;
+}

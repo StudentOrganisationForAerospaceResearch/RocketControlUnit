@@ -8,7 +8,7 @@
     export const sensorData = writable<RecordModel | null>(null);
 
     let PB;
-
+           
     onMount(() => {
         PB = new PocketBase("http://127.0.0.1:8090");
 

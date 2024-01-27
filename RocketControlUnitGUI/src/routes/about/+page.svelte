@@ -22,7 +22,7 @@
 
 <div class="sensor-data">
     <h2>Sensor Data</h2>
-    <p>PressureTransducer: {$sensorData && 'title' in $sensorData ? $sensorData.title : 'N/A'}</p>
+    <p>PressureTransducer: {$sensorData && 'tc1' in $sensorData ? $sensorData.tc1 : 'N/A'}</p>
 </div>
 
 <style>

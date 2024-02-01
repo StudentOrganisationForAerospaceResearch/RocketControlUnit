@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getModalStore, } from '@skeletonlabs/skeleton';
+	import { getModalStore, SlideToggle } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
 
@@ -40,65 +40,76 @@
 	}
 </script>
 
-<!-- Render different buttons based on the current state -->
-{#if $currentState === states.RS_PRELAUNCH}
-	<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="bottom: 80px;"
-		on:click={() => confirmStateChange(states.RS_FILL)}>Go to Fill</button
-	>
-	<button
-		class="btn variant-ghost-error next-state-btn"
-		style="bottom: 30px;"
-		on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
-	>
-{:else if $currentState === states.RS_FILL}
-	<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="bottom: 80px;"
-		on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
-	>
-	<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="bottom: 130px;"
-		on:click={() => confirmStateChange(states.RS_ARM)}>Go to Arm</button
-	>
-	<button
-		class="btn variant-ghost-error next-state-btn"
-		style="bottom: 30px;"
-		on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
-	>
-{:else if $currentState === states.RS_ARM}
-	<button
-		class="btn variant-filled-warning next-state-btn"
-		style="bottom: 80px;"
-		on:click={() => confirmStateChange(states.RS_IGNITION)}>Go to Ignition</button
-	>
-	<button
-		class="btn variant-ghost-error next-state-btn"
-		style="bottom: 30px;"
-		on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
-	>
-{:else if $currentState === states.RS_IGNITION}
-	<button
-		class="btn variant-filled-error next-state-btn"
-		style="bottom: 80px;"
-		on:click={() => nextState(states.RS_LAUNCH)}>LAUNCH</button
-	>
-	<button
-		class="btn variant-ghost-error next-state-btn"
-		style="bottom: 30px;"
-		on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
-	>
-{:else if $currentState === states.RS_ABORT}
-	<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="bottom: 30px;"
-		on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
-	>
-{:else if $currentState === states.RS_LAUNCH}
-	<h1>nice rocket bro</h1>
-{/if}
+
+
+<svelte:head></svelte:head>
+
+
+<main> 
+	<h1>HELLO</h1>
+	<SlideToggle name="slider-label" checked>(label)</SlideToggle>
+	
+	<!-- Render different buttons based on the current state -->
+	{#if $currentState === states.RS_PRELAUNCH}
+		<button
+			class="btn variant-filled-secondary next-state-btn"
+			style="bottom: 80px;"
+			on:click={() => confirmStateChange(states.RS_FILL)}>Go to Fill</button
+		>
+		<button
+			class="btn variant-ghost-error next-state-btn"
+			style="bottom: 30px;"
+			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
+		>
+	{:else if $currentState === states.RS_FILL}
+		<button
+			class="btn variant-filled-secondary next-state-btn"
+			style="bottom: 80px;"
+			on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
+		>
+		<button
+			class="btn variant-filled-secondary next-state-btn"
+			style="bottom: 130px;"
+			on:click={() => confirmStateChange(states.RS_ARM)}>Go to Arm</button
+		>
+		<button
+			class="btn variant-ghost-error next-state-btn"
+			style="bottom: 30px;"
+			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
+		>
+	{:else if $currentState === states.RS_ARM}
+		<button
+			class="btn variant-filled-warning next-state-btn"
+			style="bottom: 80px;"
+			on:click={() => confirmStateChange(states.RS_IGNITION)}>Go to Ignition</button
+		>
+		<button
+			class="btn variant-ghost-error next-state-btn"
+			style="bottom: 30px;"
+			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
+		>
+	{:else if $currentState === states.RS_IGNITION}
+		<button
+			class="btn variant-filled-error next-state-btn"
+			style="bottom: 80px;"
+			on:click={() => nextState(states.RS_LAUNCH)}>LAUNCH</button
+		>
+		<button
+			class="btn variant-ghost-error next-state-btn"
+			style="bottom: 30px;"
+			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
+		>
+	{:else if $currentState === states.RS_ABORT}
+		<button
+			class="btn variant-filled-secondary next-state-btn"
+			style="bottom: 30px;"
+			on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
+		>
+	{:else if $currentState === states.RS_LAUNCH}
+		<h1>nice rocket bro</h1>
+	{/if}
+</main>
+
 
 <style>
 	.next-state-btn {

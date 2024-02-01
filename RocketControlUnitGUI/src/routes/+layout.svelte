@@ -17,10 +17,17 @@
 	import CameraIcon from '$lib/assets/camera-dark.png';
 	import StatsIcon from '$lib/assets/stats-dark.png';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
+	import { getDrawerStore } from '@skeletonlabs/skeleton';
+	import { page } from '$app/stores';
+
 	initializeStores();
 </script>
 
+
+
+
 <Modal />
+
 
 <!-- App Shell -->
 <AppShell slotSidebarLeft="bg-surface-500/5 w-24">
@@ -49,24 +56,27 @@
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
-
-	<AppRail>
-		<AppRailAnchor hover="bg-primary-hover-token" href="/"
-			><img src={HomeIcon} class="sideBar-center" alt="Icon"/></AppRailAnchor
-		>
-		<AppRailAnchor href="/data"
-			><img src={StatsIcon} class="sideBar-center" alt="Icon"/></AppRailAnchor
-		>
-		<AppRailAnchor href="/live-feed"
-			><img src={CameraIcon} class="sideBar-center" alt="Icon"/></AppRailAnchor
-		>
-		<AppRailAnchor href="/about"
-			><img src={AboutIcon} class="sideBar-center" alt="Icon"/></AppRailAnchor
-		>
-	</AppRail>
-
+	
+	<svelte:fragment slot="sidebarLeft">
+		<AppRail>
+			<AppRailAnchor hover="bg-primary-hover-token" href="/" selected={$page.url.pathname === '/'}><img src={HomeIcon} class="sideBar-center" 
+			alt="Icon" /></AppRailAnchor>
+			
+			<AppRailAnchor href="/data" selected={$page.url.pathname === "/data"}><img src={StatsIcon} class="sideBar-center" 
+			alt="Icon" /></AppRailAnchor>
+			
+			<AppRailAnchor href="/live-feed" selected={$page.url.pathname === "/live-feed"}><img src={CameraIcon} class="sideBar-center" 
+			alt="Icon" /></AppRailAnchor>
+			
+			<AppRailAnchor href="/about" selected={$page.url.pathname === "/about"}><img src={AboutIcon} class="sideBar-center" 
+			alt="Icon" /></AppRailAnchor>
+		</AppRail>
+	</svelte:fragment>
+	
 	<slot />
+
 </AppShell>
+
 
 <style>
 	.sideBar-center {
@@ -75,5 +85,10 @@
 		margin-right: auto;
 		width: 30%;
 		height: width;
+	}
+	.thumb1 { 
+		background: url(%sveltekit.assets%/favicon.png) 50% 50% no-repeat; /* 50% 50% centers image in div */
+		width: 25px;
+		height: 25px;
 	}
 </style>

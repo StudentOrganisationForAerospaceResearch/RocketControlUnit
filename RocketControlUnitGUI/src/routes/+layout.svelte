@@ -86,9 +86,5 @@
 		width: 30%;
 		height: width;
 	}
-	.thumb1 { 
-		background: url(%sveltekit.assets%/favicon.png) 50% 50% no-repeat; /* 50% 50% centers image in div */
-		width: 25px;
-		height: 25px;
-	}
+	
 </style>

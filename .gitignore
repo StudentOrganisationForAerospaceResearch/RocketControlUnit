@@ -13,5 +13,9 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
 # Pocketbase
-
 /database/pb_data
+
+# proto
+__pycache__
+*.pyc
+*_pb2.py

@@ -14,4 +14,4 @@ vite.config.ts.timestamp-*
 
 # Pocketbase
 
-/pb_data
+/database/pb_data

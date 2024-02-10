@@ -1,25 +1,39 @@
 /// <reference path="../pb_data/types.d.ts" />
 migrate((db) => {
   const collection = new Collection({
-    "id": "n7nf208brxotq23",
-    "created": "2024-01-25 02:22:31.467Z",
-    "updated": "2024-01-25 02:22:31.467Z",
-    "name": "sensors",
+    "id": "kklpl8z6cciwv9v",
+    "created": "2024-02-09 04:25:27.523Z",
+    "updated": "2024-02-09 04:25:27.523Z",
+    "name": "PbbPressure",
     "type": "base",
     "system": false,
     "schema": [
       {
         "system": false,
-        "id": "qijk9sry",
-        "name": "tc1",
-        "type": "text",
+        "id": "q1t4yz2t",
+        "name": "ib_pressure",
+        "type": "number",
         "required": false,
         "presentable": false,
         "unique": false,
         "options": {
           "min": null,
           "max": null,
-          "pattern": ""
+          "noDecimal": false
+        }
+      },
+      {
+        "system": false,
+        "id": "ibeo913g",
+        "name": "lower_pv_pressure",
+        "type": "number",
+        "required": false,
+        "presentable": false,
+        "unique": false,
+        "options": {
+          "min": null,
+          "max": null,
+          "noDecimal": false
         }
       }
     ],
@@ -35,7 +49,7 @@ migrate((db) => {
   return Dao(db).saveCollection(collection);
 }, (db) => {
   const dao = new Dao(db);
-  const collection = dao.findCollectionByNameOrId("n7nf208brxotq23");
+  const collection = dao.findCollectionByNameOrId("kklpl8z6cciwv9v");
 
   return dao.deleteCollection(collection);
 })

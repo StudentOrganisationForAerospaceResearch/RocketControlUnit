@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getModalStore, SlideToggle } from '@skeletonlabs/skeleton';
+	import { getModalStore, initializeStores, SlideToggle } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
     import PocketBase from 'pocketbase';
@@ -44,7 +44,6 @@
 		currentState.set(state);
 	}
 
-	// Create a writable store to hold the RelayStatus data
 	export const relayStatus = writable<RecordModel | null>(null);
 
 	// Create a writable store to hold the CombustionControlStatus data
@@ -56,8 +55,8 @@
 	// Create a writable store to hold the PadBoxStatus data
 	export const padBoxStatus = writable<RecordModel | null>(null);
 
+	let PB = new PocketBase("http://127.0.0.1:8090");
 
-	// let PB;
 	let ac1_checked: boolean = false;
 	let ac2_checked: boolean = false;
 	let pbv1_checked: boolean = false;
@@ -69,12 +68,8 @@
 	let padbox_cont2_checked: boolean = false;
 	let padbox_box1_checked: boolean = false;
 	let padbox_box2_checked: boolean = false;
-	
-	let PB = new PocketBase("http://127.0.0.1:8090");
 
-
-
-	onMount(() => {
+	onMount(async () => {
 		// Subscribe to changes in the 'RelayStatus' collection
 		PB.collection('RelayStatus').subscribe('*', function (e) {
 			// Update the RelayStatus data store whenever a change is detected
@@ -98,7 +93,50 @@
 			// Update the PadBoxStatus data store whenever a change is detected
 			padBoxStatus.set(e.record);
 		});
-	});
+		
+		const resultList = await PB.collection('RelayStatus').getList(1, 1, {
+			sort: '-created',
+		});
+
+		ac1_open = resultList.items[0].ac1_open
+		ac2_open = resultList.items[0].ac2_open
+		pbv1_open = resultList.items[0].pbv1_open
+		pbv2_open = resultList.items[0].pbv2_open
+		pbv3_open = resultList.items[0].pbv3_open
+		sol1_open = resultList.items[0].sol1_open
+		sol2_open = resultList.items[0].sol2_open
+		sol3_open = resultList.items[0].sol3_open
+		sol4_open = resultList.items[0].sol4_open
+		sol5_open = resultList.items[0].sol5_open
+		sol6_open = resultList.items[0].sol6_open
+		sol7_open = resultList.items[0].sol7_open
+		sol8a_open = resultList.items[0].sol8a_open
+		sol8b_open = resultList.items[0].sol8b_open
+
+
+				
+		// PB.collection('RelayStatus').subscribe('ac1_open', function (e) {
+		// 	// Update the PadBoxStatus data store whenever a change is detected
+		// 	ac1_checked=e.record.ac1_open;
+		// 	// relayStatus.ac1_open = e.record.ac1_open;
+		// });
+	})
+
+	$: ac1_open = $relayStatus?.ac1_open || false;
+	$: ac2_open = $relayStatus?.ac2_open || false;
+	$: pbv1_open = $relayStatus?.pbv1_open || false;
+	$: pbv2_open = $relayStatus?.pbv2_open || false;
+	$: pbv3_open = $relayStatus?.pbv3_open || false;
+	$: sol1_open = $relayStatus?.sol1_open || false;
+	$: sol2_open = $relayStatus?.sol2_open || false;
+	$: sol3_open = $relayStatus?.sol3_open || false;
+	$: sol4_open = $relayStatus?.sol4_open || false;
+	$: sol5_open = $relayStatus?.sol5_open || false;
+	$: sol6_open = $relayStatus?.sol6_open || false;
+	$: sol7_open = $relayStatus?.sol7_open || false;
+	$: sol8a_open = $relayStatus?.sol8a_open || false;
+	$: sol8b_open = $relayStatus?.sol8b_open || false;
+
 
 
 	function writePadBoxChange() {
@@ -232,16 +270,16 @@
 
 <main> 
 	<h1>HELLO</h1>
-	<SlideToggle name="ac1_slider" on:change={handleAC1Change}> AC1 {$relayStatus && 'ac1_open' in $relayStatus ? $relayStatus.ac1_open : 'N/A'}</SlideToggle>
-	<SlideToggle name="ac2_slider" on:change={handleAC2Change}> AC2 {$relayStatus && 'ac2_open' in $relayStatus ? $relayStatus.ac2_open : 'N/A'}</SlideToggle>
+	<SlideToggle name="ac1_slider" bind:checked={ac1_open} on:change={handleAC1Change}> AC1 {$relayStatus && 'ac1_open' in $relayStatus ? $relayStatus.ac1_open : 'N/A'}</SlideToggle>
+	<SlideToggle name="ac2_slider" bind:checked={ac2_open} on:change={handleAC2Change}> AC2 {$relayStatus && 'ac2_open' in $relayStatus ? $relayStatus.ac2_open : 'N/A'}</SlideToggle>
 
-	<SlideToggle name="pbv1_slider" on:change={handlePBV1Change}> PV1 {$relayStatus && 'pbv1_open' in $relayStatus ? $relayStatus.pbv1_open : 'N/A'}</SlideToggle>
-	<SlideToggle name="pbv2_slider" on:change={handlePBV2Change}> PV2 {$relayStatus && 'pbv2_open' in $relayStatus ? $relayStatus.pbv2_open : 'N/A'}</SlideToggle>
+	<SlideToggle name="pbv1_slider" bind:checked={pbv1_open} on:change={handlePBV1Change}> PV1 {$relayStatus && 'pbv1_open' in $relayStatus ? $relayStatus.pbv1_open : 'N/A'}</SlideToggle>
+	<SlideToggle name="pbv2_slider" bind:checked={pbv2_open} on:change={handlePBV2Change}> PV2 {$relayStatus && 'pbv2_open' in $relayStatus ? $relayStatus.pbv2_open : 'N/A'}</SlideToggle>
 
 	<SlideToggle name="power_enable_slider" on:change={handlePowerEnableChange}> Power Enable {$combustionControlStatus && 'mev_power_enable' in $combustionControlStatus ? $combustionControlStatus.mev_power_enable : 'N/A'}</SlideToggle>
 
-	<SlideToggle name="sol1_slider" on:change={handleSOL1Change}> SOL1 {$relayStatus && 'sol1_open' in $relayStatus ? $relayStatus.sol1_open : 'N/A'}</SlideToggle>
-	<SlideToggle name="sol2_slider" on:change={handleSOL2Change}> SOL2 {$relayStatus && 'sol2_open' in $relayStatus ? $relayStatus.sol2_open : 'N/A'}</SlideToggle>
+	<SlideToggle name="sol1_slider" bind:checked={sol1_open} on:change={handleSOL1Change}> SOL1 {$relayStatus && 'sol1_open' in $relayStatus ? $relayStatus.sol1_open : 'N/A'}</SlideToggle>
+	<SlideToggle name="sol2_slider" bind:checked={sol2_open} on:change={handleSOL2Change}> SOL2 {$relayStatus && 'sol2_open' in $relayStatus ? $relayStatus.sol2_open : 'N/A'}</SlideToggle>
 
 	<SlideToggle name="padbox_cont1_slider" on:change={handleCont1Change}> Cont1 {$padBoxStatus && 'cont1' in $padBoxStatus ? $padBoxStatus.cont1 : 'N/A'}</SlideToggle>
 	<SlideToggle name="padbox_cont2_slider" on:change={handleCont2Change}> Cont2 {$padBoxStatus && 'cont2' in $padBoxStatus ? $padBoxStatus.cont2 : 'N/A'}</SlideToggle>

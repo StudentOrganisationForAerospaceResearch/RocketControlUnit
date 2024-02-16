@@ -182,13 +182,13 @@
 		});
 	}
 
-	function writeCombustionControlStatusChange() {
-		// Create a change on the 'CombustionControlStatus' collection
-		PB.collection('CombustionControlStatus').create ({
-			// Write a new record with all current values
-			'mev_power_enable': power_enable_checked
-		});
-	}
+	// function writeCombustionControlStatusChange() {
+	// 	// Create a change on the 'CombustionControlStatus' collection
+	// 	PB.collection('CombustionControlStatus').create ({
+	// 		// Write a new record with all current values
+	// 		'mev_power_enable': power_enable_checked
+	// 	});
+	// }
 
 	function handleAC1Change(e: any) {
 		const target = e.target;
@@ -220,13 +220,13 @@
 		writeRelayStatusChange();
 	}
 
-	function handlePowerEnableChange(e: any) {
-		const target = e.target;
-    	power_enable_checked = target.checked;
-    	console.log(target.checked);
+	// function handlePowerEnableChange(e: any) {
+	// 	const target = e.target;
+    // 	power_enable_checked = target.checked;
+    // 	console.log(target.checked);
 
-		writeCombustionControlStatusChange();
-	}
+	// 	writeCombustionControlStatusChange();
+	// }
 
 	function handleSOL1Change(e: any) {
 		const target = e.target;

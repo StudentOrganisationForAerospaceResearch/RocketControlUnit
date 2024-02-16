@@ -103,40 +103,60 @@
 			padBoxStatus.set(e.record);
 		});
 		
-		const resultList = await PB.collection('RelayStatus').getList(1, 1, {
+		const resultListRelay = await PB.collection('RelayStatus').getList(1, 1, {
 			sort: '-created',
 		});
-		
-    	ac1_open = resultList.items[0].ac1_open;
-		ac2_open = resultList.items[0].ac2_open
-		pbv1_open = resultList.items[0].pbv1_open
-		pbv2_open = resultList.items[0].pbv2_open
-		pbv3_open = resultList.items[0].pbv3_open
-		sol1_open = resultList.items[0].sol1_open
-		sol2_open = resultList.items[0].sol2_open
-		sol3_open = resultList.items[0].sol3_open
-		sol4_open = resultList.items[0].sol4_open
-		sol5_open = resultList.items[0].sol5_open
-		sol6_open = resultList.items[0].sol6_open
-		sol7_open = resultList.items[0].sol7_open
-		sol8a_open = resultList.items[0].sol8a_open
-		sol8b_open = resultList.items[0].sol8b_open
+
+		ac1_open = resultListRelay.items[0].ac1_open
+		ac2_open = resultListRelay.items[0].ac2_open
+		pbv1_open = resultListRelay.items[0].pbv1_open
+		pbv2_open = resultListRelay.items[0].pbv2_open
+		pbv3_open = resultListRelay.items[0].pbv3_open
+		sol1_open = resultListRelay.items[0].sol1_open
+		sol2_open = resultListRelay.items[0].sol2_open
+		sol3_open = resultListRelay.items[0].sol3_open
+		sol4_open = resultListRelay.items[0].sol4_open
+		sol5_open = resultListRelay.items[0].sol5_open
+		sol6_open = resultListRelay.items[0].sol6_open
+		sol7_open = resultListRelay.items[0].sol7_open
+		sol8a_open = resultListRelay.items[0].sol8a_open
+		sol8b_open = resultListRelay.items[0].sol8b_open
+
+			
+		const resultListPadBox = await PB.collection('PadBoxStatus').getList(1, 1, {
+			sort: '-created',
+		});
+
+		continuity_1 = resultListPadBox.items[0].continuity_1
+		continuity_2 = resultListPadBox.items[0].continuity_2
+		box1_on = resultListPadBox.items[0].box1_on
+		box2_on= resultListPadBox.items[0].box2_on
+
+
+
 	})
 
-	// $: ac1_open = $relayStatus?.ac1_open || false;	
-	// $: ac2_open = $relayStatus?.ac2_open || false;
-	// $: pbv1_open = $relayStatus?.pbv1_open || false;
-	// $: pbv2_open = $relayStatus?.pbv2_open || false;
-	// $: pbv3_open = $relayStatus?.pbv3_open || false;
-	// $: sol1_open = $relayStatus?.sol1_open || false;
-	// $: sol2_open = $relayStatus?.sol2_open || false;
-	// $: sol3_open = $relayStatus?.sol3_open || false;
-	// $: sol4_open = $relayStatus?.sol4_open || false;
-	// $: sol5_open = $relayStatus?.sol5_open || false;
-	// $: sol6_open = $relayStatus?.sol6_open || false;
-	// $: sol7_open = $relayStatus?.sol7_open || false;
-	// $: sol8a_open = $relayStatus?.sol8a_open || false;
-	// $: sol8b_open = $relayStatus?.sol8b_open || false;
+	$: ac1_open = $relayStatus?.ac1_open || false;
+	$: ac2_open = $relayStatus?.ac2_open || false;
+	$: pbv1_open = $relayStatus?.pbv1_open || false;
+	$: pbv2_open = $relayStatus?.pbv2_open || false;
+	$: pbv3_open = $relayStatus?.pbv3_open || false;
+	$: sol1_open = $relayStatus?.sol1_open || false;
+	$: sol2_open = $relayStatus?.sol2_open || false;
+	$: sol3_open = $relayStatus?.sol3_open || false;
+	$: sol4_open = $relayStatus?.sol4_open || false;
+	$: sol5_open = $relayStatus?.sol5_open || false;
+	$: sol6_open = $relayStatus?.sol6_open || false;
+	$: sol7_open = $relayStatus?.sol7_open || false;
+	$: sol8a_open = $relayStatus?.sol8a_open || false;
+	$: sol8b_open = $relayStatus?.sol8b_open || false;
+
+	$: continuity_1 = $padBoxStatus?.continuity_1 || false;
+	$: continuity_2 = $padBoxStatus?.continuity_2 || false;
+	$: box1_on = $padBoxStatus?.box1_on || false;
+	$: box2_on = $padBoxStatus?.box2_on || false;
+
+
 
 	function writePadBoxChange() {
 		// Create a change on the 'PadBoxStatus' collection
@@ -256,26 +276,105 @@
 		writePadBoxChange();
 	}
 
+	let lineColors = {
+		horizontal1: 'red',
+		horizontal2: 'red',
+		horizontal3: 'green',
+		horizontal4: 'yellow',
+		horizontal5: 'blue',
+		horizontal6: 'blue',
+		horizontal7: 'blue',
+		horizontal8: 'blue',
+		horizontal9: 'blue',
+		vertical0: 'red',
+		vertical1: 'red',
+		vertical2: 'green',
+		vertical3: 'yellow',
+		vertical4: 'blue',
+		vertical5: 'blue',
+		vertical6: 'blue',
+		vertical7: 'blue',
+		vertical8: 'blue',
+
+
+  	};
+
+	function changeColor(line: keyof typeof lineColors, color: string) {
+    	lineColors[line] = color;
+	}
+
+	
 </script>
 
+
+<svelte:head></svelte:head>
+
+
 <main> 
-	<div id="background" style="background-image: url({back}); background-repeat: no-repeat; background-size: 100%; background-position: center top; position:fixed; top: 0; left: 0; right:0; bottom:0; width: 100%; height: 100%;"></div>
+	
+	<svg viewBox="0 0 170 80" width="100%" height="100%">
 
-	<SlideToggle name="ac1_slider" bind:checked={ac1_open} on:change={handleAC1Change}> AC1 {$relayStatus && 'ac1_open' in $relayStatus ? $relayStatus.ac1_open : 'N/A'}</SlideToggle>
-	<SlideToggle name="ac2_slider" bind:checked={ac2_open} on:change={handleAC2Change}> AC2 {$relayStatus && 'ac2_open' in $relayStatus ? $relayStatus.ac2_open : 'N/A'}</SlideToggle>
+		<!-- Horizontal Lines -->
+		<!-- Red -->
+		<line x1="10" y1="10" x2="60" y2="10" stroke={lineColors.horizontal1} />
+		<line x1="10" y1="30" x2="60" y2="30" stroke={lineColors.horizontal2} />
 
-	<SlideToggle name="pbv1_slider" bind:checked={pbv1_open} on:change={handlePBV1Change}> PV1 {$relayStatus && 'pbv1_open' in $relayStatus ? $relayStatus.pbv1_open : 'N/A'}</SlideToggle>
-	<SlideToggle name="pbv2_slider" bind:checked={pbv2_open} on:change={handlePBV2Change}> PV2 {$relayStatus && 'pbv2_open' in $relayStatus ? $relayStatus.pbv2_open : 'N/A'}</SlideToggle>
+		<!-- Green -->
+		<line x1="10" y1="60" x2="60" y2="60" stroke={lineColors.horizontal3} />
 
-	<SlideToggle name="power_enable_slider" on:change={handlePowerEnableChange}> Power Enable {$combustionControlStatus && 'mev_power_enable' in $combustionControlStatus ? $combustionControlStatus.mev_power_enable : 'N/A'}</SlideToggle>
+		<!-- Yellow -->
+		<line x1="60" y1="20" x2="120" y2="20" stroke={lineColors.horizontal4} />
 
-	<SlideToggle name="sol1_slider" bind:checked={sol1_open} on:change={handleSOL1Change}> SOL1 {$relayStatus && 'sol1_open' in $relayStatus ? $relayStatus.sol1_open : 'N/A'}</SlideToggle>
-	<SlideToggle name="sol2_slider" bind:checked={sol2_open} on:change={handleSOL2Change}> SOL2 {$relayStatus && 'sol2_open' in $relayStatus ? $relayStatus.sol2_open : 'N/A'}</SlideToggle> -->
+		<!-- Blue -->
+		<line x1="90" y1="35" x2="100" y2="35" stroke={lineColors.horizontal5} />
+		<line x1="90" y1="40" x2="105" y2="40" stroke={lineColors.horizontal6} />
+		<line x1="90" y1="45" x2="110" y2="45" stroke={lineColors.horizontal7} />
+		<line x1="90" y1="50" x2="140" y2="50" stroke={lineColors.horizontal8} />
+		<line x1="90" y1="55" x2="145" y2="55" stroke={lineColors.horizontal9} />
+	  
+		<!-- Vertical Lines -->
 
-	<SlideToggle name="padbox_cont1_slider" on:change={handleCont1Change}> Cont1 {$padBoxStatus && 'cont1' in $padBoxStatus ? $padBoxStatus.cont1 : 'N/A'}</SlideToggle>
-	<SlideToggle name="padbox_cont2_slider" on:change={handleCont2Change}> Cont2 {$padBoxStatus && 'cont2' in $padBoxStatus ? $padBoxStatus.cont2 : 'N/A'}</SlideToggle>
-	<SlideToggle name="padbox_box1_slider" on:change={handleBox1Change}> Box1 {$padBoxStatus && 'box1_on' in $padBoxStatus ? $padBoxStatus.box1_on : 'N/A'}</SlideToggle>
-	<SlideToggle name="padbox_box2_slider" on:change={handleBox2Change}> Box2 {$padBoxStatus && 'box2_on' in $padBoxStatus ? $padBoxStatus.box2_on : 'N/A'}</SlideToggle>
+		<!-- Red -->
+		<line x1="60" y1="10" x2="60" y2="20" stroke={lineColors.vertical0} />
+		<line x1="60" y1="20" x2="60" y2="30" stroke={lineColors.vertical1} />
+
+		<!-- Green -->
+		<line x1="60" y1="30" x2="60" y2="60" stroke={lineColors.vertical2} />
+
+		<!-- Yellow-->
+		<line x1="80" y1="10" x2="80" y2="20" stroke={lineColors.vertical3} />
+
+		<!-- Blue -->
+		<line x1="100" y1="20" x2="100" y2="35" stroke={lineColors.vertical4} />
+		<line x1="105" y1="20" x2="105" y2="40" stroke={lineColors.vertical5} />
+		<line x1="110" y1="20" x2="110" y2="45" stroke={lineColors.vertical6} />
+		<line x1="140" y1="10" x2="140" y2="50" stroke={lineColors.vertical7} />
+		<line x1="145" y1="10" x2="145" y2="55" stroke={lineColors.vertical8} />
+	</svg>
+
+
+
+	<div>
+		<input type="color" bind:value={lineColors.horizontal1} on:change={() => changeColor('horizontal1', lineColors.horizontal1)} />
+		<input type="color" bind:value={lineColors.horizontal2} on:change={() => changeColor('horizontal2', lineColors.horizontal2)} />
+		<input type="color" bind:value={lineColors.horizontal3} on:change={() => changeColor('horizontal3', lineColors.horizontal3)} />
+		<input type="color" bind:value={lineColors.vertical1} on:change={() => changeColor('vertical1', lineColors.vertical1)} />
+		<input type="color" bind:value={lineColors.vertical2} on:change={() => changeColor('vertical2', lineColors.vertical2)} />
+	</div>
+
+	<SlideToggle name="ac1_slider" bind:checked={ac1_open} on:change={handleAC1Change}> AC1 {ac1_open}</SlideToggle>
+	<SlideToggle name="ac2_slider" bind:checked={ac2_open} on:change={handleAC2Change}> AC2 {ac2_open}</SlideToggle>
+
+	<SlideToggle name="pbv1_slider" bind:checked={pbv1_open} on:change={handlePBV1Change}> PV1 {pbv1_open}</SlideToggle>
+	<SlideToggle name="pbv2_slider" bind:checked={pbv2_open} on:change={handlePBV2Change}> PV2 {pbv2_open}</SlideToggle>
+
+	<SlideToggle name="sol1_slider" bind:checked={sol1_open} on:change={handleSOL1Change}> SOL1 {sol1_open}</SlideToggle>
+	<SlideToggle name="sol2_slider" bind:checked={sol2_open} on:change={handleSOL2Change}> SOL2 {sol2_open}</SlideToggle>
+
+	<SlideToggle name="padbox_cont1_slider"  bind:checked={continuity_1} on:change={handleCont1Change}> Cont1 {continuity_1}</SlideToggle>
+	<SlideToggle name="padbox_cont2_slider"  bind:checked={continuity_2} on:change={handleCont2Change}> Cont2 {continuity_2}</SlideToggle>
+	<SlideToggle name="padbox_box1_slider"  bind:checked={box1_on} on:change={handleBox1Change}> Box1 {box1_on}</SlideToggle>
+	<SlideToggle name="padbox_box2_slider"  bind:checked={box2_on} on:change={handleBox2Change}> Box2 {box2_on}</SlideToggle>
 
 	<h1>TC1 {$rcuTemp && 'tc1_temp' in $rcuTemp ? $rcuTemp.tc1_temp: 'N/A'}</h1>
 	<h1>TC2 {$rcuTemp && 'tc2_temp ' in $rcuTemp ? $rcuTemp.tc2_temp : 'N/A'}</h1>
@@ -350,4 +449,33 @@
 		left: 100px;
 		width: 200px;
 	}
+
+	@keyframes glow {
+		0% {
+			box-shadow:
+				0 0 5px #00ff00,
+				0 0 10px #00ff00,
+				0 0 15px #00ff00,
+				0 0 20px #00ff00;
+		}
+		100% {
+			box-shadow:
+				0 0 10px #00ff00,
+				0 0 20px #00ff00,
+				0 0 30px #00ff00,
+				0 0 40px #00ff00;
+		}
+	}
+
+	svg {
+		width: 100%;
+		height: 700px;
+  	}
+
+	line {
+        stroke-width: 0.3;
+    }
+
+
+
 </style>

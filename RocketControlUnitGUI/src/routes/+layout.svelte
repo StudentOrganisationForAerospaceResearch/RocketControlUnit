@@ -29,7 +29,7 @@
 
 
 <!-- App Shell -->
-<AppShell slotSidebarLeft="bg-surface-500/5 w-24">
+<AppShell slotSidebarLeft="bg-surface-500/5">
 	<svelte:fragment slot="header">
 		<!-- App Bar -->
 		<AppBar gridColumns="grid-cols-3" slotDefault="place-self-center" slotTrail="place-content-end">

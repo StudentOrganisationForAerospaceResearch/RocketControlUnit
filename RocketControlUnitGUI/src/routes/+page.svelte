@@ -241,7 +241,7 @@
 
 		console.log('checked: ', ac1_checked);
 
-		writeRelayStatusChange();
+		//writeRelayStatusChange();
 		console.log(ac1_open);
 
 

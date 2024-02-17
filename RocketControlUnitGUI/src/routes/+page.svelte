@@ -56,6 +56,9 @@
 
 	// Create a writable store to hold the PadBoxStatus data
 	export const padBoxStatus = writable<RecordModel | null>(null);
+	
+	export const ac1_checked = writable<boolean>(false);
+
 
 	let ac1_open: boolean = false;
 	let ac2_open: boolean = false;
@@ -63,6 +66,12 @@
 	let pbv2_open: boolean = false;
 	let pbv3_open: boolean = false;
 
+	// let ac1_checked: boolean = false;
+	// let ac2_checked: boolean = false;
+	// let ac1_checked: boolean;
+	let ac2_checked: boolean;
+	let pbv1_checked: boolean = false;
+	let pbv2_checked: boolean = false;
 	let power_enable_checked: boolean = false;
 	let sol1_open: boolean = false;
 	let sol2_open: boolean = false;
@@ -78,11 +87,39 @@
 	let padbox_box1_checked: boolean = false;
 	let padbox_box2_checked: boolean = false;
 
+
+	// async function getRelayRecord() {
+		
+	// 	const resultListRelay = await PB.collection('RelayStatus').getList(1, 1, {
+	// 		sort: '-created',
+	// 	});
+
+	// 	ac1_open = resultListRelay.items[0].ac1_open
+	// 	ac2_open = resultListRelay.items[0].ac2_open
+	// 	pbv1_open = resultListRelay.items[0].pbv1_open
+	// 	pbv2_open = resultListRelay.items[0].pbv2_open
+	// 	pbv3_open = resultListRelay.items[0].pbv3_open
+	// 	sol1_open = resultListRelay.items[0].sol1_open
+	// 	sol2_open = resultListRelay.items[0].sol2_open
+	// 	sol3_open = resultListRelay.items[0].sol3_open
+	// 	sol4_open = resultListRelay.items[0].sol4_open
+	// 	sol5_open = resultListRelay.items[0].sol5_open
+	// 	sol6_open = resultListRelay.items[0].sol6_open
+	// 	sol7_open = resultListRelay.items[0].sol7_open
+	// 	sol8a_open = resultListRelay.items[0].sol8a_open
+	// 	sol8b_open = resultListRelay.items[0].sol8b_open		
+
+	// }
+
+
 	onMount(async () => {
+		console.log("Called");
 		// Subscribe to changes in the 'RelayStatus' collection
 		PB.collection('RelayStatus').subscribe('*', function (e) {
 			// Update the RelayStatus data store whenever a change is detected
 			relayStatus.set(e.record);
+			ac1_checked.set(e.record.ac1_open);
+    		ac2_checked = e.record.ac2_open;
 		});
 
 		// Subscribe to changes in the 'CombustionControlStatus' collection
@@ -122,6 +159,7 @@
 		sol8a_open = resultListRelay.items[0].sol8a_open
 		sol8b_open = resultListRelay.items[0].sol8b_open
 
+		console.log('in record: ', ac1_open);
 			
 		const resultListPadBox = await PB.collection('PadBoxStatus').getList(1, 1, {
 			sort: '-created',
@@ -156,11 +194,12 @@
 	$: box1_on = $padBoxStatus?.box1_on || false;
 	$: box2_on = $padBoxStatus?.box2_on || false;
 
+	console.log('after react ', ac1_open);
 
 
-	function writePadBoxChange() {
+	async function writePadBoxChange() {
 		// Create a change on the 'PadBoxStatus' collection
-		PB.collection('PadBoxStatus').create ({
+		await PB.collection('PadBoxStatus').create ({
 			// Write a new record with all current values
 			'cont1': padbox_cont1_checked,
 			'cont2': padbox_cont2_checked,
@@ -169,9 +208,11 @@
 		});
 	}
 
-	function writeRelayStatusChange() {
+
+
+	async function writeRelayStatusChange() {
 		// Create a change on the 'RelayStatus' collection
-		PB.collection('RelayStatus').create ({
+		await PB.collection('RelayStatus').create ({
 			// Write a new record with all current values
 			'ac1_open': ac1_open,
 			'ac2_open': ac2_open,
@@ -180,6 +221,7 @@
 			'sol1_open': sol1_open,
 			'sol2_open': sol2_open
 		});
+
 	}
 
 	// function writeCombustionControlStatusChange() {
@@ -190,10 +232,29 @@
 	// 	});
 	// }
 
-	function handleAC1Change(e: any) {
+	async function handleAC1Change(e: any) {
+		console.log(ac1_open);
 		const target = e.target;
+		const checked = target.checked;
+
+		ac1_checked.set(checked);
+
+		console.log('checked: ', ac1_checked);
+
 		writeRelayStatusChange();
-    	ac1_open = target.checked;
+		console.log(ac1_open);
+
+
+				// Create a change on the 'RelayStatus' collection
+		await PB.collection('RelayStatus').create ({
+			// Write a new record with all current values
+			'ac1_open': checked,
+			'ac2_open': ac2_checked,
+			'pbv1_open': pbv1_checked,
+			'pbv2_open': pbv2_checked,
+			'sol1_open': sol1_checked,
+			'sol2_open': sol2_checked
+		});
 	}
 
 	function handleAC2Change(e: any) {
@@ -313,7 +374,6 @@
 <main> 
 	
 	<svg viewBox="0 0 170 80" width="100%" height="100%">
-
 		<!-- Horizontal Lines -->
 		<!-- Red -->
 		<line x1="10" y1="10" x2="60" y2="10" stroke={lineColors.horizontal1} />
@@ -353,7 +413,7 @@
 	</svg>
 
 
-
+	<p>{ac1_open}</p>
 	<div>
 		<input type="color" bind:value={lineColors.horizontal1} on:change={() => changeColor('horizontal1', lineColors.horizontal1)} />
 		<input type="color" bind:value={lineColors.horizontal2} on:change={() => changeColor('horizontal2', lineColors.horizontal2)} />
@@ -362,7 +422,7 @@
 		<input type="color" bind:value={lineColors.vertical2} on:change={() => changeColor('vertical2', lineColors.vertical2)} />
 	</div>
 
-	<SlideToggle name="ac1_slider" bind:checked={ac1_open} on:change={handleAC1Change}> AC1 {ac1_open}</SlideToggle>
+	<SlideToggle name="ac1_slider" bind:checked={$ac1_checked} on:change={handleAC1Change}> AC1 {ac1_open}</SlideToggle>
 	<SlideToggle name="ac2_slider" bind:checked={ac2_open} on:change={handleAC2Change}> AC2 {ac2_open}</SlideToggle>
 
 	<SlideToggle name="pbv1_slider" bind:checked={pbv1_open} on:change={handlePBV1Change}> PV1 {pbv1_open}</SlideToggle>
@@ -378,7 +438,7 @@
 
 	<h1>TC1 {$rcuTemp && 'tc1_temp' in $rcuTemp ? $rcuTemp.tc1_temp: 'N/A'}</h1>
 	<h1>TC2 {$rcuTemp && 'tc2_temp ' in $rcuTemp ? $rcuTemp.tc2_temp : 'N/A'}</h1>
-	
+
 	<!-- Render different buttons based on the current state -->
 	{#if $currentState === states.RS_PRELAUNCH}
 		<button
@@ -469,7 +529,7 @@
 
 	svg {
 		width: 100%;
-		height: 700px;
+		height: 70px;
   	}
 
 	line {

@@ -21,7 +21,6 @@ message TelemetryMessage {
         Baro baro = 4;
         Imu imu = 5;
         Battery battery = 6;
-        Flash flash_info = 8;
         Flash flash_info = 7;
         DmbPressure pressure_dmb = 8;
         PbbPressure pressure_pbb = 9;
@@ -79,12 +78,12 @@ message Imu{
 }
 
 message Battery{
-    enum power_source {
+    enum PowerSource {
         INVALID = 0;
         GROUND = 1;
         ROCKET = 2;
     }; 
-    power_source power_source = 1; // power source of battery
+    PowerSource power_source = 1; // power source of battery
     int32 voltage = 2; // voltage of battery
 }
 

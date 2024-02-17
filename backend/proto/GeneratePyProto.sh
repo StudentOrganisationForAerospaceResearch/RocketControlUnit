@@ -11,7 +11,6 @@ if [ ! -d "Python" ]; then
 fi
 
 #protoc --plugin=protoc-gen-eams=protoc-gen-eams.bat --eams_out=_C++ *.proto
-#protoc --pyi_out=_Python --python_out=_Python *.proto
 protoc --pyi_out=Python --python_out=Python ./*.proto
 
 #echo "** C++ File Cleanup **"

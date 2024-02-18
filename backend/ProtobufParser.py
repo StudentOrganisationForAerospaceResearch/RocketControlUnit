@@ -11,12 +11,15 @@ import proto.Python.ControlMessage_pb2 as ProtoCtrl
 import proto.Python.CommandMessage_pb2 as ProtoCmd
 import proto.Python.TelemetryMessage_pb2 as ProtoTele
 import proto.Python.CoreProto_pb2 as Core
+from pocketbase import Client
+
 
 class ProtobufParser:
     @staticmethod
     def parse_protobuf_to_json(protobuf_message):
         # Convert the protobuf message to a JSON string
-        json_string = MessageToJson(protobuf_message)
+        print(protobuf_message)
+        json_string = MessageToJson(protobuf_message, preserving_proto_field_name=True)
         return json_string
 
     @staticmethod
@@ -57,10 +60,13 @@ class ProtobufParser:
         Note: The third key in the JSON data is assumed to be the table name
         '''
         # Extract the table name from the JSON data
+        json_data = json.loads(json_data)
         table_name = list(json_data.keys())[2]
 
+        print(json_data[table_name])
+
         # Push the JSON data to PocketBase using the correct schema
-        client.collection(table_name).create(json.loads(json_data))
+        client.collection(table_name).create(json_data[table_name])
 
 # Example code
 import time, datetime
@@ -104,5 +110,9 @@ if __name__ == "__main__":
     # Parse the serialized message to JSON
     parsed = ProtobufParser.parse_serial_to_json(serialized_message, Core.MessageID.MSG_TELEMETRY)
 
+    
+    client = Client("http://127.0.0.1:8090")
+    ProtobufParser.push_tele_json_to_pocketbase(client, parsed)
+
     # Output
-    print(parsed)
+    # print(parsed)

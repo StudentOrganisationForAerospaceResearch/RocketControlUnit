@@ -1,15 +1,12 @@
 from concurrent.futures import ThreadPoolExecutor
 import enum
-import queue
 import serial           # You'll need to run `pip install pyserial`
 from cobs import cobs   # pip install cobs
 from Codec import Codec
-import SoarLib.CoreProto_pb2 as ProtoCore
-import SoarLib.TelemetryMessage_pb2 as ProtoTele
-import SoarLib.ControlMessage_pb2 as ProtoCtr
-import Ethernet_handler as EtHan
-import Telemetry_Objects as TelO
-import Protobuf_parser as ProtoParse
+import proto.Python.CoreProto_pb2 as ProtoCore
+import proto.Python.TelemetryMessage_pb2 as TelemetryMessageProto
+import proto.Python.ControlMessage_pb2 as ProtoCtr
+import ProtobufParser as ProtobufParser
 import google.protobuf.message as Message
 import json
 
@@ -86,7 +83,7 @@ class SerialHandler():
             self.uart_serial.write(encBuf)
 
     def process_telemetry_message(data):
-        received_message = ProtoTele.TelemetryMessage()
+        received_message = TelemetryMessageProto.TelemetryMessage()
         try:
             received_message.ParseFromString(data)
         except Message.DecodeError:
@@ -95,7 +92,7 @@ class SerialHandler():
         
         if received_message.target == ProtoCore.NODE_RCU:
             telemetry_message_type = received_message.WhichOneof('message')
-            CommonLogger.logger.debug("Telemetry message received: \n\t{telemetry_message_type}\n\t{received_message}")
+            CommonLogger.logger.debug(f"Telemetry message received: \n\t{telemetry_message_type}\n\t{received_message}")
 
 
 
@@ -121,7 +118,7 @@ class SerialHandler():
 
 # telemetry message
 def process_telemetry_message(data):
-    received_message = ProtoTele.TelemetryMessage()
+    received_message = TelemetryMessageProto.TelemetryMessage()
     try:
         received_message.ParseFromString(data)
     except Message.DecodeError:

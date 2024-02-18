@@ -409,9 +409,6 @@
 </main>
 
 <style>
-	#background {
-		z-index: -1;
-	}
 	.next-state-btn {
 		position: fixed;
 		left: 100px;

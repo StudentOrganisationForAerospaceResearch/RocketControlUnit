@@ -45,30 +45,32 @@
 		currentState.set(state);
 	}
 
-	const ac1_open = writable<boolean>(false);
-	const ac2_open = writable<boolean>(false);
+	const ac1_open = writable(undefined);
+	const ac2_open = writable(undefined);
 
-	const pbv1_open = writable<boolean>(false);
-	const pbv2_open = writable<boolean>(false);
-	const pbv3_open = writable<boolean>(false);	
+	const pbv1_open = writable(undefined);
+	const pbv2_open = writable(undefined);
+	const pbv3_open = writable(undefined);
 
-	const sol1_open = writable<boolean>(false);		
-	const sol2_open = writable<boolean>(false);
-	const sol3_open = writable<boolean>(false);
-	const sol4_open = writable<boolean>(false);
-	const sol5_open = writable<boolean>(false);
-	const sol6_open = writable<boolean>(false);
-	const sol7_open = writable<boolean>(false);
-	const sol8a_open = writable<boolean>(false);
-	const sol8b_open = writable<boolean>(false);
+	const sol1_open = writable(undefined);
+	const sol2_open = writable(undefined);
+	const sol3_open = writable(undefined);
+	const sol4_open = writable(undefined);
+	const sol5_open = writable(undefined);
+	const sol6_open = writable(undefined);
+	const sol7_open = writable(undefined);
+	const sol8a_open = writable(undefined);
+	const sol8b_open = writable(undefined);
 
-	const continuity1 = writable<boolean>(false);
-	const continuity2= writable<boolean>(false);
-	const box1_on = writable<boolean>(false);
-	const box2_on = writable<boolean>(false);
+	const continuity1 = writable(undefined);
+	const continuity2 = writable(undefined);
+	const box1_on = writable(undefined);
+	const box2_on = writable(undefined);
+	const box1_status = writable(undefined);
+	const box2_status = writable(undefined);
 
-	const vent_open = writable<boolean>(false);
-	const drain_open = writable<boolean>(false);
+	const vent_open = writable(undefined);
+	const drain_open = writable(undefined);
 	const mev_open = writable(undefined);
 
 	const rcu_tc1_temperature = writable(undefined);
@@ -97,6 +99,35 @@
 
 	const sob_tc1_temperature = writable(undefined);
 	const sob_tc2_temperature = writable(undefined);
+
+	$: ac1_display = $ac1_open === undefined ? 'N/A' : ($ac1_open ? 'OPEN' : 'CLOSE');
+	$: ac2_display = $ac2_open === undefined ? 'N/A' : ($ac2_open ? 'OPEN' : 'CLOSE');
+
+	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : ($pbv1_open ? 'OPEN' : 'CLOSE');
+	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : ($pbv2_open ? 'OPEN' : 'CLOSE');
+	$: pbv3_display = $pbv3_open === undefined ? 'N/A' : ($pbv3_open ? 'OPEN' : 'CLOSE');
+
+	$: sol1_display = $sol1_open === undefined ? 'N/A' : ($sol1_open ? 'OPEN' : 'CLOSE');
+	$: sol2_display = $sol2_open === undefined ? 'N/A' : ($sol2_open ? 'OPEN' : 'CLOSE');
+	$: sol3_display = $sol3_open === undefined ? 'N/A' : ($sol3_open ? 'OPEN' : 'CLOSE');
+	$: sol4_display = $sol4_open === undefined ? 'N/A' : ($sol4_open ? 'OPEN' : 'CLOSE');
+	$: sol5_display = $sol5_open === undefined ? 'N/A' : ($sol5_open ? 'OPEN' : 'CLOSE');
+	$: sol6_display = $sol6_open === undefined ? 'N/A' : ($sol6_open ? 'OPEN' : 'CLOSE');
+	$: sol7_display = $sol7_open === undefined ? 'N/A' : ($sol7_open ? 'OPEN' : 'CLOSE');
+	$: sol8a_display = $sol8a_open === undefined ? 'N/A' : ($sol8a_open ? 'OPEN' : 'CLOSE');
+	$: sol8b_display = $sol8b_open === undefined ? 'N/A' : ($sol8b_open ? 'OPEN' : 'CLOSE');
+
+	$: continuity1_display = $continuity1 === undefined ? 'N/A' : $continuity1;
+	$: continuity2_display = $continuity2 === undefined ? 'N/A' : $continuity2;
+
+	$: box1_display = $box1_on === undefined ? 'N/A' : ($box1_on ? 'LIVE' : 'DEAD');
+	$: box2_display = $box2_on === undefined ? 'N/A' : ($box2_on ? 'LIVE' : 'DEAD');
+
+	$: box1_status_display = $box1_status === undefined ? 'N/A' : ($box1_status ? 'LIVE' : 'DEAD');
+	$: box2_status_display = $box2_status === undefined ? 'N/A' : ($box2_status ? 'LIVE' : 'DEAD');
+
+	$: vent_display = $vent_open === undefined ? 'N/A' : ($vent_open ? 'OPEN' : 'CLOSED');
+	$: drain_display = $drain_open === undefined ? 'N/A' : ($drain_open ? 'OPEN' : 'CLOSED');
 
 	$: rcu_tc1_display = $rcu_tc1_temperature === undefined ? 'N/A' : $rcu_tc1_temperature;
 	$: rcu_tc2_display = $rcu_tc2_temperature === undefined ? 'N/A' : $rcu_tc2_temperature;
@@ -397,9 +428,21 @@
 		});
 	}
 
-	async function handleBoxChange(e: any) {
+	async function handleBox1Change(e: any) {
 		// Determine the command based on the current value of the slider
 		const command = e.target.checked ? 'RCU_KILL_PAD_BOX1' : 'RCU_IGNITE_BOX1';
+
+		// Create a change on the 'RelayStatus' collection
+		await PB.collection('CommandMessage').create ({
+			// Write a new record with all current values
+			'target': 'NODE_RCU',
+			'command': command,
+		});
+	}
+
+	async function handleBox2Change(e: any) {
+		// Determine the command based on the current value of the slider
+		const command = e.target.checked ? 'RCU_KILL_PAD_BOX2' : 'RCU_IGNITE_BOX2';
 
 		// Create a change on the 'RelayStatus' collection
 		await PB.collection('CommandMessage').create ({
@@ -438,24 +481,25 @@
 <main> 
 	<div id="background" style="background-image: url({background}); background-repeat: no-repeat; background-size: 100%; background-position: center top; position:fixed; top: 0; left: 0; right:0; bottom:0; width: 100%; height: 100%;"></div>
 
-	<SlideToggle name="ac1_slider" bind:checked={$ac1_open} on:change={handleAC1Change}> AC1 {$ac1_open}</SlideToggle>
-	<SlideToggle name="ac2_slider" bind:checked={$ac2_open} on:change={handleAC2Change}> AC2 {$ac2_open}</SlideToggle>
+	<SlideToggle name="ac1_slider" bind:checked={$ac1_open} on:change={handleAC1Change}> AC1 {ac1_display}</SlideToggle>
+	<SlideToggle name="ac2_slider" bind:checked={$ac2_open} on:change={handleAC2Change}> AC2 {ac2_display}</SlideToggle>
 
-	<SlideToggle name="pbv1_slider" bind:checked={$pbv1_open} on:change={handlePBV1Change}> PV1 {$pbv1_open}</SlideToggle>
-	<SlideToggle name="pbv2_slider" bind:checked={$pbv2_open} on:change={handlePBV2Change}> PV2 {$pbv2_open}</SlideToggle>
-	<SlideToggle name="pbv3_slider" bind:checked={$pbv3_open} on:change={handlePBV3Change}> PV3 {$pbv3_open}</SlideToggle>
+	<SlideToggle name="pbv1_slider" bind:checked={$pbv1_open} on:change={handlePBV1Change}> PV1 {pbv1_display}</SlideToggle>
+	<SlideToggle name="pbv2_slider" bind:checked={$pbv2_open} on:change={handlePBV2Change}> PV2 {pbv2_display}</SlideToggle>
+	<SlideToggle name="pbv3_slider" bind:checked={$pbv3_open} on:change={handlePBV3Change}> PV3 {pbv3_display}</SlideToggle>
 
-	<SlideToggle name="sol1_slider" bind:checked={$sol1_open} on:change={handleSOL1Change}> SOL1 {$sol1_open}</SlideToggle>
-	<SlideToggle name="sol2_slider" bind:checked={$sol2_open} on:change={handleSOL2Change}> SOL2 {$sol2_open}</SlideToggle>
-	<SlideToggle name="sol3_slider" bind:checked={$sol3_open} on:change={handleSOL3Change}> SOL3 {$sol3_open}</SlideToggle>
-	<SlideToggle name="sol4_slider" bind:checked={$sol4_open} on:change={handleSOL4Change}> SOL4 {$sol4_open}</SlideToggle>
-	<SlideToggle name="sol5_slider" bind:checked={$sol5_open} on:change={handleSOL5Change}> SOL5 {$sol5_open}</SlideToggle>
-	<SlideToggle name="sol6_slider" bind:checked={$sol6_open} on:change={handleSOL6Change}> SOL6 {$sol6_open}</SlideToggle>
-	<SlideToggle name="sol7_slider" bind:checked={$sol7_open} on:change={handleSOL7Change}> SOL7 {$sol7_open}</SlideToggle>
-	<SlideToggle name="sol8a_slider" bind:checked={$sol8a_open} on:change={handleSOL8AChange}> SOL8A {$sol8a_open}</SlideToggle>
-	<SlideToggle name="sol8b_slider" bind:checked={$sol8b_open} on:change={handleSOL8BChange}> SOL8B {$sol8b_open}</SlideToggle>
+	<SlideToggle name="sol1_slider" bind:checked={$sol1_open} on:change={handleSOL1Change}> SOL1 {sol1_display}</SlideToggle>
+	<SlideToggle name="sol2_slider" bind:checked={$sol2_open} on:change={handleSOL2Change}> SOL2 {sol2_display}</SlideToggle>
+	<SlideToggle name="sol3_slider" bind:checked={$sol3_open} on:change={handleSOL3Change}> SOL3 {sol3_display}</SlideToggle>
+	<SlideToggle name="sol4_slider" bind:checked={$sol4_open} on:change={handleSOL4Change}> SOL4 {sol4_display}</SlideToggle>
+	<SlideToggle name="sol5_slider" bind:checked={$sol5_open} on:change={handleSOL5Change}> SOL5 {sol5_display}</SlideToggle>
+	<SlideToggle name="sol6_slider" bind:checked={$sol6_open} on:change={handleSOL6Change}> SOL6 {sol6_display}</SlideToggle>
+	<SlideToggle name="sol7_slider" bind:checked={$sol7_open} on:change={handleSOL7Change}> SOL7 {sol7_display}</SlideToggle>
+	<SlideToggle name="sol8a_slider" bind:checked={$sol8a_open} on:change={handleSOL8AChange}> SOL8A {sol8a_display}</SlideToggle>
+	<SlideToggle name="sol8b_slider" bind:checked={$sol8b_open} on:change={handleSOL8BChange}> SOL8B {sol8b_display}</SlideToggle>
 
-	<SlideToggle name="box1_slider" bind:checked={$box1_on} on:change={handleBoxChange}> Ignitor Boxes {$box1_on}</SlideToggle>
+	<SlideToggle name="box1_slider" bind:checked={$box1_on} on:change={handleBox1Change}> Ignitor 1 {box1_display}</SlideToggle>
+	<SlideToggle name="box2_slider" bind:checked={$box2_on} on:change={handleBox2Change}> Ignitor 2 {box2_display}</SlideToggle>
 
 	<SlideToggle name="vent_slider" bind:checked={$vent_open} on:change={handleVentChange}> Vent {$vent_open}</SlideToggle>
 	<SlideToggle name="drain_slider" bind:checked={$drain_open} on:change={handleDrainChange}> Drain {$drain_open}</SlideToggle>
@@ -488,6 +532,15 @@
 
 	<p>SOB TC1 Temperature: {sob_tc1_display}</p>
 	<p>SOB TC2 Temperature: {sob_tc2_display}</p>
+
+	<p>Ignitor Box 1 Continuity: {continuity1_display}</p>
+	<p>Ignitor Box 2 Continuity: {continuity2_display}</p>
+
+	<p>Ignitor 1 Status: {box1_status_display}</p>
+	<p>Ignitor 2 Status: {box2_status_display}</p>
+
+	<p>Vent Status: {vent_display}</p>
+	<p>Drain Status: {drain_display}</p>
 	
 	<!-- Render different buttons based on the current state -->
 	{#if $currentState === states.RS_PRELAUNCH}

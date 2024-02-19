@@ -20,7 +20,14 @@
 			body: `Are you sure you wish to proceed to ${state}?`,
 			response: (r: boolean) => {
 				if (r) {
-					nextState(nextStatePending);
+					async function writeStateChange(state:string) {
+						await PB.collection('CommandMessage').create({
+							'target': 'NODE_DMB',
+							'command': stateCommands[state]
+						});
+					}
+					writeStateChange(nextStatePending);
+					nextState(nextStatePending); //TODO: For easy testing before launch remove this line
 				}
 				nextStatePending = '';
 			}
@@ -40,6 +47,20 @@
 		RS_ABORT: 'Abort',
 		RS_TEST: 'Test'
 	};
+
+	// Define a type for the keys of the `states` object
+	type StateKey = 'RS_PRELAUNCH' | 'RS_FILL' | 'RS_ARM' | 'RS_IGNITION' | 'RS_LAUNCH' | 'RS_BURN' | 'RS_COAST' | 'RS_DESCENT' | 'RS_RECOVERY' | 'RS_ABORT' | 'RS_TEST';
+
+	// Use the `StateKey` type to index the `states` object
+	function getStateName(key: StateKey) {
+		return states[key];
+	}
+
+    // Create a reverse mapping of states
+    const stateCommands: Record<string, string> = Object.entries(states).reduce((acc: Record<string, string>, [key, value]) => {
+        acc[value] = key;
+        return acc;
+    }, {});
 
 	function nextState(state: string) {
 		currentState.set(state);
@@ -257,6 +278,14 @@
 			// Update the SobTemperature data store whenever a change is detected
 			sob_tc1_temperature.set(e.record.tc1_temperature);
 			sob_tc2_temperature.set(e.record.tc2_temperature);
+		});
+
+		// Subscribe to changes in the 'SystemState' collection
+		PB.collection('SystemState').subscribe('*', function (e) {
+			// Update the SystemState data store whenever a change is detected
+			
+			const state = e.record.rocket_state;
+			nextState(getStateName(state));
 		});
 	})
 

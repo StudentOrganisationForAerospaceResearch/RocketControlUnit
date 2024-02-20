@@ -527,9 +527,6 @@
 	<SlideToggle name="sol8a_slider" bind:checked={$sol8a_open} on:change={handleSOL8AChange}> SOL8A {sol8a_display}</SlideToggle>
 	<SlideToggle name="sol8b_slider" bind:checked={$sol8b_open} on:change={handleSOL8BChange}> SOL8B {sol8b_display}</SlideToggle>
 
-	<SlideToggle name="box1_slider" bind:checked={$box1_on} on:change={handleBox1Change}> Ignitor 1 {box1_display}</SlideToggle>
-	<SlideToggle name="box2_slider" bind:checked={$box2_on} on:change={handleBox2Change}> Ignitor 2 {box2_display}</SlideToggle>
-
 	<SlideToggle name="vent_slider" bind:checked={$vent_open} on:change={handleVentChange}> Vent {$vent_open}</SlideToggle>
 	<SlideToggle name="drain_slider" bind:checked={$drain_open} on:change={handleDrainChange}> Drain {$drain_open}</SlideToggle>
 
@@ -621,6 +618,8 @@
 			style="bottom: 30px;"
 			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 		>
+		<SlideToggle name="box1_slider" bind:checked={$box1_on} on:change={handleBox1Change}> Ignitor 1 {box1_display}</SlideToggle>
+		<SlideToggle name="box2_slider" bind:checked={$box2_on} on:change={handleBox2Change}> Ignitor 2 {box2_display}</SlideToggle>
 	{:else if $currentState === states.RS_ABORT}
 		<button
 			class="btn variant-filled-secondary next-state-btn"

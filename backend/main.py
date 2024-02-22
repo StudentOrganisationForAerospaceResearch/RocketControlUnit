@@ -1,5 +1,5 @@
 from DatabaseHandler import DatabaseHandler
-from SerialHandler import SerialHandler
+# from SerialHandler import SerialHandler
 
 from CommonLogger import CommonLogger
 
@@ -11,8 +11,8 @@ if __name__ == "__main__":
   db_thread = DatabaseHandler()
   db_thread.start()
 
-  serial_thread = SerialHandler()
-  serial_thread.start()
+  # serial_thread = SerialHandler()
+  # serial_thread.start()
 
   while 1:
     pass

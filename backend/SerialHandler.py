@@ -26,6 +26,14 @@ class SerialDevices(enum):
 
 class SerialHandler():
     def __init__(self):#TODO: write description and types
+        """
+        Whenever a new entry is created in the CommandMessage 
+        collection, this function is called to handle the
+        command and forward it to the serial port.
+
+        Args:
+            document (MessageData): the change notification from the database.
+        """
         CommonLogger.logger.info("SerialHandler initializing")
         self.serial_executor = ThreadPoolExecutor(max_workers=2)
         self.serial_stop = False

@@ -1,8 +1,10 @@
 import threading
+import time
 
 from pocketbase import Client
 from pocketbase.services.realtime_service import MessageData
 from CommonLogger import CommonLogger
+from SerialHandler import send_serial_message
 
 
 class DatabaseHandler():
@@ -17,12 +19,12 @@ class DatabaseHandler():
         """
         CommonLogger.logger.info("DatabaseHandler initializing")
         self.thread_stop = False
-        self.database_thread = threading.Thread(target=self._run)
+        self.pi_command_thread = threading.Thread(target=self._run_pi_command_thread)
+        self.backend_command_thread = threading.Thread(target=self._run_backend_command_thread)
         self.client = Client("http://127.0.0.1:8090")
-        self.client.collection('CommandMessage').subscribe(DatabaseHandler._handle_command_callback)
 
     @staticmethod
-    def _handle_command_callback(document: MessageData):
+    def _handle_pi_command_callback(document: MessageData) -> None:
         """
         Whenever a new entry is created in the CommandMessage 
         collection, this function is called to handle the
@@ -31,27 +33,63 @@ class DatabaseHandler():
         Args:
             document (MessageData): the change notification from the database.
         """
-        CommonLogger.logger.info("Received new command from the database")
+        command: str = document.record.command
+        target: str = document.record.target
+        command_param: int = document.record.command_param
+        source_sequence_number: int = document.record.source_sequence_number
+
+        CommonLogger.logger.info("Received new command from the CommandMessage collection")
         CommonLogger.logger.debug(f"Record command: {document.record.command}")
+        CommonLogger.logger.debug(f"Record target: {document.record.target}")
+        CommonLogger.logger.debug(f"Record command_param: {document.record.command_param}")
+        CommonLogger.logger.debug(f"Record source_sequence_number: {document.record.source_sequence_number}")
 
+        send_serial_message(command, target, command_param, source_sequence_number)
 
+    @staticmethod
+    def _handle_backend_command_callback(document: MessageData) -> None:
+        """
+        Whenever a new entry is created in the BackendCommand 
+        collection, this function is called to handle any command targeted at the backend for processing
+        and forward it to the appropriate function.
 
-    def _run(self):
+        Args:
+            document (MessageData): the change notification from the database.
+        """
+        CommonLogger.logger.info("Received new data from the BackendCommand collection")
+
+    def _run_database_command_thread(self) -> None:
         """
         The main loop of the database handler. It subscribes to the CommandMessage collection
         """
+        CommonLogger.logger.info("DatabaseHandler database thread started")
+        self.client.collection("CommandMessage").subscribe(self._handle_database_command_callback)
         while not self.thread_stop:
-            pass
-            
-  
-    def start(self):
-        """
-        Start the database handler thread.
-        """
-        CommonLogger.logger.info(f"Starting database handler thread")
-        self.database_thread.start()
+            time.sleep(0.5)
 
-    # def stop(self):
-    #     CommonLogger.logger.info(f"Closing database handler thread")
-    #     self.thread_stop = True
-    #     self.database_thread.join()
+    def _run_backend_command_thread(self) -> None:
+        """
+        The main loop of the backend command handler. It subscribes to the backend collection
+        """
+        CommonLogger.logger.info("Backend command thread started")
+        self.client.collection("BackendCommand").subscribe(self._handle_backend_command_callback)
+        while not self.thread_stop:
+            time.sleep(0.5)
+  
+    def start(self) -> None:
+        """
+        Start the handler threads.
+        """
+        CommonLogger.logger.info(f"Starting pi command thread")
+        self.pi_command_thread.start()
+        CommonLogger.logger.info(f"Starting backend command thread")
+        self.backend_command_thread.start()
+
+    def stop(self) -> None:
+        """
+        Stop the handler threads.
+        """
+        CommonLogger.logger.info(f"Closing pi and backend command threads")
+        self.thread_stop = True
+        self.pi_command_thread.join()
+        self.backend_command_thread.join()

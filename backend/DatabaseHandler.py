@@ -63,7 +63,7 @@ class DatabaseHandler():
         The main loop of the database handler. It subscribes to the CommandMessage collection
         """
         CommonLogger.logger.info("DatabaseHandler database thread started")
-        self.client.collection("CommandMessage").subscribe(self._handle_database_command_callback)
+        self.client.collection("CommandMessage").subscribe(self._handle_pi_command_callback)
         while not self.thread_stop:
             time.sleep(0.5)
 

@@ -68,63 +68,102 @@ Python dependencies are inside the requrements.txt
 
 - Clone repository
 
-```sh
-git clone https://github.com/StudentOrganisationForAerospaceResearch/RocketControlUnit.git
-cd RocketControlUnit
-```
+    ```sh
+    git clone https://github.com/StudentOrganisationForAerospaceResearch/RocketControlUnit.git
+    ```
+
+    ```sh
+    cd RocketControlUnit
+    ```
 
 - Database Setup
-
+  - Download PocketBase Binary
+    - Go to https://pocketbase.io/docs/ and download the build for your specific OS.
   - Move PocketBase Binary
 
-Move the PocketBase binary to the `database` directory of the `RocketControlUnit` project. Replace `path_to_pocketbase_binary` with the actual path of the PocketBase binary on your system:
+    - Move the PocketBase binary to the `database` directory of the `RocketControlUnit` project. Replace `path_to_pocketbase_binary` with the actual path of the PocketBase binary on your system:
 
-```sh
-mv path_to_pocketbase_binary RocketControlUnit/database/
-```
+        ```sh
+        mv path_to_pocketbase_binary RocketControlUnit/database/
+        ```
 
   - Hosting Database
 
-```sh
-cd RocketControlUnit/database/
-./pocketbase serve
-```
+    ```sh
+    cd RocketControlUnit/database/
+    ```
 
-Now enter the 'Admin UI' URL into a browser and create a PocketBase account.
+    ```sh
+    ./pocketbase serve
+    ```
 
-You will now be able to access the PocketBase admin dashboard
+    Now enter the `Admin UI` URL into a browser and create a PocketBase account.
+
+    You will now be able to access the PocketBase admin dashboard
 
 - Backend Setup
 
-```sh
-cd RocketControlUnit/backend
-pip install -r requirements.txt
-```
+    ```sh
+    cd RocketControlUnit/backend
+    ```
+
+    ```sh
+    pip install -r requirements.txt
+    ```
 
 - Frontend Setup
 
-```sh
-cd RocketControlUnit/RocketControlUnitGUI/
-npm install
-```
+    ```sh
+    cd RocketControlUnit/RocketControlUnitGUI/
+    ```
 
-To run an instance for development
+    ```sh
+    npm install
+    ```
 
-```sh
-npm run dev
-```
+    To run an instance for development:
 
-To build for production
+    ```sh
+    npm run dev
+    ```
 
-```sh
-npm run build
-```
+    To build for production using the node adapter:
 
-To preview the app
+    ```sh
+    npm i -D @sveltejs/adapter-node
+    ```
 
-```sh
-npm run preview
-```
+    > **_NOTE:_**  You may have to run the above with `--force` or `--legacy-peer-deps`.
+
+    ```sh
+    npm run build
+    ```
+
+    ```sh
+    npm ci --omit dev
+    ```
+
+    > **_NOTE:_**  You may have to run the above with `--force` or `--legacy-peer-deps`.
+
+    ```sh
+    node build
+    ```
+
+    By default, the server will accept connections on `0.0.0.0` using port 3000. These can be customised with the `PORT` and `HOST` environment variables:
+
+    ```sh
+    HOST=127.0.0.1 PORT=4000 node build
+    ```
+
+    To preview the app:
+
+    ```sh
+    npm run build
+    ```
+
+    ```sh
+    npm run preview
+    ```
 
 ## TODO
 
@@ -140,5 +179,5 @@ npm run preview
   - [ ] Add Fluid Flow Animation
   - [ ] Add Authentication
   - [ ] Add Test State
-  - [ ] Figure Out Deployment
+  - [x] Figure Out Deployment
 - [ ] Integration Test

@@ -41,7 +41,7 @@ def battery_write():
 
 
 def combustion_control_write():
-    pb.collection("CombustionControl").create(
+    pb.collection("CombustionControlStatus").create(
         {
             "vent_open": random_int(),
             "drain_open": random_int(),
@@ -51,9 +51,9 @@ def combustion_control_write():
 
 
 def dmb_pressure_write():
-    pb.collection("DmbPressue").create(
+    pb.collection("DmbPressure").create(
         {
-            "upper_pv_pressue": random_int(),
+            "upper_pv_pressure": random_int(),
         }
     )
 
@@ -93,15 +93,6 @@ def lr_loadcell_write():
             "rocket_mass": random_int(),
         }
     )
-
-
-def mev_state_write():
-    pb.collection("MevState").create(
-        {
-            "mev_open": random_bool(),
-        }
-    )
-
 
 def nos_load_write():
     pb.collection("NosLoadCell").create(
@@ -200,7 +191,6 @@ functions = [
     gps_write,
     imu_write,
     lr_loadcell_write,
-    mev_state_write,
     nos_load_write,
     pad_box_write,
     pbb_pressure_write,

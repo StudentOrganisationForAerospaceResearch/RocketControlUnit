@@ -34,6 +34,7 @@
 		};
 		modalStore.trigger(modal);
 	}
+
 	const states = {
 		RS_PRELAUNCH: 'Pre-Launch',
 		RS_FILL: 'Fill',
@@ -289,6 +290,25 @@
 			nextState(getStateName(state));
 		});
 	})
+	async function writeCommandMessage(target: string, command: string) {
+		await PB.collection('CommandMessage').create({
+			'target': target,
+			'command': command
+		});
+	}
+
+
+	async function handleSliderChange(e: any, openCommand: string, closeCommand: string) {
+		// Determine the command based on the current value of the slider
+		const command = e.target.checked ? openCommand : closeCommand;
+
+		// Create a change on the 'RelayStatus' collection
+		await PB.collection('CommandMessage').create ({
+			// Write a new record with all current values
+			'target': 'NODE_RCU',
+			'command': command,
+		});
+	}
 
 	async function handleAC1Change(e: any) {
 		// Determine the command based on the current value of the slider
@@ -506,10 +526,57 @@
 		});
 	}
 
+	function confirmTakeWeight(loadcell: string) {
+		const modal: ModalSettings = {
+			type: 'confirm',
+			title: 'Take all weight',
+			response: (r: boolean) => {
+				if (r) {
+					writeCommandMessage("EnterTargetHere", "EnterCommandHere");
+					confirmWeightPlaced(loadcell);
+				}
+			}
+		};
+		modalStore.trigger(modal);
+	}
+
+	function confirmWeightPlaced(loadcell: string) {
+		const modal: ModalSettings = {
+			type: 'confirm',
+			title: 'Place weight on loadcell',
+			response: async (r: boolean) => {
+				if (r) {
+					writeCommandMessage("EnterTargetHere", "EnterCommandHere");
+					promptEnterWeight(loadcell);
+				}
+			}
+		};
+		modalStore.trigger(modal);
+	}
+
+	function promptEnterWeight(loadcell: string) {
+		const modal: ModalSettings = {
+			type: 'prompt',
+			title: 'Enter Weight (kg)',
+			valueAttr: { type: 'text', required: true },
+			response: async (r: string) => {
+				if (r) {
+					writeCommandMessage("EnterTargetHere", "EnterCommandHere");
+				}
+			}
+		};
+		modalStore.trigger(modal);
+	}
+
+
 </script>
 
 <main> 
-	<div id="background" style="background-image: url({background}); background-repeat: no-repeat; background-size: 100%; background-position: center top; position:fixed; top: 0; left: 0; right:0; bottom:0; width: 100%; height: 100%;"></div>
+	<!--<div id="background" style="background-image: url({background}); background-repeat: no-repeat; background-size: 100%; background-position: center top; position:fixed; top: 0; left: 0; right:0; bottom:0; width: 100%; height: 100%;"></div>-->
+
+	<button type="button" class="btn variant-filled" on:click={() => confirmTakeWeight("nos1")}>CAL NOS1</button>
+	<button type="button" class="btn variant-filled" on:click={() => confirmTakeWeight("nos2")}>CAL NOS2</button>
+	<button type="button" class="btn variant-filled" on:click={() => confirmTakeWeight("rail")}>CAL RAIL</button>
 
 	<SlideToggle name="ac1_slider" bind:checked={$ac1_open} on:change={handleAC1Change}> AC1 {ac1_display}</SlideToggle>
 	<SlideToggle name="ac2_slider" bind:checked={$ac2_open} on:change={handleAC2Change}> AC2 {ac2_display}</SlideToggle>
@@ -653,19 +720,7 @@
 				0 0 10px #00ff00,
 				0 0 20px #00ff00,
 				0 0 30px #00ff00,
-				0 0 40px #00ff00;
+				0 0 40px  #00ff00;
 		}
 	}
-
-	svg {
-		width: 100%;
-		height: 70px;
-  	}
-
-	line {
-        stroke-width: 0.3;
-    }
-
-
-
 </style>

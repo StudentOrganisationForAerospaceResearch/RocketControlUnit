@@ -8,7 +8,8 @@
 		initializeStores,
 		LightSwitch,
 		Modal,
-		storePopup
+		storePopup,
+		getModalStore
 	} from '@skeletonlabs/skeleton';
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import HomeIcon from "$lib/assets/rocket-dark.png";
@@ -20,13 +21,10 @@
 	import { page } from '$app/stores';
 
 	initializeStores();
+
 </script>
 
-
-
-
 <Modal />
-
 
 <!-- App Shell -->
 <AppShell slotSidebarLeft="bg-surface-500/5">

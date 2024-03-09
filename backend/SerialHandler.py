@@ -6,7 +6,7 @@ from cobs import cobs   # pip install cobs
 from Codec import Codec
 import proto.Python.CoreProto_pb2 as ProtoCore
 import proto.Python.TelemetryMessage_pb2 as TelemetryMessageProto
-import proto.Python.ControlMessage_pb2 as ProtoCtr
+import proto.Python.CommandMessage_pb2 as CommandMessageProto
 import ProtobufParser as ProtobufParser
 import google.protobuf.message as Message
 import json
@@ -101,36 +101,43 @@ class SerialHandler():
         else:
             CommonLogger.logger.warn("Received invalid MessageID")
 
-    def send_serial_message(self, message: str, target: ProtoCore.Node, message_ID: ProtoCore.MessageID = ProtoCore.MSG_COMMAND) -> bool:
+    def send_serial_command_message(self, command, target, command_param, source_sequence_number) -> bool:
         """
         Send the out going command message to the correct
         serial port based on the target node.
 
         Args:
-            message (str): 
-                The table dictionary from the database in json format.
-            message_ID (ProtoCore.MessageID):
-                The message type being sent to the serial port.
-            target (ProtoCore.Node):
-                The node the message is being sent to, determines
-                which serial port to write to.
+            command (str):
+                The command to be sent.
+            target (str):
+                The target node for the command.
+            command_param (int):
+                The command parameter for calibration or other commands.
+            source_sequence_number (int):
+                Unused.
 
         Returns:
             bool: 
                 True if the message was successfully sent, False otherwise.
         """
 
-        command_dictionary = json.loads(message.decode("utf-8"))
+        
+        command_message = CommandMessageProto.CommandMessage()
+        command_message.source = ProtoCore.NODE_PI
+        command_message.target = target
+        command_message.source_sequence_number = source_sequence_number
+        command_message.message. = command
+
+
+
+
 
         if ('command' not in command_dictionary) and (message_ID == ProtoCore.MessageID.MSG_COMMAND):
             CommonLogger.logger.warn(f"Invalid command message: {message}")
             return False
 
-        command = command_dictionary["command"]
-
         CommonLogger.logger.info(f"Sending message {message_ID} to {target.name}")
 
-        buf = message.SerializeToString()
         encBuf = Codec.Encode(buf, len(buf), message_ID)
 
         if target ==  ProtoCore.NODE_DMB or target ==  ProtoCore.Node.NODE_PBB:

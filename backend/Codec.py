@@ -22,16 +22,16 @@ class Codec:
         return unencodedSize + 1 + GetCOBSOverhead(unencodedSize + 1) + 1
 
     @staticmethod
-    def Encode(buf, len, msgId): #TODO: Write descriptions ask what msgid refers to
+    def Encode(buf, length, msgId): #TODO: Write descriptions ask what msgid refers to
         
         # Make a new buffer encoded with just the message ID and enough space for the checksum
-        encodedBuf = bytearray(len+1)
+        encodedBuf = bytearray(length+1)
 
         # We encode the message ID first
         encodedBuf[0] = msgId
 
         # Then we copy the rest of the buffer
-        for i in range(0, len):
+        for i in range(0, length):
             encodedBuf[i+1] = buf[i]
 
         # Calculate a checksum

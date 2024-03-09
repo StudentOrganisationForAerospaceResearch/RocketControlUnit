@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { getModalStore ,SlideToggle} from '@skeletonlabs/skeleton';
-	//import SlideToggle from './SlideToggle.svelte';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
 	import { onMount } from 'svelte';
@@ -135,14 +134,6 @@
 
 	const sob_tc1_temperature = writable(undefined);
 	const sob_tc2_temperature = writable(undefined);
-
-	let arrowColor = 'white'; // initial color
-	let animate = false;
-
-	$: {
-		arrowColor = $sol1_open ? 'red' : 'white';
-		animate = $sol1_open === true;
-	}
 
 	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'OPEN' : 'CLOSE';
 	$: ac2_display = $ac2_open === undefined ? 'N/A' : $ac2_open ? 'OPEN' : 'CLOSE';
@@ -310,221 +301,24 @@
 			const state = e.record.rocket_state;
 			nextState(getStateName(state));
 		});
-	});
+	})
 
-	async function handleAC1Change(e: any) {
+	async function handleSliderChange(e: any, target: string, openCommand: string, closeCommand: string) {
 		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_AC1' : 'RCU_CLOSE_AC1';
+		const command = e.target.checked ? openCommand : closeCommand;
 
 		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
+		await PB.collection('CommandMessage').create ({
 			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
+			'target': 'NODE_RCU',
+			'command': command,
 		});
 	}
 
-	async function handleAC2Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_AC2' : 'RCU_CLOSE_AC2';
-
-		// Create a change on the 'RelayStatus' collection
+	async function writeCommandMessage(target: string, command: string) {
 		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handlePBV1Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_PBV1' : 'RCU_CLOSE_PBV1';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handlePBV2Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_PBV2' : 'RCU_CLOSE_PBV2';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handlePBV3Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_PBV3' : 'RCU_CLOSE_PBV3';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleSOL1Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_SOL1' : 'RCU_CLOSE_SOL1';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleSOL2Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_SOL2' : 'RCU_CLOSE_SOL2';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleSOL3Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_SOL3' : 'RCU_CLOSE_SOL3';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleSOL4Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_SOL4' : 'RCU_CLOSE_SOL4';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleSOL5Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_SOL5' : 'RCU_CLOSE_SOL5';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleSOL6Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_SOL6' : 'RCU_CLOSE_SOL6';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleSOL7Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_SOL7' : 'RCU_CLOSE_SOL7';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleSOL8AChange(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_SOL8A' : 'RCU_CLOSE_SOL8A';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleSOL8BChange(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_SOL8B' : 'RCU_CLOSE_SOL8B';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleBox1Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_KILL_PAD_BOX1' : 'RCU_IGNITE_BOX1';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleBox2Change(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_KILL_PAD_BOX2' : 'RCU_IGNITE_BOX2';
-
-		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_RCU',
-			command: command
-		});
-	}
-
-	async function handleVentChange(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_VENT' : 'RCU_CLOSE_VENT';
-
-		// Create a change on the 'CombustionControlStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_DMB',
-			command: command
-		});
-	}
-
-	async function handleDrainChange(e: any) {
-		// Determine the command based on the current value of the slider
-		const command = e.target.checked ? 'RCU_OPEN_DRAIN' : 'RCU_CLOSE_DRAIN';
-
-		// Create a change on the 'CombustionControlStatus' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with all current values
-			target: 'NODE_DMB',
-			command: command
+			'target': target,
+			'command': command
 		});
 	}
 </script>
@@ -539,59 +333,26 @@
 	</div>
 </div>
 
-<main>
-	<!--
-	<SlideToggle name="ac1_slider" bind:checked={$ac1_open} on:change={handleAC1Change}>
-		AC1 {ac1_display}</SlideToggle
-	>
-	<SlideToggle name="ac2_slider" bind:checked={$ac2_open} on:change={handleAC2Change}>
-		AC2 {ac2_display}</SlideToggle
-	>
+<main> 
+	<SlideToggle name="ac1_slider" bind:checked={$ac1_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}> AC1 {ac1_display}</SlideToggle>
+	<SlideToggle name="ac2_slider" bind:checked={$ac2_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_AC2', 'RCU_CLOSE_AC2')}> AC2 {ac2_display}</SlideToggle>
 
-	<SlideToggle name="pbv1_slider" bind:checked={$pbv1_open} on:change={handlePBV1Change}>
-		PV1 {pbv1_display}</SlideToggle
-	>
-	<SlideToggle name="pbv2_slider" bind:checked={$pbv2_open} on:change={handlePBV2Change}>
-		PV2 {pbv2_display}</SlideToggle
-	>
-	<SlideToggle name="pbv3_slider" bind:checked={$pbv3_open} on:change={handlePBV3Change}>
-		PV3 {pbv3_display}</SlideToggle
-	>
+	<SlideToggle name="pbv1_slider" bind:checked={$pbv1_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV1', 'RCU_CLOSE_PBV1')}> PV1 {pbv1_display}</SlideToggle>
+	<SlideToggle name="pbv2_slider" bind:checked={$pbv2_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV2', 'RCU_CLOSE_PBV2')}> PV2 {pbv2_display}</SlideToggle>
+	<SlideToggle name="pbv3_slider" bind:checked={$pbv3_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV3', 'RCU_CLOSE_PBV3')}> PV3 {pbv3_display}</SlideToggle>
 
-	<SlideToggle name="sol1_slider" bind:checked={$sol1_open} on:change={handleSOL1Change}>
-		SOL1 {sol1_display}</SlideToggle
-	>
-	<SlideToggle name="sol2_slider" bind:checked={$sol2_open} on:change={handleSOL2Change}>
-		SOL2 {sol2_display}</SlideToggle
-	>
-	<SlideToggle name="sol3_slider" bind:checked={$sol3_open} on:change={handleSOL3Change}>
-		SOL3 {sol3_display}</SlideToggle
-	>
-	<SlideToggle name="sol4_slider" bind:checked={$sol4_open} on:change={handleSOL4Change}>
-		SOL4 {sol4_display}</SlideToggle
-	>
-	<SlideToggle name="sol5_slider" bind:checked={$sol5_open} on:change={handleSOL5Change}>
-		SOL5 {sol5_display}</SlideToggle
-	>
-	<SlideToggle name="sol6_slider" bind:checked={$sol6_open} on:change={handleSOL6Change}>
-		SOL6 {sol6_display}</SlideToggle
-	>
-	<SlideToggle name="sol7_slider" bind:checked={$sol7_open} on:change={handleSOL7Change}>
-		SOL7 {sol7_display}</SlideToggle
-	>
-	<SlideToggle name="sol8a_slider" bind:checked={$sol8a_open} on:change={handleSOL8AChange}>
-		SOL8A {sol8a_display}</SlideToggle
-	>
-	<SlideToggle name="sol8b_slider" bind:checked={$sol8b_open} on:change={handleSOL8BChange}>
-		SOL8B {sol8b_display}</SlideToggle
-	>
+	<SlideToggle name="sol1_slider" bind:checked={$sol1_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL1', 'RCU_CLOSE_SOL1')}> SOL1 {sol1_display}</SlideToggle>
+	<SlideToggle name="sol2_slider" bind:checked={$sol2_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL2', 'RCU_CLOSE_SOL2')}> SOL2 {sol2_display}</SlideToggle>
+	<SlideToggle name="sol3_slider" bind:checked={$sol3_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL3', 'RCU_CLOSE_SOl3')}> SOL3 {sol3_display}</SlideToggle>
+	<SlideToggle name="sol4_slider" bind:checked={$sol4_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL4', 'RCU_CLOSE_SOL4')}> SOL4 {sol4_display}</SlideToggle>
+	<SlideToggle name="sol5_slider" bind:checked={$sol5_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL5', 'RCU_CLOSE_SOL5')}> SOL5 {sol5_display}</SlideToggle>
+	<SlideToggle name="sol6_slider" bind:checked={$sol6_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL6', 'RCU_CLOSE_SOL6')}> SOL6 {sol6_display}</SlideToggle>
+	<SlideToggle name="sol7_slider" bind:checked={$sol7_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL7', 'RCU_CLOSE_SOL7')}> SOL7 {sol7_display}</SlideToggle>
+	<SlideToggle name="sol8a_slider" bind:checked={$sol8a_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL8A', 'RCU_CLOSE_SOL8A')}> SOL8A {sol8a_display}</SlideToggle>
+	<SlideToggle name="sol8b_slider" bind:checked={$sol8b_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL8B', 'RCU_CLOSE_SOL8B')}> SOL8B {sol8b_display}</SlideToggle>
 
-	<SlideToggle name="vent_slider" bind:checked={$vent_open} on:change={handleVentChange}>
-		Vent {$vent_open}</SlideToggle
-	>
-	<SlideToggle name="drain_slider" bind:checked={$drain_open} on:change={handleDrainChange}>
-		Drain {$drain_open}</SlideToggle
-	>
+	<SlideToggle name="vent_slider" bind:checked={$vent_open} on:change={(e) => handleSliderChange(e, 'NODE_DMB','RCU_OPEN_VENT', 'RCU_CLOSE_VENT')}> Vent {$vent_open}</SlideToggle>
+	<SlideToggle name="drain_slider" bind:checked={$drain_open} on:change={(e) => handleSliderChange(e, 'NODE_DMB','RCU_OPEN_DRAIN', 'RCU_CLOSE_DRAIN')}> Drain {$drain_open}</SlideToggle>
 
 	<p>RCU TC1 Temperature: {rcu_tc1_display}</p>
 	<p>RCU TC2 Temperature: {rcu_tc2_display}</p>
@@ -681,12 +442,8 @@
 			style="bottom: 30px;"
 			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 		>
-		<SlideToggle name="box1_slider" bind:checked={$box1_on} on:change={handleBox1Change}>
-			Ignitor 1 {box1_display}</SlideToggle
-		>
-		<SlideToggle name="box2_slider" bind:checked={$box2_on} on:change={handleBox2Change}>
-			Ignitor 2 {box2_display}</SlideToggle
-		>
+		<SlideToggle name="box1_slider" bind:checked={$box1_on} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_KILL_PAD_BOX1', 'RCU_IGNITE_BOX1')}> Ignitor 1 {box1_display}</SlideToggle>
+		<SlideToggle name="box2_slider" bind:checked={$box2_on} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_KILL_PAD_BOX2', 'RCU_IGNITE_BOX2')}> Ignitor 2 {box2_display}</SlideToggle>
 	{:else if $currentState === states.RS_ABORT}
 		<button
 			class="btn variant-filled-secondary next-state-btn"

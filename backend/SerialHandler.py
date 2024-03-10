@@ -1,13 +1,18 @@
 from concurrent.futures import ThreadPoolExecutor
 import enum
-import string
+import os
+import sys
 import serial           # You'll need to run `pip install pyserial`
 from cobs import cobs   # pip install cobs
 from Codec import Codec
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'proto/Python'))
+
+from Utils import get_node_from_enum
 import proto.Python.CoreProto_pb2 as ProtoCore
-import proto.Python.TelemetryMessage_pb2 as TelemetryMessageProto
-import proto.Python.CommandMessage_pb2 as CommandMessageProto
-import ProtobufParser as ProtobufParser
+import proto.Python.TelemetryMessage_pb2 as TelemetryProto
+import proto.Python.ControlMessage_pb2 as ControlProto
+from ProtobufParser import ProtobufParser
 import google.protobuf.message as Message
 import json
 
@@ -21,7 +26,7 @@ RADIO_SERIAL_PORT = "/dev/ttyUSB0"
 UART_BAUDRATE = 115200
 RADIO_BAUDRATE = 115200 #NOTE: might need to change this (57600 ???)
 
-class SerialDevices(enum):
+class SerialDevices(enum.Enum):
     UART = 1
     RADIO = 2
 
@@ -83,14 +88,14 @@ class SerialHandler():
         """
         # Check message length
         if len(message) < MIN_SERIAL_MESSAGE_LENGTH:
-            CommonLogger.logger.warn(f"Message from {source.name} too short: {message}")
+            CommonLogger.logger.warning(f"Message from {source.name} too short: {message}")
             return
         
         # Decode, remove 0x00 byte
         try:
             msgId, data = Codec.Decode(message[:-1], len(message) - 1)
         except cobs.DecodeError:
-            CommonLogger.logger.warn("Invalid cobs message")
+            CommonLogger.logger.warning("Invalid cobs message")
             return
         
         # Process message according to ID
@@ -99,9 +104,48 @@ class SerialHandler():
         elif msgId == ProtoCore.MessageID.MSG_CONTROL:
             self.process_control_message(data)
         else:
-            CommonLogger.logger.warn("Received invalid MessageID")
+            CommonLogger.logger.warning("Received invalid MessageID")
 
-    def send_serial_command_message(self, command, target, command_param, source_sequence_number) -> bool:
+    def process_telemetry_message(self, data):
+        received_message = TelemetryProto.TelemetryMessage()
+        # Ensure we received a valid message
+        try:
+            received_message.ParseFromString(data)
+        except Message.DecodeError:
+            CommonLogger.logger.warning("Unable to decode telemetry message: {data}")
+            return
+        # Ensure the message is intended for us
+        if received_message.target == ProtoCore.NODE_RCU or received_message.target == ProtoCore.NODE_ANY:
+            telemetry_message_type = received_message.WhichOneof('message')
+            CommonLogger.logger.debug(f"Received {telemetry_message_type} from {get_node_from_enum(received_message.source)}")
+        else:
+            CommonLogger.logger.debug(f"Received message intended for {get_node_from_enum(received_message.target)}")
+            return
+        
+        ProtobufParser.parse_serial_to_json(data, ProtoCore.MessageID.MSG_TELEMETRY)
+        
+
+    def process_control_message(self, data):
+        received_message = ControlProto.ControlMessage()
+        # Ensure we received a valid message
+        try:
+            received_message.ParseFromString(data)
+        except Message.DecodeError:
+            CommonLogger.logger.warning("Unable to decode control message: {data}")
+            return
+        # Ensure the message is intended for us
+        if received_message.target == ProtoCore.NODE_RCU or received_message.target == ProtoCore.NODE_ANY:
+            control_message_type = received_message.WhichOneof('message')
+            CommonLogger.logger.debug(f"Received {control_message_type} from {get_node_from_enum(received_message.source)}")
+        else:
+            CommonLogger.logger.debug(f"Received message intended for {get_node_from_enum(received_message.target)}")
+            return
+        
+        ProtobufParser.parse_serial_to_json(data, ProtoCore.MessageID.MSG_CONTROL)
+
+        
+
+    def send_serial_command_message(self, command: str, target: str, command_param: int, source_sequence_number: int) -> bool:
         """
         Send the out going command message to the correct
         serial port based on the target node.
@@ -121,121 +165,34 @@ class SerialHandler():
                 True if the message was successfully sent, False otherwise.
         """
 
-        
-        command_message = CommandMessageProto.CommandMessage()
-        command_message.source = ProtoCore.NODE_PI
-        command_message.target = target
-        command_message.source_sequence_number = source_sequence_number
-        command_message.message. = command
+        command_message = ProtobufParser.create_command_proto(command, target, command_param, source_sequence_number)
 
-
-
-
-
-        if ('command' not in command_dictionary) and (message_ID == ProtoCore.MessageID.MSG_COMMAND):
-            CommonLogger.logger.warn(f"Invalid command message: {message}")
+        if command_message == None:
+            CommonLogger.logger.warning(f"Cannot send command {command} to {target}")
             return False
 
-        CommonLogger.logger.info(f"Sending message {message_ID} to {target.name}")
+        buf = command_message.SerializeToString()
 
-        encBuf = Codec.Encode(buf, len(buf), message_ID)
+        CommonLogger.logger.debug(f"Sending command message {command} to {target}")
+
+        encBuf = Codec.Encode(buf, len(buf), ProtoCore.MessageID.MSG_COMMAND)
 
         if target ==  ProtoCore.NODE_DMB or target ==  ProtoCore.Node.NODE_PBB:
             self.radio_serial.write(encBuf)
         if target ==  ProtoCore.NODE_RCU or target ==  ProtoCore.Node.NODE_SOB:
             self.uart_serial.write(encBuf)
 
-    def process_telemetry_message(self, data):
-        received_message = TelemetryMessageProto.TelemetryMessage()
-        try:
-            received_message.ParseFromString(data)
-        except Message.DecodeError:
-            CommonLogger.logger.warn("Unable to decode telemetry message: {data}")
-            return
-        
-        if received_message.target == ProtoCore.NODE_RCU:
-            telemetry_message_type = received_message.WhichOneof('message')
-            CommonLogger.logger.debug(f"Telemetry message received: \n\t{telemetry_message_type}\n\t{received_message}")
-
-            print('========')
-            print(telemetry_message_type)
-            print(received_message)
-            print('========')
+        return True
 
 
 
 
 
 
+# sh = SerialHandler()
+
+# sh.send_serial_command_message("RSC_ANY_TO_ABORT", "NODE_DMB", 0, 23)
+
+# sh._handle_serial_message(SerialDevices.RADIO, bytes(Codec.Encode([8, 3, 16, 4, 24, 23, 34, 2, 8, 1], len([8, 3, 16, 4, 24, 23, 34, 2, 8, 1]),4)))
 
 
-
-
-
-
-# telemetry message
-# def process_telemetry_message(data):
-#     received_message = TelemetryMessageProto.TelemetryMessage()
-#     try:
-#         received_message.ParseFromString(data)
-#     except Message.DecodeError:
-#         print("cannot decode telemetry message")
-#         return
-
-#     if received_message.target == ProtoCore.NODE_RCU:
-#         message_type = received_message.WhichOneof('message')
-#         print('========')
-#         print(message_type)
-#         print(received_message)
-#         print('========')
-
-#         if(message_type != None):
-#             topic, jsnStr = ProtoParse.TELE_FUNCTION_DICTIONARY[message_type](received_message)
-#             EtHan.soar_publish(topic, jsnStr)
-#             return
-#         else:
-#             print("received invalid telemetry message type")
-#             EtHan.soar_publish("TELE_PI_ERROR", json.dumps({"error": "Invalid telemetry message type"}))
-
-# control message 
-# def process_control_message(data):
-#     received_message = ProtoCtr.ControlMessage()
-
-#     try:
-#         received_message.ParseFromString(data)
-#     except message.DecodeError:
-#         print("cannot decode control message")
-#         return
-
-#     #print(received_message)
-
-#     if received_message.target == ProtoCore.NODE_RCU:
-#         message_type = received_message.WhichOneof('message')
-#         if message_type == 'sys_state':
-#             #print(received_message.sys_state)
-#             if received_message.source == ProtoCore.NODE_DMB:
-#                 TelO.tele_dmb_obj.current_state = ProtoParse.PROTO_STATE_TO_STRING[received_message.sys_state.rocket_state]
-#                 EtHan.soar_publish("CONTROL_SYS_STATE", json.dumps({"dmb_state": str(TelO.tele_dmb_obj.current_state)}))
-
-#                 #print(ProtoParse.PROTO_STATE_TO_STRING[received_message.sys_state.rocket_state])
-#         elif message_type == 'hb':
-#             print('hb: ', received_message.source)
-#         elif message_type == 'ping':
-#             if received_message.source == ProtoCore.NODE_DMB and received_message.ping.ping_response_sequence_num == DMB_SEQ_NUM:
-#                 EtHan.soar_publish("TELE_PI_ERROR", '{"ping_status" : "ping from DMB received"}')
-#             elif received_message.source == ProtoCore.NODE_PBB and received_message.ping.ping_response_sequence_num == PBB_SEQ_NUM:
-#                 EtHan.soar_publish("TELE_PI_ERROR", '{"ping_status" : "ping from PBB received"}')
-#             elif received_message.source == ProtoCore.NODE_SOB and received_message.ping.ping_response_sequence_num == SOB_SEQ_NUM:
-#                 EtHan.soar_publish("TELE_PI_ERROR", '{"ping_status" : "ping from SOB received"}')
-#             else:
-#                 EtHan.soar_publish("TELE_PI_ERROR", '{"ping_status" : "unknown ping received"}')
-#             print('we were pinged: ', received_message.source)
-#         elif message_type == 'ack':
-#             print('oh hey, we ack: ', received_message.source)
-#         elif message_type == 'nack':
-#             #add resend of message
-#             print('nack received, this is bad')
-
-
-# placeholder in case the pi ever receives a command message
-#def process_command_message(msg):

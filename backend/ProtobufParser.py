@@ -3,10 +3,13 @@
 #         and pushing telemetry messages to PocketBase
 
 import os, sys
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'proto/Python'))
 
 import json
+from Utils import get_command_from_str, get_node_from_str
 from google.protobuf.json_format import MessageToJson
+import proto.Python.CoreProto_pb2 as ProtoCore
 import proto.Python.ControlMessage_pb2 as ProtoCtrl
 import proto.Python.CommandMessage_pb2 as ProtoCmd
 import proto.Python.TelemetryMessage_pb2 as ProtoTele
@@ -68,6 +71,51 @@ class ProtobufParser:
         # Push the JSON data to PocketBase using the correct schema
         client.collection(table_name).create(json_data[table_name])
 
+    @staticmethod
+    def create_command_proto(command: str, target: str, command_param: int, source_sequence_number: int):
+        """
+        Create the command message protobuf message.
+
+        Args:
+            command (str):
+                The command to be sent.
+            target (str):
+                The target node for the command.
+            command_param (int):
+                The command parameter for calibration or other commands.
+            source_sequence_number (int):
+                Unused.
+
+        Returns:
+            command_message (ProtoCmd.CommandMessage): 
+                returns the protobuf command message, None if the target is invalid.
+        """
+        target_enum = get_node_from_str(target)
+        command_message = ProtoCmd.CommandMessage()
+        command_message.source = ProtoCore.NODE_RCU
+        command_message.source_sequence_num = source_sequence_number
+
+        if target_enum == ProtoCore.NODE_DMB:
+            command_message.target = ProtoCore.NODE_DMB
+            command_enum = get_command_from_str(ProtoCmd.DmbCommand.Command, command)
+            command_message.dmb_command.CopyFrom(ProtoCmd.DmbCommand(command_enum=command_enum))
+        elif target_enum == ProtoCore.NODE_PBB:
+            command_message.target = ProtoCore.NODE_PBB
+            command_enum = get_command_from_str(ProtoCmd.PbbCommand.Command, command)
+            command_message.pbb_command.CopyFrom(ProtoCmd.PbbCommand(command_enum=command_enum))
+        elif target_enum == ProtoCore.NODE_SOB:
+            command_message.target = ProtoCore.NODE_SOB
+            command_enum = get_command_from_str(ProtoCmd.SobCommand.Command, command)
+            command_message.sob_command.CopyFrom(ProtoCmd.SobCommand(command_enum=command_enum, command_param=command_param))
+        elif target_enum == ProtoCore.NODE_RCU:
+            command_message.target = ProtoCore.NODE_RCU
+            command_enum = get_command_from_str(ProtoCmd.RcuCommand.Command, command)
+            command_message.rcu_command.CopyFrom(ProtoCmd.RcuCommand(command_enum=command_enum, command_param=command_param))
+        else:
+            return None
+        
+        return command_message
+
 # Example code
 import time, datetime
 
@@ -109,7 +157,6 @@ if __name__ == "__main__":
 
     # Parse the serialized message to JSON
     parsed = ProtobufParser.parse_serial_to_json(serialized_message, Core.MessageID.MSG_TELEMETRY)
-
     
     client = Client("http://127.0.0.1:8090")
     ProtobufParser.push_tele_json_to_pocketbase(client, parsed)

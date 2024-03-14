@@ -86,11 +86,8 @@
 	const pbv1_open = writable(undefined);
 	const pbv2_open = writable(undefined);
 	const pbv3_open = writable(undefined);
+	const pbv4_open = writable(undefined);
 
-	const sol1_open = writable(undefined);
-	const sol2_open = writable(undefined);
-	const sol3_open = writable(undefined);
-	const sol4_open = writable(undefined);
 	const sol5_open = writable(undefined);
 	const sol6_open = writable(undefined);
 	const sol7_open = writable(undefined);
@@ -141,11 +138,8 @@
 	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSE';
 	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'OPEN' : 'CLOSE';
 	$: pbv3_display = $pbv3_open === undefined ? 'N/A' : $pbv3_open ? 'OPEN' : 'CLOSE';
+	$: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'OPEN' : 'CLOSE';
 
-	$: sol1_display = $sol1_open === undefined ? 'N/A' : $sol1_open ? 'OPEN' : 'CLOSE';
-	$: sol2_display = $sol2_open === undefined ? 'N/A' : $sol2_open ? 'OPEN' : 'CLOSE';
-	$: sol3_display = $sol3_open === undefined ? 'N/A' : $sol3_open ? 'OPEN' : 'CLOSE';
-	$: sol4_display = $sol4_open === undefined ? 'N/A' : $sol4_open ? 'OPEN' : 'CLOSE';
 	$: sol5_display = $sol5_open === undefined ? 'N/A' : $sol5_open ? 'OPEN' : 'CLOSE';
 	$: sol6_display = $sol6_open === undefined ? 'N/A' : $sol6_open ? 'OPEN' : 'CLOSE';
 	$: sol7_display = $sol7_open === undefined ? 'N/A' : $sol7_open ? 'OPEN' : 'CLOSE';
@@ -202,11 +196,8 @@
 			pbv1_open.set(e.record.pbv1_open);
 			pbv2_open.set(e.record.pbv2_open);
 			pbv3_open.set(e.record.pbv3_open);
+			pbv4_open.set(e.record.pbv4_open);
 
-			sol1_open.set(e.record.sol1_open);
-			sol2_open.set(e.record.sol2_open);
-			sol3_open.set(e.record.sol3_open);
-			sol4_open.set(e.record.sol4_open);
 			sol5_open.set(e.record.sol5_open);
 			sol6_open.set(e.record.sol6_open);
 			sol7_open.set(e.record.sol7_open);
@@ -310,7 +301,7 @@
 		// Create a change on the 'RelayStatus' collection
 		await PB.collection('CommandMessage').create ({
 			// Write a new record with all current values
-			'target': 'NODE_RCU',
+			'target': target,
 			'command': command,
 		});
 	}
@@ -326,25 +317,21 @@
 <div class="container">
 	<SvgComponent />
 
-	<div class="pbv4_slide_toggle">
-		<SlideToggle name="pbv4_slider" active='bg-primary-500 dark:bg-primary-500' size="sm" bind:checked={$pbv1_open} on:change={handleAC1Change}>
-			{ac1_display}</SlideToggle
+	<div class="pbv4_slider">
+		<SlideToggle name="pbv4_slider" active='bg-primary-500 dark:bg-primary-500' size="sm" bind:checked={$pbv4_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV4', 'RCU_CLOSE_PBV4')}>
+			{pbv4_display}</SlideToggle
 		>
 	</div>
 </div>
 
 <main> 
-	<SlideToggle name="ac1_slider" bind:checked={$ac1_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}> AC1 {ac1_display}</SlideToggle>
+	<!-- <SlideToggle name="ac1_slider" bind:checked={$ac1_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}> AC1 {ac1_display}</SlideToggle>
 	<SlideToggle name="ac2_slider" bind:checked={$ac2_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_AC2', 'RCU_CLOSE_AC2')}> AC2 {ac2_display}</SlideToggle>
 
 	<SlideToggle name="pbv1_slider" bind:checked={$pbv1_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV1', 'RCU_CLOSE_PBV1')}> PV1 {pbv1_display}</SlideToggle>
 	<SlideToggle name="pbv2_slider" bind:checked={$pbv2_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV2', 'RCU_CLOSE_PBV2')}> PV2 {pbv2_display}</SlideToggle>
 	<SlideToggle name="pbv3_slider" bind:checked={$pbv3_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV3', 'RCU_CLOSE_PBV3')}> PV3 {pbv3_display}</SlideToggle>
 
-	<SlideToggle name="sol1_slider" bind:checked={$sol1_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL1', 'RCU_CLOSE_SOL1')}> SOL1 {sol1_display}</SlideToggle>
-	<SlideToggle name="sol2_slider" bind:checked={$sol2_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL2', 'RCU_CLOSE_SOL2')}> SOL2 {sol2_display}</SlideToggle>
-	<SlideToggle name="sol3_slider" bind:checked={$sol3_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL3', 'RCU_CLOSE_SOl3')}> SOL3 {sol3_display}</SlideToggle>
-	<SlideToggle name="sol4_slider" bind:checked={$sol4_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL4', 'RCU_CLOSE_SOL4')}> SOL4 {sol4_display}</SlideToggle>
 	<SlideToggle name="sol5_slider" bind:checked={$sol5_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL5', 'RCU_CLOSE_SOL5')}> SOL5 {sol5_display}</SlideToggle>
 	<SlideToggle name="sol6_slider" bind:checked={$sol6_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL6', 'RCU_CLOSE_SOL6')}> SOL6 {sol6_display}</SlideToggle>
 	<SlideToggle name="sol7_slider" bind:checked={$sol7_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL7', 'RCU_CLOSE_SOL7')}> SOL7 {sol7_display}</SlideToggle>
@@ -473,7 +460,7 @@
 		}
 	}
 
-	.pbv4_slide_toggle {
+	.pbv4_slider {
 		position: absolute;
 		top: 25.7%; /* Adjust this value */
 		left: 47.5%; /* Adjust this value */

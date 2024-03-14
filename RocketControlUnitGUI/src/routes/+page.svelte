@@ -5,7 +5,7 @@
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
-	import SvgComponent from './test.svelte';
+	import Background from './background.svelte';
 
 	const modalStore = getModalStore();
 
@@ -315,7 +315,7 @@
 </script>
 
 <div class="container">
-	<SvgComponent />
+	<Background />
 
 	<div class="pbv4_slider">
 		<SlideToggle name="pbv4_slider" active='bg-primary-500 dark:bg-primary-500' size="sm" bind:checked={$pbv4_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV4', 'RCU_CLOSE_PBV4')}>

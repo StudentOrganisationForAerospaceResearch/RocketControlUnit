@@ -659,257 +659,257 @@
 
 	.ac1_slider {
 		position: absolute;
-		top: 4.4%; /* Adjust this value */
-		left: 8.6%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 4.4%;
+		left: 8.6%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.pbv1_slider {
 		position: absolute;
-		top: 20.7%; /* Adjust this value */
-		left: 35.5%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 20.7%;
+		left: 35.5%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.pbv2_slider {
 		position: absolute;
-		top: 33.1%; /* Adjust this value */
-		left: 35.5%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 33.1%;
+		left: 35.5%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.pbv3_slider {
 		position: absolute;
-		top: 48.1%; /* Adjust this value */
-		left: 35.5%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 48.1%;
+		left: 35.5%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.pbv4_slider {
 		position: absolute;
-		top: 25.3%; /* Adjust this value */
-		left: 47.5%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 25.3%;
+		left: 47.5%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.sol5_slider {
 		position: absolute;
-		top: 46.8%; /* Adjust this value */
-		left: 63.3%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 46.8%;
+		left: 63.3%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.sol6_slider {
 		position: absolute;
-		top: 54.4%; /* Adjust this value */
-		left: 63.3%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 54.4%;
+		left: 63.3%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.sol7_slider {
 		position: absolute;
-		top: 62.1%; /* Adjust this value */
-		left: 63.3%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 62.1%;
+		left: 63.3%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.sol8a_slider {
 		position: absolute;
-		top: 69%; /* Adjust this value */
-		left: 63.3%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 69%;
+		left: 63.3%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.sol8b_slider {
 		position: absolute;
-		top: 76.7%; /* Adjust this value */
-		left: 63.3%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 76.7%;
+		left: 63.3%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.vent_slider {
 		position: absolute;
-		top: 27%; /* Adjust this value */
-		left: 85.3%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 27%;
+		left: 85.3%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.drain_slider {
 		position: absolute;
-		top: 46.8%; /* Adjust this value */
-		left: 85.3%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 46.8%;
+		left: 85.3%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.power_source_slider {
 		position: absolute;
-		top: 4.5%; /* Adjust this value */
-		left: 95.5%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 4.5%;
+		left: 95.5%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 	
 	.box1_slider {
 		position: absolute;
-		top: 72.4%; /* Adjust this value */
-		left: 12.5%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 72.4%;
+		left: 12.5%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.box2_slider {
 		position: absolute;
-		top: 75.8%; /* Adjust this value */
-		left: 12.5%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		top: 75.8%;
+		left: 12.5%;
+		transform: translate(-50%, -50%) scale(0.75);
 		font-size: 16px;
 	}
 
 	.rcu_tc1 {
 		position: absolute;
-		top: 11.2%; /* Adjust this value */
-		left: 5.6%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 11.2%;
+		left: 5.6%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.rcu_tc2 {
 		position: absolute;
-		top: 11.2%; /* Adjust this value */
-		left: 9.2%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 11.2%;
+		left: 9.2%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.nos1 {
 		position: absolute;
-		top: 32%; /* Adjust this value */
-		left: 7.6%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 32%;
+		left: 7.6%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.nos2 {
 		position: absolute;
-		top: 44%; /* Adjust this value */
-		left: 7.6%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 44%;
+		left: 7.6%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.pt1_pressure {
 		position: absolute;
-		top: 20.5%; /* Adjust this value */
-		left: 14.7%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 20.5%;
+		left: 14.7%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.pt2_pressure {
 		position: absolute;
-		top: 32.8%; /* Adjust this value */
-		left: 14.7%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 32.8%;
+		left: 14.7%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.pt3_pressure {
 		position: absolute;
-		top: 47.9%; /* Adjust this value */
-		left: 14.9%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 47.9%;
+		left: 14.9%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.pt4_pressure {
 		position: absolute;
-		top: 32.9%; /* Adjust this value */
-		left: 42%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 32.9%;
+		left: 42%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.box1_continuity {
 		position: absolute;
-		top: 65.1%; /* Adjust this value */
-		left: 14.7%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 65.1%;
+		left: 14.7%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.box2_continuity {
 		position: absolute;
-		top: 67.5%; /* Adjust this value */
-		left: 14.7%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 67.5%;
+		left: 14.7%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.mev_status {
 		position: absolute;
-		top: 12%; /* Adjust this value */
-		left: 93.9%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 12%;
+		left: 93.9%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.battery_voltage {
 		position: absolute;
-		top: 8.5%; /* Adjust this value */
-		left: 93.9%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 8.5%;
+		left: 93.9%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.upper_pv_pressure {
 		position: absolute;
-		top: 18.1%; /* Adjust this value */
-		left: 92.9%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 18.1%;
+		left: 92.9%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.rocket_mass {
 		position: absolute;
-		top: 15%; /* Adjust this value */
-		left: 74.3%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 15%;
+		left: 74.3%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.ib_pressure {
 		position: absolute;
-		top: 68.3%; /* Adjust this value */
-		left: 93.1%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 68.3%;
+		left: 93.1%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.lower_pv_pressure {
 		position: absolute;
-		top: 60.3%; /* Adjust this value */
-		left: 90.3%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 60.3%;
+		left: 90.3%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 
 	.pv_temperature {
 		position: absolute;
-		top: 60.3%; /* Adjust this value */
-		left: 95.5%; /* Adjust this value */
-		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		top: 60.3%;
+		left: 95.5%;
+		transform: translate(-50%, -50%) scale(1);
 		font-size: 14px;
 	}
 </style>

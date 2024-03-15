@@ -170,14 +170,18 @@ Python dependencies are inside the requrements.txt
 - Backend
   - [ ] Finish Serial Handler
   - [ ] Finish Database Handler
+  - [ ] Cython
 - Database
   - [ ] Add BackendCommands Table
+  - [ ] Remove Unused fields
 - Frontend
-  - [ ] Finish Background Creation
-  - [ ] Move Components in Place
+  - [x] Finish Background Creation
+  - [x] Move Components in Place
   - [ ] Add Loadcell Calibration
   - [ ] Add Fluid Flow Animation
   - [ ] Add Authentication
   - [ ] Add Test State
+  - [ ] Tie Ignitors
+  - [ ] Verify Correct State on Refresh
   - [x] Figure Out Deployment
 - [ ] Integration Test

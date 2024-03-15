@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { getModalStore ,SlideToggle} from '@skeletonlabs/skeleton';
+	import { getModalStore, SlideToggle } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
 	import { onMount } from 'svelte';
@@ -121,7 +121,6 @@
 	const ib_pressure = writable(undefined);
 	const lower_pv_pressure = writable(undefined);
 
-	const ib_temperature = writable(undefined);
 	const pv_temperature = writable(undefined);
 
 	const pt1_pressure = writable(undefined);
@@ -132,13 +131,13 @@
 	const sob_tc1_temperature = writable(undefined);
 	const sob_tc2_temperature = writable(undefined);
 
-	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'OPEN' : 'CLOSE';
-	$: ac2_display = $ac2_open === undefined ? 'N/A' : $ac2_open ? 'OPEN' : 'CLOSE';
+	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
+	$: ac2_display = $ac2_open === undefined ? 'N/A' : $ac2_open ? 'ON' : 'OFF';
 
 	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSE';
 	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'OPEN' : 'CLOSE';
 	$: pbv3_display = $pbv3_open === undefined ? 'N/A' : $pbv3_open ? 'OPEN' : 'CLOSE';
-	$: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'OPEN' : 'CLOSE';
+	$: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'CLOSE' : 'OPEN';
 
 	$: sol5_display = $sol5_open === undefined ? 'N/A' : $sol5_open ? 'OPEN' : 'CLOSE';
 	$: sol6_display = $sol6_open === undefined ? 'N/A' : $sol6_open ? 'OPEN' : 'CLOSE';
@@ -164,7 +163,7 @@
 	$: mev_display = $mev_open === undefined ? 'N/A' : $mev_open ? 'OPEN' : 'CLOSED';
 
 	$: battery_display = $battery_voltage === undefined ? 'N/A' : $battery_voltage;
-	$: power_display = $power_source === undefined ? 'N/A' : $power_source;
+	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'ONBOARD' : 'GROUND';
 
 	$: upper_pv_display = $upper_pv_pressure === undefined ? 'N/A' : $upper_pv_pressure;
 
@@ -176,7 +175,6 @@
 	$: ib_pressure_display = $ib_pressure === undefined ? 'N/A' : $ib_pressure;
 	$: lower_pv_display = $lower_pv_pressure === undefined ? 'N/A' : $lower_pv_pressure;
 
-	$: ib_temperature_display = $ib_temperature === undefined ? 'N/A' : $ib_temperature;
 	$: pv_temperature_display = $pv_temperature === undefined ? 'N/A' : $pv_temperature;
 
 	$: pt1_pressure_display = $pt1_pressure === undefined ? 'N/A' : $pt1_pressure;
@@ -265,7 +263,6 @@
 		// Subscribe to changes in the 'PbbTemperature' collection
 		PB.collection('PbbTemperature').subscribe('*', function (e) {
 			// Update the PbbTemperature data store whenever a change is detected
-			ib_temperature.set(e.record.ib_temperature);
 			pv_temperature.set(e.record.pv_temperature);
 		});
 
@@ -292,24 +289,29 @@
 			const state = e.record.rocket_state;
 			nextState(getStateName(state));
 		});
-	})
+	});
 
-	async function handleSliderChange(e: any, target: string, openCommand: string, closeCommand: string) {
+	async function handleSliderChange(
+		e: any,
+		target: string,
+		openCommand: string,
+		closeCommand: string
+	) {
 		// Determine the command based on the current value of the slider
 		const command = e.target.checked ? openCommand : closeCommand;
 
 		// Create a change on the 'RelayStatus' collection
-		await PB.collection('CommandMessage').create ({
+		await PB.collection('CommandMessage').create({
 			// Write a new record with all current values
-			'target': target,
-			'command': command,
+			target: target,
+			command: command
 		});
 	}
 
 	async function writeCommandMessage(target: string, command: string) {
 		await PB.collection('CommandMessage').create({
-			'target': target,
-			'command': command
+			target: target,
+			command: command
 		});
 	}
 </script>
@@ -317,67 +319,264 @@
 <div class="container">
 	<Background />
 
+	<div class="ac1_slider">
+		<SlideToggle
+			name="ac1_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$ac1_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}
+		>
+			{ac1_display}</SlideToggle
+		>
+	</div>
+
+	<div class="pbv1_slider">
+		<SlideToggle
+			name="pbv1_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$pbv1_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV1', 'RCU_CLOSE_PBV1')}
+		>
+			{pbv1_display}</SlideToggle
+		>
+	</div>
+
+	<div class="pbv2_slider">
+		<SlideToggle
+			name="pbv2_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$pbv2_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV2', 'RCU_CLOSE_PBV2')}
+		>
+			{pbv2_display}</SlideToggle
+		>
+	</div>
+
+	<div class="pbv3_slider">
+		<SlideToggle
+			name="pbv3_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$pbv3_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV3', 'RCU_CLOSE_PBV3')}
+		>
+			{pbv3_display}</SlideToggle
+		>
+	</div>
+
 	<div class="pbv4_slider">
-		<SlideToggle name="pbv4_slider" active='bg-primary-500 dark:bg-primary-500' size="sm" bind:checked={$pbv4_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV4', 'RCU_CLOSE_PBV4')}>
+		<SlideToggle
+			name="pbv4_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$pbv4_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV4', 'RCU_CLOSE_PBV4')}
+		>
 			{pbv4_display}</SlideToggle
 		>
 	</div>
+
+	<div class="sol5_slider">
+		<SlideToggle
+			name="sol5_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol5_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL5', 'RCU_CLOSE_SOL5')}
+		>
+			{sol5_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol6_slider">
+		<SlideToggle
+			name="sol6_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol6_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL6', 'RCU_CLOSE_SOL6')}
+		>
+			{sol6_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol7_slider">
+		<SlideToggle
+			name="sol7_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol7_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL7', 'RCU_CLOSE_SOL7')}
+		>
+			{sol7_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol8a_slider">
+		<SlideToggle
+			name="sol8a_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol8a_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8A', 'RCU_CLOSE_SOL8A')}
+		>
+			{sol8a_display}</SlideToggle
+		>
+	</div>
+
+	<div class="sol8b_slider">
+		<SlideToggle
+			name="sol8b_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol8b_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8B', 'RCU_CLOSE_SOL8B')}
+		>
+			{sol8b_display}</SlideToggle
+		>
+	</div>
+
+	<div class="vent_slider">
+		<SlideToggle
+			name="vent_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$vent_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'DMB_OPEN_VENT', 'DMB_CLOSE_VENT')}
+		>
+			{vent_display}</SlideToggle
+		>
+	</div>
+
+	<div class="drain_slider">
+		<SlideToggle
+			name="drain_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$drain_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'DMB_OPEN_DRAIN', 'DMB_CLOSE_DRAIN')}
+		>
+			{drain_display}</SlideToggle
+		>
+	</div>
+
+	<div class="power_source_slider">
+		<SlideToggle
+			name="power_source_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$power_source}
+			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_POWER_TRANSITION_ONBOARD', 'RSC_POWER_TRANSITION_EXTERNAL')}
+		>
+			{power_display}</SlideToggle
+		>
+	</div>
+
+	{#if $currentState === states.RS_IGNITION}
+		<div class="box1_slider">
+			<SlideToggle
+				name="box1_slider"
+				active="bg-primary-500 dark:bg-primary-500"
+				size="sm"
+				bind:checked={$box1_on}
+				on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX1', 'RCU_IGNITE_BOX1')}
+			>
+				{box1_display}</SlideToggle
+			>
+		</div>
+
+		<div class="box2_slider">
+			<SlideToggle
+				name="box2_slider"
+				active="bg-primary-500 dark:bg-primary-500"
+				size="sm"
+				bind:checked={$box2_on}
+				on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX2', 'RCU_IGNITE_BOX2')}
+			>
+				{box2_display}</SlideToggle
+			>
+		</div>
+	{/if}
+
+	<div class="rcu_tc1">
+		<p>{rcu_tc1_display}</p>
+	</div>
+
+	<div class="rcu_tc2">
+		<p>{rcu_tc2_display}</p>
+	</div>
+
+	<div class="nos1">
+		<p>{nos1_mass_display}</p>
+	</div>
+	
+	<div class="nos2">
+		<p>{nos2_mass_display}</p>
+	</div>
+
+	<div class="pt1_pressure">
+		<p>{pt1_pressure_display}</p>
+	</div>
+
+	<div class="pt2_pressure">
+		<p>{pt2_pressure_display}</p>
+	</div>
+
+	<div class="pt3_pressure">
+		<p>{pt3_pressure_display}</p>
+	</div>
+
+	<div class="pt4_pressure">
+		<p>{pt4_pressure_display}</p>
+	</div>
+
+	<div class="box1_continuity">
+		<p>{continuity1_display}</p>
+	</div>
+
+	<div class="box2_continuity">
+		<p>{continuity2_display}</p>
+	</div>
+
+	<div class="mev_status">
+		<p>{mev_display}</p>
+	</div>
+
+	<div class="battery_voltage">
+		<p>{battery_display}</p>
+	</div>
+
+	<div class="upper_pv_pressure">
+		<p>{upper_pv_display}</p>
+	</div>
+
+	<div class="rocket_mass">
+		<p>{rocket_mass_display}</p>
+	</div>
+
+	<div class="ib_pressure">
+		<p>{ib_pressure_display}</p>
+	</div>
+
+	<div class="lower_pv_pressure">
+		<p>{lower_pv_display}</p>
+	</div>
+
+	<div class="pv_temperature">
+		<p>{pv_temperature_display}</p>
+	</div>
+
+
 </div>
 
-<main> 
-	<!-- <SlideToggle name="ac1_slider" bind:checked={$ac1_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}> AC1 {ac1_display}</SlideToggle>
-	<SlideToggle name="ac2_slider" bind:checked={$ac2_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_AC2', 'RCU_CLOSE_AC2')}> AC2 {ac2_display}</SlideToggle>
-
-	<SlideToggle name="pbv1_slider" bind:checked={$pbv1_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV1', 'RCU_CLOSE_PBV1')}> PV1 {pbv1_display}</SlideToggle>
-	<SlideToggle name="pbv2_slider" bind:checked={$pbv2_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV2', 'RCU_CLOSE_PBV2')}> PV2 {pbv2_display}</SlideToggle>
-	<SlideToggle name="pbv3_slider" bind:checked={$pbv3_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_PBV3', 'RCU_CLOSE_PBV3')}> PV3 {pbv3_display}</SlideToggle>
-
-	<SlideToggle name="sol5_slider" bind:checked={$sol5_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL5', 'RCU_CLOSE_SOL5')}> SOL5 {sol5_display}</SlideToggle>
-	<SlideToggle name="sol6_slider" bind:checked={$sol6_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL6', 'RCU_CLOSE_SOL6')}> SOL6 {sol6_display}</SlideToggle>
-	<SlideToggle name="sol7_slider" bind:checked={$sol7_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL7', 'RCU_CLOSE_SOL7')}> SOL7 {sol7_display}</SlideToggle>
-	<SlideToggle name="sol8a_slider" bind:checked={$sol8a_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL8A', 'RCU_CLOSE_SOL8A')}> SOL8A {sol8a_display}</SlideToggle>
-	<SlideToggle name="sol8b_slider" bind:checked={$sol8b_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_SOL8B', 'RCU_CLOSE_SOL8B')}> SOL8B {sol8b_display}</SlideToggle>
-
-	<SlideToggle name="vent_slider" bind:checked={$vent_open} on:change={(e) => handleSliderChange(e, 'NODE_DMB','RCU_OPEN_VENT', 'RCU_CLOSE_VENT')}> Vent {$vent_open}</SlideToggle>
-	<SlideToggle name="drain_slider" bind:checked={$drain_open} on:change={(e) => handleSliderChange(e, 'NODE_DMB','RCU_OPEN_DRAIN', 'RCU_CLOSE_DRAIN')}> Drain {$drain_open}</SlideToggle>
-
-	<p>RCU TC1 Temperature: {rcu_tc1_display}</p>
-	<p>RCU TC2 Temperature: {rcu_tc2_display}</p>
-
-	<p>MEV: {mev_display}</p>
-
-	<p>Battery Voltage: {battery_display}</p>
-	<p>Power Source: {power_display}</p>
-
-	<p>Upper PV Pressure: {upper_pv_display}</p>
-
-	<p>Rocket Mass: {rocket_mass_display}</p>
-
-	<p>NOS1 Mass: {nos1_mass_display}</p>
-	<p>NOS2 Mass: {nos2_mass_display}</p>
-
-	<p>IB Pressure: {ib_pressure_display}</p>
-	<p>Lower PV Pressure: {lower_pv_display}</p>
-
-	<p>IB Temperature: {ib_temperature_display}</p>
-	<p>PV Temperature: {pv_temperature_display}</p>
-
-	<p>PT1 Pressure: {pt1_pressure_display}</p>
-	<p>PT2 Pressure: {pt2_pressure_display}</p>
-	<p>PT3 Pressure: {pt3_pressure_display}</p>
-	<p>PT4 Pressure: {pt4_pressure_display}</p>
+<main>
+	<!-- <SlideToggle name="ac2_slider" bind:checked={$ac2_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_AC2', 'RCU_CLOSE_AC2')}> AC2 {ac2_display}</SlideToggle>
 
 	<p>SOB TC1 Temperature: {sob_tc1_display}</p>
-	<p>SOB TC2 Temperature: {sob_tc2_display}</p>
-
-	<p>Ignitor Box 1 Continuity: {continuity1_display}</p>
-	<p>Ignitor Box 2 Continuity: {continuity2_display}</p>
-
-	<p>Ignitor 1 Status: {box1_status_display}</p>
-	<p>Ignitor 2 Status: {box2_status_display}</p>
-
-	<p>Vent Status: {vent_display}</p>
-	<p>Drain Status: {drain_display}</p> -->
+	<p>SOB TC2 Temperature: {sob_tc2_display}</p> -->
 
 	<!-- Render different buttons based on the current state -->
 	{#if $currentState === states.RS_PRELAUNCH}
@@ -429,8 +628,6 @@
 			style="bottom: 30px;"
 			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 		>
-		<SlideToggle name="box1_slider" bind:checked={$box1_on} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_KILL_PAD_BOX1', 'RCU_IGNITE_BOX1')}> Ignitor 1 {box1_display}</SlideToggle>
-		<SlideToggle name="box2_slider" bind:checked={$box2_on} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_KILL_PAD_BOX2', 'RCU_IGNITE_BOX2')}> Ignitor 2 {box2_display}</SlideToggle>
 	{:else if $currentState === states.RS_ABORT}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
@@ -460,11 +657,259 @@
 		}
 	}
 
+	.ac1_slider {
+		position: absolute;
+		top: 4.4%; /* Adjust this value */
+		left: 8.6%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.pbv1_slider {
+		position: absolute;
+		top: 20.7%; /* Adjust this value */
+		left: 35.5%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.pbv2_slider {
+		position: absolute;
+		top: 33.1%; /* Adjust this value */
+		left: 35.5%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.pbv3_slider {
+		position: absolute;
+		top: 48.1%; /* Adjust this value */
+		left: 35.5%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
 	.pbv4_slider {
 		position: absolute;
-		top: 25.7%; /* Adjust this value */
+		top: 25.3%; /* Adjust this value */
 		left: 47.5%; /* Adjust this value */
 		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
 		font-size: 16px;
+	}
+
+	.sol5_slider {
+		position: absolute;
+		top: 46.8%; /* Adjust this value */
+		left: 63.3%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.sol6_slider {
+		position: absolute;
+		top: 54.4%; /* Adjust this value */
+		left: 63.3%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.sol7_slider {
+		position: absolute;
+		top: 62.1%; /* Adjust this value */
+		left: 63.3%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.sol8a_slider {
+		position: absolute;
+		top: 69%; /* Adjust this value */
+		left: 63.3%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.sol8b_slider {
+		position: absolute;
+		top: 76.7%; /* Adjust this value */
+		left: 63.3%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.vent_slider {
+		position: absolute;
+		top: 27%; /* Adjust this value */
+		left: 85.3%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.drain_slider {
+		position: absolute;
+		top: 46.8%; /* Adjust this value */
+		left: 85.3%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.power_source_slider {
+		position: absolute;
+		top: 4.5%; /* Adjust this value */
+		left: 95.5%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+	
+	.box1_slider {
+		position: absolute;
+		top: 72.4%; /* Adjust this value */
+		left: 12.5%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.box2_slider {
+		position: absolute;
+		top: 75.8%; /* Adjust this value */
+		left: 12.5%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(0.75); /* Adjust the scale value */
+		font-size: 16px;
+	}
+
+	.rcu_tc1 {
+		position: absolute;
+		top: 11.2%; /* Adjust this value */
+		left: 5.6%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.rcu_tc2 {
+		position: absolute;
+		top: 11.2%; /* Adjust this value */
+		left: 9.2%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.nos1 {
+		position: absolute;
+		top: 32%; /* Adjust this value */
+		left: 7.6%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.nos2 {
+		position: absolute;
+		top: 44%; /* Adjust this value */
+		left: 7.6%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.pt1_pressure {
+		position: absolute;
+		top: 20.5%; /* Adjust this value */
+		left: 14.7%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.pt2_pressure {
+		position: absolute;
+		top: 32.8%; /* Adjust this value */
+		left: 14.7%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.pt3_pressure {
+		position: absolute;
+		top: 47.9%; /* Adjust this value */
+		left: 14.9%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.pt4_pressure {
+		position: absolute;
+		top: 32.9%; /* Adjust this value */
+		left: 42%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.box1_continuity {
+		position: absolute;
+		top: 65.1%; /* Adjust this value */
+		left: 14.7%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.box2_continuity {
+		position: absolute;
+		top: 67.5%; /* Adjust this value */
+		left: 14.7%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.mev_status {
+		position: absolute;
+		top: 12%; /* Adjust this value */
+		left: 93.9%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.battery_voltage {
+		position: absolute;
+		top: 8.5%; /* Adjust this value */
+		left: 93.9%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.upper_pv_pressure {
+		position: absolute;
+		top: 18.1%; /* Adjust this value */
+		left: 92.9%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.rocket_mass {
+		position: absolute;
+		top: 15%; /* Adjust this value */
+		left: 74.3%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.ib_pressure {
+		position: absolute;
+		top: 68.3%; /* Adjust this value */
+		left: 93.1%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.lower_pv_pressure {
+		position: absolute;
+		top: 60.3%; /* Adjust this value */
+		left: 90.3%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
+	}
+
+	.pv_temperature {
+		position: absolute;
+		top: 60.3%; /* Adjust this value */
+		left: 95.5%; /* Adjust this value */
+		transform: translate(-50%, -50%) scale(1); /* Adjust the scale value */
+		font-size: 14px;
 	}
 </style>

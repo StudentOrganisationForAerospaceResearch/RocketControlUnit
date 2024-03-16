@@ -202,4 +202,3 @@ Python dependencies are inside the requrements.txt
   - [ ] Verify Correct State on Refresh
   - [x] Figure Out Deployment
 - [ ] Integration Test
-  - [ ] Add secrets.ini for db URL

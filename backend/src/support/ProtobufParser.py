@@ -2,21 +2,25 @@
 # BRIEF: This file contains the protobuf parser class for converting protobuf messages to JSON
 #         and pushing telemetry messages to PocketBase
 
-import os, sys
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'proto/Python'))
-
+# General imports =================================================================================
+import os, sys, git
 import json
-from Utils import get_command_from_str, get_node_from_str
+from pocketbase import Client
 from google.protobuf.json_format import MessageToJson
+
+# Project specific imports ========================================================================
+git_repo = git.Repo(__file__, search_parent_directories=True).git.rev_parse("--show-toplevel")
+sys.path.insert(0, os.path.join(git_repo, "backend", 'proto/Python'))
 import proto.Python.CoreProto_pb2 as ProtoCore
 import proto.Python.ControlMessage_pb2 as ProtoCtrl
 import proto.Python.CommandMessage_pb2 as ProtoCmd
 import proto.Python.TelemetryMessage_pb2 as ProtoTele
 import proto.Python.CoreProto_pb2 as Core
-from pocketbase import Client
 
+sys.path.insert(0, os.path.join(git_repo, "backend"))
+from src.Utils import Utils as utl
 
+# Class Definitions ===============================================================================
 class ProtobufParser:
     @staticmethod
     def parse_protobuf_to_json(protobuf_message):
@@ -90,26 +94,26 @@ class ProtobufParser:
             command_message (ProtoCmd.CommandMessage): 
                 returns the protobuf command message, None if the target is invalid.
         """
-        target_enum = get_node_from_str(target)
+        target_enum = utl.get_node_from_str(target)
         command_message = ProtoCmd.CommandMessage()
         command_message.source = ProtoCore.NODE_RCU
         command_message.source_sequence_num = source_sequence_number
 
         if target_enum == ProtoCore.NODE_DMB:
             command_message.target = ProtoCore.NODE_DMB
-            command_enum = get_command_from_str(ProtoCmd.DmbCommand.Command, command)
+            command_enum = utl.get_command_from_str(ProtoCmd.DmbCommand.Command, command)
             command_message.dmb_command.CopyFrom(ProtoCmd.DmbCommand(command_enum=command_enum))
         elif target_enum == ProtoCore.NODE_PBB:
             command_message.target = ProtoCore.NODE_PBB
-            command_enum = get_command_from_str(ProtoCmd.PbbCommand.Command, command)
+            command_enum = utl.get_command_from_str(ProtoCmd.PbbCommand.Command, command)
             command_message.pbb_command.CopyFrom(ProtoCmd.PbbCommand(command_enum=command_enum))
         elif target_enum == ProtoCore.NODE_SOB:
             command_message.target = ProtoCore.NODE_SOB
-            command_enum = get_command_from_str(ProtoCmd.SobCommand.Command, command)
+            command_enum = utl.get_command_from_str(ProtoCmd.SobCommand.Command, command)
             command_message.sob_command.CopyFrom(ProtoCmd.SobCommand(command_enum=command_enum, command_param=command_param))
         elif target_enum == ProtoCore.NODE_RCU:
             command_message.target = ProtoCore.NODE_RCU
-            command_enum = get_command_from_str(ProtoCmd.RcuCommand.Command, command)
+            command_enum = utl.get_command_from_str(ProtoCmd.RcuCommand.Command, command)
             command_message.rcu_command.CopyFrom(ProtoCmd.RcuCommand(command_enum=command_enum, command_param=command_param))
         else:
             return None

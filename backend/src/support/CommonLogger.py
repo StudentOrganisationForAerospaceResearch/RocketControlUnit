@@ -18,4 +18,4 @@ class CommonLogger():
         if not CommonLogger.log_to_terminal:
             CommonLogger.logger.remove()
         log_file_path = os.path.join(dir_path, f"log_{time_now}.log")
-        CommonLogger.logger.add(log_file_path, format="{time:HH:mm:ss} {level} {message}", level="DEBUG")
+        CommonLogger.logger.add(log_file_path, format="{time:HH:mm:ss} {level} {message}", level="DEBUG", enqueue=True)

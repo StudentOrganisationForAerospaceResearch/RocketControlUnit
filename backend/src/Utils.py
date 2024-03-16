@@ -9,7 +9,7 @@ from dataclasses import dataclass
 # Project specific imports ========================================================================
 import proto.Python.CoreProto_pb2 as ProtoCore
 
-from src.support.CommonLogger import CommonLogger
+from src.support.CommonLogger import logger
 
 
 # Constants ========================================================================================
@@ -82,17 +82,17 @@ class Utils:
         
         message = message_workq.get()
 
-        CommonLogger.logger.debug(f"Handling thread messages from {message.src_thread} to {message.dest_thread} with message type: {message.message_type}")
+        logger.debug(f"Handling thread messages from {message.src_thread} to {message.dest_thread} with message type: {message.message_type}")
 
         if message.dest_thread == "all_serial":
             for serial_thread in ['uart', 'radio']:
                 if (serial_thread not in Utils.thread_pool) or (not Utils.thread_pool[serial_thread]['thread'].is_alive()):
-                    CommonLogger.logger.error(f"Attempting to send message to non-existent thread: {serial_thread}")
+                    logger.error(f"Attempting to send message to non-existent thread: {serial_thread}")
                     continue
             Utils.thread_pool[serial_thread]['workq'].put(message)
         else:
             if (message.dest_thread not in Utils.thread_pool) or (not Utils.thread_pool[message.dest_thread]['thread'].is_alive()):
-                CommonLogger.logger.error(f"Attempting to send message to non-existent thread: {message.dest_thread}")
+                logger.error(f"Attempting to send message to non-existent thread: {message.dest_thread}")
                 return
             dest_workq = Utils.thread_pool[message.dest_thread]['workq']
             if dest_workq:

@@ -1,4 +1,5 @@
 # General imports =================================================================================
+import datetime
 import enum
 import multiprocessing as mp
 import os
@@ -16,7 +17,7 @@ import proto.Python.ControlMessage_pb2 as ControlProto
 
 from src.support.Codec import Codec
 from src.support.ProtobufParser import ProtobufParser
-from src.support.CommonLogger import CommonLogger
+from src.support.CommonLogger import logger
 
 from src.Utils import Utils as utl, TEST_RECEIVE_SERIAL_MESSAGE, THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
 
@@ -50,7 +51,7 @@ class SerialHandler():
             message_handler_workq (mp.Queue):
                 The workq to send messages to the database handler.
         """
-        CommonLogger.logger.info(f"{thread_name} SerialHandler initializing")
+        logger.info(f"{thread_name} SerialHandler initializing")
         self.port = port
         self.baudrate = baudrate
         self.thread_name = thread_name
@@ -61,7 +62,7 @@ class SerialHandler():
             self.serial_port = serial.Serial(port=port, baudrate=baudrate, bytesize=8, parity=serial.PARITY_NONE, timeout=None, stopbits=serial.STOPBITS_ONE)
         except Exception:
             self.serial_port = None
-            CommonLogger.logger.error(f"Failed to open serial port {port}")
+            logger.error(f"Failed to open serial port {port}")
             return
 
     def _get_serial_message(self):
@@ -83,14 +84,14 @@ class SerialHandler():
 
         # Check message length
         if len(message) < MIN_SERIAL_MESSAGE_LENGTH:
-            CommonLogger.logger.warning(f"Message from {self.port} too short: {message}")
+            logger.warning(f"Message from {self.port} too short: {message}")
             return
         
         # Decode, remove 0x00 byte
         try:
             msgId, data = Codec.Decode(message[:-1], len(message) - 1)
         except cobs.DecodeError:
-            CommonLogger.logger.warning("Invalid cobs message")
+            logger.warning("Invalid cobs message")
             return
         
         # Process message according to ID
@@ -99,7 +100,7 @@ class SerialHandler():
         elif msgId == ProtoCore.MessageID.MSG_CONTROL:
             self.process_control_message(data)
         else:
-            CommonLogger.logger.warning("Received invalid MessageID")
+            logger.warning("Received invalid MessageID")
 
     def process_telemetry_message(self, data):
         """
@@ -114,14 +115,14 @@ class SerialHandler():
         try:
             received_message.ParseFromString(data)
         except Message.DecodeError:
-            CommonLogger.logger.warning(f"Unable to decode telemetry message: {data}")
+            logger.warning(f"Unable to decode telemetry message: {data}")
             return
         # Ensure the message is intended for us
         if received_message.target == ProtoCore.NODE_RCU or received_message.target == ProtoCore.NODE_ANY:
             telemetry_message_type = received_message.WhichOneof('message')
-            CommonLogger.logger.debug(f"Received {telemetry_message_type} from {utl.get_node_from_enum(received_message.source)}")
+            logger.debug(f"Received {telemetry_message_type} from {utl.get_node_from_enum(received_message.source)}")
         else:
-            CommonLogger.logger.debug(f"Received message intended for {utl.get_node_from_enum(received_message.target)}")
+            logger.debug(f"Received message intended for {utl.get_node_from_enum(received_message.target)}")
             return
         
         json_str = ProtobufParser.parse_serial_to_json(data, ProtoCore.MessageID.MSG_TELEMETRY)
@@ -141,14 +142,14 @@ class SerialHandler():
         try:
             received_message.ParseFromString(data)
         except Message.DecodeError:
-            CommonLogger.logger.warning(f"Unable to decode control message: {data}")
+            logger.warning(f"Unable to decode control message: {data}")
             return
         # Ensure the message is intended for us
         if received_message.target == ProtoCore.NODE_RCU or received_message.target == ProtoCore.NODE_ANY:
             control_message_type = received_message.WhichOneof('message')
-            CommonLogger.logger.debug(f"Received {control_message_type} from {utl.get_node_from_enum(received_message.source)}")
+            logger.debug(f"Received {control_message_type} from {utl.get_node_from_enum(received_message.source)}")
         else:
-            CommonLogger.logger.debug(f"Received message intended for {utl.get_node_from_enum(received_message.target)}")
+            logger.debug(f"Received message intended for {utl.get_node_from_enum(received_message.target)}")
             return
         
         json_str = ProtobufParser.parse_serial_to_json(data, ProtoCore.MessageID.MSG_CONTROL)
@@ -178,15 +179,14 @@ class SerialHandler():
         command_message = ProtobufParser.create_command_proto(command, target, command_param, source_sequence_number)
 
         if command_message == None:
-            CommonLogger.logger.warning(f"Cannot send command {command} to {target}")
+            logger.warning(f"Cannot send command {command} to {target}")
             return False
 
         buf = command_message.SerializeToString()
 
-        CommonLogger.logger.debug(f"Sending command message {command} to {target}")
+        logger.debug(f"Sending command message {command} to {target}")
 
         encBuf = Codec.Encode(buf, len(buf), ProtoCore.MessageID.MSG_COMMAND)
-
         if (target == ProtoCore.NODE_DMB or target == ProtoCore.Node.NODE_PBB) and self.port == RADIO_SERIAL_PORT:
             self.serial_port.write(encBuf)
         if (target ==  ProtoCore.NODE_RCU or target ==  ProtoCore.Node.NODE_SOB) and self.port == UART_SERIAL_PORT:
@@ -204,11 +204,11 @@ def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler)
             message (str):
                 The message from the workq.
         """
-        CommonLogger.logger.debug(f"Processing serial workq message: {message.message_type}")
+        logger.debug(f"Processing serial workq message: {message.message_type}")
         messageID = message.message_type
 
         if messageID == THREAD_MESSAGE_KILL:
-            CommonLogger.logger.debug(f"Killing {ser_han.thread_name} thread")
+            logger.debug(f"Killing {ser_han.thread_name} thread")
             return False
         elif messageID == THREAD_MESSAGE_SERIAL_WRITE:
             command = message.message[0]

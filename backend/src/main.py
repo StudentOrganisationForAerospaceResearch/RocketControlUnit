@@ -9,21 +9,20 @@ git_repo = git.Repo(__file__, search_parent_directories=True).git.rev_parse("--s
 sys.path.insert(0, os.path.join(git_repo, "backend", 'proto/Python'))
 sys.path.insert(0, os.path.join(git_repo, "backend"))
 
-from src.support.CommonLogger import CommonLogger
+import proto.Python.CoreProto_pb2 as ProtoCore
+
+from src.support.CommonLogger import logger
 from src.DatabaseHandler import database_thread
 from src.SerialHandler import SerialDevices as sd, serial_thread
-from src.Utils import RADIO_BAUDRATE, UART_BAUDRATE, Utils as utl
+from src.Utils import RADIO_BAUDRATE, THREAD_MESSAGE_DB_WRITE, UART_BAUDRATE, Utils as utl, WorkQ_Message
 
-# Constants =======================================================================================
-LOG_TO_TERMINAL = True
 
 # Local Procedures ================================================================================
 def initialize_threads():
         '''
         Create threads for the backend
         '''
-        CommonLogger.logger.info('Initializing threads')
-        pass
+        logger.info('Initializing threads')
         thread_pool = {}
         uart_workq = mp.Queue()
         radio_workq = mp.Queue()
@@ -50,11 +49,10 @@ def initialize_threads():
         return
 
 if __name__ == "__main__":
-  CommonLogger(LOG_TO_TERMINAL)
   utl()
   initialize_threads()
   utl.start_threads()
 
   while 1:
+
     utl.handle_thread_messages()
-    time.sleep(0.1)

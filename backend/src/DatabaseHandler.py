@@ -1,4 +1,5 @@
 # General imports =================================================================================
+import datetime
 import json
 import time, os, sys, git
 import multiprocessing as mp
@@ -6,7 +7,7 @@ from pocketbase import Client
 from pocketbase.services.realtime_service import MessageData
 
 # Project specific imports ========================================================================
-from src.support.CommonLogger import CommonLogger
+from src.support.CommonLogger import logger
 
 from src.Utils import Utils as utl, THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
 
@@ -20,7 +21,7 @@ class DatabaseHandler():
         The handler can also send telemetry data to the database
         to be read by the front end.
         """
-        CommonLogger.logger.info("DatabaseHandler initializing")
+        logger.info("DatabaseHandler initializing")
         DatabaseHandler.thread_workq = thread_workq
         DatabaseHandler.send_message_workq = message_handler_workq
         DatabaseHandler.thread_name = thread_name
@@ -37,8 +38,9 @@ class DatabaseHandler():
         Args:
             document (MessageData): the change notification from the database.
         """
-        CommonLogger.logger.info("Received new command from the database")
-        CommonLogger.logger.debug(f"Record command: {document.record.command}")
+
+        logger.info("Received new command from the database")
+        logger.debug(f"Record command: {document.record.command}")
         DatabaseHandler.send_message_workq.put(WorkQ_Message(DatabaseHandler.thread_name, 'all_serial', THREAD_MESSAGE_SERIAL_WRITE, (document.record.command,)))
 
     @staticmethod
@@ -52,8 +54,8 @@ class DatabaseHandler():
         json_data = json.loads(json_data)
         table_name = list(json_data.keys())[2]
 
-        CommonLogger.logger.info(f"Adding an entry to the {table_name} table")
-        CommonLogger.logger.trace(f"Entry: {json_data[table_name]}")
+        logger.info(f"Adding an entry to the {table_name} table")
+        logger.trace(f"Entry: {json_data[table_name]}")
 
         # Push the JSON data to PocketBase using the correct schema
         DatabaseHandler.client.collection(table_name).create(json_data[table_name])
@@ -81,14 +83,29 @@ def process_workq_message(message: WorkQ_Message) -> bool:
         message (WorkQ_Message):
             The message from the workq.
     """
-    CommonLogger.logger.debug(f"Processing db workq message: {message}")
+    logger.debug(f"Processing db workq message: {message.message_type}")
     messageID = message.message_type
 
     if messageID == THREAD_MESSAGE_KILL:
-        CommonLogger.logger.debug(f"Killing database thread")
+        logger.debug(f"Killing database thread")
         return False
     elif messageID == THREAD_MESSAGE_DB_WRITE:   
-        CommonLogger.logger.debug(f"Writing {utl.get_message_from_enum(message.message[0])}")
+        logger.debug(f"Writing {utl.get_message_from_enum(message.message[0])}")
         DatabaseHandler.send_message_to_database(message.message[1])
         return True
     return True
+
+# EXPECTED DATA FORMAT
+#
+# json = """
+# {
+#   "source": "NODE_DMB",
+#   "target": "NODE_RCU",
+#   "RcuPressure": {
+#     "pt1_pressure": 100,
+#     "pt2_pressure": 200,
+#     "pt3_pressure": 300,
+#     "pt4_pressure": 400
+#   }
+# }
+# """

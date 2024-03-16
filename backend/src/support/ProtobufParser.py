@@ -10,6 +10,7 @@ from google.protobuf.json_format import MessageToJson
 
 # Project specific imports ========================================================================
 git_repo = git.Repo(__file__, search_parent_directories=True).git.rev_parse("--show-toplevel")
+sys.path.insert(0, os.path.join(git_repo, "backend"))
 sys.path.insert(0, os.path.join(git_repo, "backend", 'proto/Python'))
 import proto.Python.CoreProto_pb2 as ProtoCore
 import proto.Python.ControlMessage_pb2 as ProtoCtrl
@@ -28,7 +29,6 @@ class ProtobufParser:
         Parse a protobuf message to a JSON string
         '''
         # Convert the protobuf message to a JSON string
-        print(protobuf_message)
         json_string = MessageToJson(protobuf_message, preserving_proto_field_name=True)
         return json_string
 
@@ -58,11 +58,19 @@ class ProtobufParser:
         # Parse the serialized message
         message.ParseFromString(serialized_message)
         
-        # Convert the message to JSON and print it
+        # Convert the message to JSON
         json_string = ProtobufParser.parse_protobuf_to_json(message)
         return json_string
 
+
+
+
+
+#NOTE: TEMPORARY TEST FUNCTION !!!!!!!!!!!!!!!! +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
     @staticmethod
+    #NOTE: TEMPORARY TEST FUNCTION !!!!!!!!!!!!!!!!
     def push_tele_json_to_pocketbase(client, json_data):
         '''
         Push a telemetry JSON message to PocketBase
@@ -79,6 +87,7 @@ class ProtobufParser:
         client.collection(table_name).create(json_data[table_name])
 
     @staticmethod
+    #NOTE: TEMPORARY TEST FUNCTION !!!!!!!!!!!!!!!!
     def create_command_proto(command: str, target: str, command_param: int, source_sequence_number: int):
         """
         Create the command message protobuf message.
@@ -125,7 +134,7 @@ class ProtobufParser:
 
 # Example code
 import time, datetime
-
+#NOTE: TEMPORARY TEST FUNCTION !!!!!!!!!!!!!!!!
 def generate_gps_serial():
     # Create a new GPS message
     gps_message = ProtoTele.Gps()
@@ -157,7 +166,7 @@ def generate_gps_serial():
     # Serialize the message
     serialized_message = telemetry_message.SerializeToString()
     return serialized_message
-
+#NOTE: TEMPORARY TEST FUNCTION !!!!!!!!!!!!!!!!
 if __name__ == "__main__":
     # Generate a GPS message
     serialized_message = generate_gps_serial()

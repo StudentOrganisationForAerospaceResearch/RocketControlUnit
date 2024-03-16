@@ -34,11 +34,21 @@ class SerialDevices(enum.Enum):
 
 # Class Definitions ===============================================================================
 class SerialHandler():
-    def __init__(self, thread_name: str, port: int, baudrate: int, message_handler_workq: mp.Queue):
+    def __init__(self, thread_name: str, port: str, baudrate: int, message_handler_workq: mp.Queue):
         """
         This thread class creates threads to handle 
         incoming and outgoing serial messages over 
         the radio to the DMB and the uart to RCU.
+
+        Args:
+            thread_name (str):
+                The name of the thread.
+            port (str):
+                The port of the serial connection.
+            baudrate (int):
+                The baudrate of the serial connection.
+            message_handler_workq (mp.Queue):
+                The workq to send messages to the database handler.
         """
         CommonLogger.logger.info(f"{thread_name} SerialHandler initializing")
         self.port = port
@@ -54,7 +64,10 @@ class SerialHandler():
             CommonLogger.logger.error(f"Failed to open serial port {port}")
             return
 
-    def get_serial_message(self):
+    def _get_serial_message(self):
+        """
+        Get the serial message from the serial port.
+        """
         return self.serial_port.read_until(expected = b'\x00', size = None)
 
     def handle_serial_message(self):
@@ -66,7 +79,7 @@ class SerialHandler():
                 the data that was received.
         """
         # Read the serial port
-        message = self.get_serial_message()
+        message = self._get_serial_message()
 
         # Check message length
         if len(message) < MIN_SERIAL_MESSAGE_LENGTH:
@@ -89,6 +102,13 @@ class SerialHandler():
             CommonLogger.logger.warning("Received invalid MessageID")
 
     def process_telemetry_message(self, data):
+        """
+        Process the incoming telemetry message.
+
+        Args:
+            data (bytes):
+                The data that was received.
+        """
         received_message = TelemetryProto.TelemetryMessage()
         # Ensure we received a valid message
         try:
@@ -106,9 +126,16 @@ class SerialHandler():
         
         json_str = ProtobufParser.parse_serial_to_json(data, ProtoCore.MessageID.MSG_TELEMETRY)
 
-        self.send_message_workq.put(WorkQ_Message('database', self.thread_name, THREAD_MESSAGE_DB_WRITE, (ProtoCore.MessageID.MSG_TELEMETRY, json_str)))
+        self.send_message_workq.put(WorkQ_Message(self.thread_name, 'database', THREAD_MESSAGE_DB_WRITE, (ProtoCore.MessageID.MSG_TELEMETRY, json_str)))
         
     def process_control_message(self, data):
+        """
+        Process the incoming control message.
+
+        Args:
+            data (bytes):
+                The data that was received.
+        """
         received_message = ControlProto.ControlMessage()
         # Ensure we received a valid message
         try:
@@ -126,7 +153,7 @@ class SerialHandler():
         
         json_str = ProtobufParser.parse_serial_to_json(data, ProtoCore.MessageID.MSG_CONTROL)
 
-        self.send_message_workq.put(WorkQ_Message('database', self.thread_name, THREAD_MESSAGE_DB_WRITE, (ProtoCore.MessageID.MSG_CONTROL, json_str)))\
+        self.send_message_workq.put(WorkQ_Message(self.thread_name, 'database', THREAD_MESSAGE_DB_WRITE, (ProtoCore.MessageID.MSG_CONTROL, json_str)))\
 
     def send_serial_command_message(self, command: str, target: str, command_param: int, source_sequence_number: int) -> bool:
         """
@@ -177,10 +204,11 @@ def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler)
             message (str):
                 The message from the workq.
         """
-        CommonLogger.logger.debug(f"Processing serial workq message: {message}")
+        CommonLogger.logger.debug(f"Processing serial workq message: {message.message_type}")
         messageID = message.message_type
 
         if messageID == THREAD_MESSAGE_KILL:
+            CommonLogger.logger.debug(f"Killing {ser_han.thread_name} thread")
             return False
         elif messageID == THREAD_MESSAGE_SERIAL_WRITE:
             command = message.message[0]
@@ -195,6 +223,18 @@ def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler)
 def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread_workq: mp.Queue, message_handler_workq: mp.Queue):
     """
     Thread function for the incoming serial data listening.
+
+    Args:
+        thread_name (str):
+            The name of the thread.
+        device (SerialDevices):
+            The device to listen to.
+        baudrate (int):
+            The baudrate of the serial connection.
+        thread_workq (mp.Queue):
+            The workq to send messages to the thread.
+        message_handler_workq (mp.Queue):
+            The workq to send messages to the database handler. 
     """
     if device == SerialDevices.UART:
         port = UART_SERIAL_PORT
@@ -210,7 +250,6 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
         # If there is any workq messages, process them first
         # then once the queue is empty read the serial port
         if not serial_workq.empty():
-            print("Processing workq message")
             if not process_serial_workq_message(serial_workq.get(), ser_han):
                 return
         else:

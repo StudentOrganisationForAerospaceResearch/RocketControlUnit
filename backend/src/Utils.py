@@ -9,6 +9,9 @@ from dataclasses import dataclass
 # Project specific imports ========================================================================
 import proto.Python.CoreProto_pb2 as ProtoCore
 
+from src.support.CommonLogger import CommonLogger
+
+
 # Constants ========================================================================================
 THREAD_MESSAGE_KILL = 'stop'
 THREAD_MESSAGE_DB_WRITE = 'db_write'
@@ -23,8 +26,8 @@ RADIO_BAUDRATE = 115200 #NOTE: might need to change this (57600 ???)
 # Data Classes =====================================================================================
 @dataclass
 class WorkQ_Message:
-    dest_thread: str
     src_thread: str
+    dest_thread: str
     message_type: str
     message: tuple
 
@@ -58,7 +61,6 @@ class Utils:
         '''
         Get the work queue for the specified thread
         '''
-        print("thread pool keys", Utils.thread_pool.keys())
         return Utils.thread_pool[thread_name]['workq']
 
     @staticmethod
@@ -80,23 +82,46 @@ class Utils:
         
         message = message_workq.get()
 
+        CommonLogger.logger.debug(f"Handling thread messages from {message.src_thread} to {message.dest_thread} with message type: {message.message_type}")
+
         if message.dest_thread == "all_serial":
-            thread_pool['uart']['workq'].put(message)
-            thread_pool['radio']['workq'].put(message)
+            for serial_thread in ['uart', 'radio']:
+                if (serial_thread not in Utils.thread_pool) or (not Utils.thread_pool[serial_thread]['thread'].is_alive()):
+                    CommonLogger.logger.error(f"Attempting to send message to non-existent thread: {serial_thread}")
+                    continue
+            Utils.thread_pool[serial_thread]['workq'].put(message)
         else:
-            dest_workq = thread_pool[message.dest_thread]['workq']
+            if (message.dest_thread not in Utils.thread_pool) or (not Utils.thread_pool[message.dest_thread]['thread'].is_alive()):
+                CommonLogger.logger.error(f"Attempting to send message to non-existent thread: {message.dest_thread}")
+                return
+            dest_workq = Utils.thread_pool[message.dest_thread]['workq']
             if dest_workq:
                 dest_workq.put(message)
 
-
     @staticmethod
     def get_node_from_str(target):
+        """
+        Get the ProtoCore.Node enum number value from the string target.
+        """
         return ProtoCore.Node.DESCRIPTOR.values_by_name[target].number
 
     @staticmethod
     def get_command_from_str(target, command):
+        """
+        Get the command enum number value from the string command.
+        """
         return target.DESCRIPTOR.values_by_name[command].number
 
     @staticmethod
     def get_node_from_enum(target):
+        """
+        Get the node name from the ProtoCore.Node enum number.
+        """
         return ProtoCore.Node.DESCRIPTOR.values_by_number[target].name
+    
+    @staticmethod
+    def get_message_from_enum(target):
+        """
+        Get the message name from the ProtoCore.Node enum number.
+        """
+        return ProtoCore.MessageID.DESCRIPTOR.values_by_number[target].name

@@ -24,6 +24,9 @@ from src.Utils import Utils as utl
 class ProtobufParser:
     @staticmethod
     def parse_protobuf_to_json(protobuf_message):
+        '''
+        Parse a protobuf message to a JSON string
+        '''
         # Convert the protobuf message to a JSON string
         print(protobuf_message)
         json_string = MessageToJson(protobuf_message, preserving_proto_field_name=True)

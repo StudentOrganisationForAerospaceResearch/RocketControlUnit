@@ -22,6 +22,7 @@ def initialize_threads():
         '''
         Create threads for the backend
         '''
+        CommonLogger.logger.info('Initializing threads')
         pass
         thread_pool = {}
         uart_workq = mp.Queue()

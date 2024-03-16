@@ -168,8 +168,10 @@ Python dependencies are inside the requrements.txt
 ## TODO
 
 - Backend
-  - [ ] Finish Serial Handler
-  - [ ] Finish Database Handler
+  - [x] Finish Serial Handler
+  - [x] Finish Database Handler
+  - [ ] Add Backend Handler
+  - [ ] Add Loadcell calibration and tare
 - Database
   - [ ] Add BackendCommands Table
 - Frontend
@@ -181,3 +183,4 @@ Python dependencies are inside the requrements.txt
   - [ ] Add Test State
   - [x] Figure Out Deployment
 - [ ] Integration Test
+  - [ ] Add secrets.ini for db URL

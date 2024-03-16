@@ -167,6 +167,10 @@ Python dependencies are inside the requrements.txt
 
 ## TODO
 
+- General
+  - [ ] Add secrets.ini for db URL
+- RaspberryPi
+  - [ ] Add script to run backend on startup
 - Backend
   - [x] Finish Serial Handler
   - [x] Finish Database Handler
@@ -183,4 +187,3 @@ Python dependencies are inside the requrements.txt
   - [ ] Add Test State
   - [x] Figure Out Deployment
 - [ ] Integration Test
-  - [ ] Add secrets.ini for db URL

@@ -8,18 +8,22 @@
 		initializeStores,
 		LightSwitch,
 		Modal,
-		storePopup
+		storePopup,
+		modeCurrent
 	} from '@skeletonlabs/skeleton';
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
-	import HomeIcon from "$lib/assets/rocket-dark.png";
-	import AboutIcon from "$lib/assets/info-dark.png";
-	import CameraIcon from "$lib/assets/camera-dark.png";
-	import StatsIcon from "$lib/assets/stats-dark.png";
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 	import { currentState } from '../store';
 	import { page } from '$app/stores';
 
 	initializeStores();
+
+	$: logoSrc = $modeCurrent ? '/soar_logo_light.svg' : '/soar_logo_dark.svg';
+	$: homeIcon = $modeCurrent ? '/rocket-light.png' : '/rocket-dark.png';
+	$: aboutIcon = $modeCurrent ? '/info-light.png' : '/info-dark.png';
+	$: cameraIcon = $modeCurrent ? '/camera-light.png' : '/camera-dark.png';
+	$: statsIcon = $modeCurrent ? '/stats-light.png' : '/stats-dark.png';
+
 </script>
 
 <Modal />
@@ -33,7 +37,7 @@
 				<div class="flex items-center">
 					<div class="flex items-center">
 						<img
-							src="/soar_logo_dark.svg"
+							src={logoSrc}
 							alt="SOAR Logo"
 							class="mr-2"
 							style="width: 70px; height: 35px;"
@@ -54,16 +58,16 @@
 	
 	<svelte:fragment slot="sidebarLeft">
 		<AppRail>
-			<AppRailAnchor hover="bg-primary-hover-token" href="/" selected={$page.url.pathname === '/'}><img src={HomeIcon} class="sideBar-center" 
+			<AppRailAnchor hover="bg-primary-hover-token" href="/" selected={$page.url.pathname === '/'}><img src={homeIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
 			
-			<AppRailAnchor href="/data" selected={$page.url.pathname === "/data"}><img src={StatsIcon} class="sideBar-center" 
+			<AppRailAnchor href="/data" selected={$page.url.pathname === "/data"}><img src={statsIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
 			
-			<AppRailAnchor href="/live-feed" selected={$page.url.pathname === "/live-feed"}><img src={CameraIcon} class="sideBar-center" 
+			<AppRailAnchor href="/live-feed" selected={$page.url.pathname === "/live-feed"}><img src={cameraIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
 			
-			<AppRailAnchor href="/about" selected={$page.url.pathname === "/about"}><img src={AboutIcon} class="sideBar-center" 
+			<AppRailAnchor href="/about" selected={$page.url.pathname === "/about"}><img src={aboutIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
 		</AppRail>
 	</svelte:fragment>

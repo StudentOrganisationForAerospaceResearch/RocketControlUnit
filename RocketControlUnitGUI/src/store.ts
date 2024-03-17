@@ -15,4 +15,3 @@ const states = {
 };
 
 export const currentState = writable(states.RS_PRELAUNCH);
-export const lightMode = writable(false);

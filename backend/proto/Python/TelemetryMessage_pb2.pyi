@@ -7,44 +7,44 @@ from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Opti
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class TelemetryMessage(_message.Message):
-    __slots__ = ("source", "target", "gps", "baro", "imu", "battery", "flash_info", "pressure_dmb", "pressure_pbb", "temperature_pbb", "combustion_control_status", "pressure_rcu", "temperature_rcu", "nos_mass", "relay_status", "padbox_status", "rocket_mass", "temperature_sob")
+    __slots__ = ("source", "target", "gps", "baro", "imu", "battery", "flash", "dmbPressure", "pbbPressure", "pbbTemperature", "combustionControlStatus", "rcuPressure", "rcuTemperature", "nosLoadCell", "relayStatus", "padBoxStatus", "launchRailLoadCell", "sobTemperature")
     SOURCE_FIELD_NUMBER: _ClassVar[int]
     TARGET_FIELD_NUMBER: _ClassVar[int]
     GPS_FIELD_NUMBER: _ClassVar[int]
     BARO_FIELD_NUMBER: _ClassVar[int]
     IMU_FIELD_NUMBER: _ClassVar[int]
     BATTERY_FIELD_NUMBER: _ClassVar[int]
-    FLASH_INFO_FIELD_NUMBER: _ClassVar[int]
-    PRESSURE_DMB_FIELD_NUMBER: _ClassVar[int]
-    PRESSURE_PBB_FIELD_NUMBER: _ClassVar[int]
-    TEMPERATURE_PBB_FIELD_NUMBER: _ClassVar[int]
-    COMBUSTION_CONTROL_STATUS_FIELD_NUMBER: _ClassVar[int]
-    PRESSURE_RCU_FIELD_NUMBER: _ClassVar[int]
-    TEMPERATURE_RCU_FIELD_NUMBER: _ClassVar[int]
-    NOS_MASS_FIELD_NUMBER: _ClassVar[int]
-    RELAY_STATUS_FIELD_NUMBER: _ClassVar[int]
-    PADBOX_STATUS_FIELD_NUMBER: _ClassVar[int]
-    ROCKET_MASS_FIELD_NUMBER: _ClassVar[int]
-    TEMPERATURE_SOB_FIELD_NUMBER: _ClassVar[int]
+    FLASH_FIELD_NUMBER: _ClassVar[int]
+    DMBPRESSURE_FIELD_NUMBER: _ClassVar[int]
+    PBBPRESSURE_FIELD_NUMBER: _ClassVar[int]
+    PBBTEMPERATURE_FIELD_NUMBER: _ClassVar[int]
+    COMBUSTIONCONTROLSTATUS_FIELD_NUMBER: _ClassVar[int]
+    RCUPRESSURE_FIELD_NUMBER: _ClassVar[int]
+    RCUTEMPERATURE_FIELD_NUMBER: _ClassVar[int]
+    NOSLOADCELL_FIELD_NUMBER: _ClassVar[int]
+    RELAYSTATUS_FIELD_NUMBER: _ClassVar[int]
+    PADBOXSTATUS_FIELD_NUMBER: _ClassVar[int]
+    LAUNCHRAILLOADCELL_FIELD_NUMBER: _ClassVar[int]
+    SOBTEMPERATURE_FIELD_NUMBER: _ClassVar[int]
     source: _CoreProto_pb2.Node
     target: _CoreProto_pb2.Node
     gps: Gps
     baro: Baro
     imu: Imu
     battery: Battery
-    flash_info: Flash
-    pressure_dmb: DmbPressure
-    pressure_pbb: PbbPressure
-    temperature_pbb: PbbTemperature
-    combustion_control_status: CombustionControlStatus
-    pressure_rcu: RcuPressure
-    temperature_rcu: RcuTemperature
-    nos_mass: NosLoadCell
-    relay_status: RelayStatus
-    padbox_status: PadBoxStatus
-    rocket_mass: LaunchRailLoadCell
-    temperature_sob: SobTemperature
-    def __init__(self, source: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., target: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., gps: _Optional[_Union[Gps, _Mapping]] = ..., baro: _Optional[_Union[Baro, _Mapping]] = ..., imu: _Optional[_Union[Imu, _Mapping]] = ..., battery: _Optional[_Union[Battery, _Mapping]] = ..., flash_info: _Optional[_Union[Flash, _Mapping]] = ..., pressure_dmb: _Optional[_Union[DmbPressure, _Mapping]] = ..., pressure_pbb: _Optional[_Union[PbbPressure, _Mapping]] = ..., temperature_pbb: _Optional[_Union[PbbTemperature, _Mapping]] = ..., combustion_control_status: _Optional[_Union[CombustionControlStatus, _Mapping]] = ..., pressure_rcu: _Optional[_Union[RcuPressure, _Mapping]] = ..., temperature_rcu: _Optional[_Union[RcuTemperature, _Mapping]] = ..., nos_mass: _Optional[_Union[NosLoadCell, _Mapping]] = ..., relay_status: _Optional[_Union[RelayStatus, _Mapping]] = ..., padbox_status: _Optional[_Union[PadBoxStatus, _Mapping]] = ..., rocket_mass: _Optional[_Union[LaunchRailLoadCell, _Mapping]] = ..., temperature_sob: _Optional[_Union[SobTemperature, _Mapping]] = ...) -> None: ...
+    flash: Flash
+    dmbPressure: DmbPressure
+    pbbPressure: PbbPressure
+    pbbTemperature: PbbTemperature
+    combustionControlStatus: CombustionControlStatus
+    rcuPressure: RcuPressure
+    rcuTemperature: RcuTemperature
+    nosLoadCell: NosLoadCell
+    relayStatus: RelayStatus
+    padBoxStatus: PadBoxStatus
+    launchRailLoadCell: LaunchRailLoadCell
+    sobTemperature: SobTemperature
+    def __init__(self, source: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., target: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., gps: _Optional[_Union[Gps, _Mapping]] = ..., baro: _Optional[_Union[Baro, _Mapping]] = ..., imu: _Optional[_Union[Imu, _Mapping]] = ..., battery: _Optional[_Union[Battery, _Mapping]] = ..., flash: _Optional[_Union[Flash, _Mapping]] = ..., dmbPressure: _Optional[_Union[DmbPressure, _Mapping]] = ..., pbbPressure: _Optional[_Union[PbbPressure, _Mapping]] = ..., pbbTemperature: _Optional[_Union[PbbTemperature, _Mapping]] = ..., combustionControlStatus: _Optional[_Union[CombustionControlStatus, _Mapping]] = ..., rcuPressure: _Optional[_Union[RcuPressure, _Mapping]] = ..., rcuTemperature: _Optional[_Union[RcuTemperature, _Mapping]] = ..., nosLoadCell: _Optional[_Union[NosLoadCell, _Mapping]] = ..., relayStatus: _Optional[_Union[RelayStatus, _Mapping]] = ..., padBoxStatus: _Optional[_Union[PadBoxStatus, _Mapping]] = ..., launchRailLoadCell: _Optional[_Union[LaunchRailLoadCell, _Mapping]] = ..., sobTemperature: _Optional[_Union[SobTemperature, _Mapping]] = ...) -> None: ...
 
 class Gps(_message.Message):
     __slots__ = ("latitude", "longitude", "antenna_altitude", "geo_id_altitude", "total_altitude", "time")

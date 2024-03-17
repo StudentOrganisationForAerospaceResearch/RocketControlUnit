@@ -89,7 +89,7 @@ class Utils:
                 if (serial_thread not in Utils.thread_pool) or (not Utils.thread_pool[serial_thread]['thread'].is_alive()):
                     logger.error(f"Attempting to send message to non-existent thread: {serial_thread}")
                     continue
-            Utils.thread_pool[serial_thread]['workq'].put(message)
+                Utils.thread_pool[serial_thread]['workq'].put(message)
         else:
             if (message.dest_thread not in Utils.thread_pool) or (not Utils.thread_pool[message.dest_thread]['thread'].is_alive()):
                 logger.error(f"Attempting to send message to non-existent thread: {message.dest_thread}")

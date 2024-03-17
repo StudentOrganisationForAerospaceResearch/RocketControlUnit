@@ -21,18 +21,18 @@ message TelemetryMessage {
         Baro baro = 4;
         Imu imu = 5;
         Battery battery = 6;
-        Flash flash_info = 7;
-        DmbPressure pressure_dmb = 8;
-        PbbPressure pressure_pbb = 9;
-        PbbTemperature temperature_pbb = 10;
-        CombustionControlStatus combustion_control_status = 11;
-        RcuPressure pressure_rcu = 12;
-        RcuTemperature temperature_rcu = 13;
-        NosLoadCell nos_mass = 14;
-        RelayStatus relay_status = 15;
-        PadBoxStatus padbox_status = 16;
-        LaunchRailLoadCell rocket_mass = 17;
-        SobTemperature temperature_sob = 18;
+        Flash flash = 7;
+        DmbPressure dmbPressure = 8;
+        PbbPressure pbbPressure = 9;
+        PbbTemperature pbbTemperature = 10;
+        CombustionControlStatus combustionControlStatus = 11;
+        RcuPressure rcuPressure = 12;
+        RcuTemperature rcuTemperature = 13;
+        NosLoadCell nosLoadCell = 14;
+        RelayStatus relayStatus = 15;
+        PadBoxStatus padBoxStatus = 16;
+        LaunchRailLoadCell launchRailLoadCell = 17;
+        SobTemperature sobTemperature = 18;
     }
 }
 

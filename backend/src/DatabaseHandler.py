@@ -27,6 +27,7 @@ class DatabaseHandler():
         DatabaseHandler.thread_name = thread_name
         DatabaseHandler.client = Client("http://10.13.141.121:8090/")
         DatabaseHandler.client.collection('CommandMessage').subscribe(DatabaseHandler._handle_command_callback)
+        logger.success(f"Successfully started {thread_name} thread")
 
     @staticmethod
     def _handle_command_callback(document: MessageData):
@@ -41,7 +42,18 @@ class DatabaseHandler():
 
         logger.info("Received new command from the database")
         logger.debug(f"Record command: {document.record.command}")
-        DatabaseHandler.send_message_workq.put(WorkQ_Message(DatabaseHandler.thread_name, 'all_serial', THREAD_MESSAGE_SERIAL_WRITE, (document.record.command,)))
+        DatabaseHandler.send_message_workq.put(
+            WorkQ_Message(
+                DatabaseHandler.thread_name,
+                'all_serial', 
+                THREAD_MESSAGE_SERIAL_WRITE, 
+                (document.record.command,
+                 document.record.target,
+                 document.record.command_param,
+                 document.record.source_sequence_num
+                )
+            )
+        )
 
     @staticmethod
     def send_message_to_database(json_data: str):

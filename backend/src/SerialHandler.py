@@ -62,8 +62,9 @@ class SerialHandler():
             self.serial_port = serial.Serial(port=port, baudrate=baudrate, bytesize=8, parity=serial.PARITY_NONE, timeout=None, stopbits=serial.STOPBITS_ONE)
         except Exception:
             self.serial_port = None
-            logger.error(f"Failed to open serial port {port}")
+            logger.error(f"Failed to open {thread_name} serial port {port}")
             return
+        logger.success(f"Successfully opened {thread_name} serial port {port}")
 
     def _get_serial_message(self):
         """
@@ -187,9 +188,10 @@ class SerialHandler():
         logger.debug(f"Sending command message {command} to {target}")
 
         encBuf = Codec.Encode(buf, len(buf), ProtoCore.MessageID.MSG_COMMAND)
-        if (target == ProtoCore.NODE_DMB or target == ProtoCore.Node.NODE_PBB) and self.port == RADIO_SERIAL_PORT:
+        target_enum = utl.get_node_from_str(target)
+        if (target_enum == ProtoCore.NODE_DMB or target_enum == ProtoCore.Node.NODE_PBB) and self.port == RADIO_SERIAL_PORT:
             self.serial_port.write(encBuf)
-        if (target ==  ProtoCore.NODE_RCU or target ==  ProtoCore.Node.NODE_SOB) and self.port == UART_SERIAL_PORT:
+        if (target_enum ==  ProtoCore.NODE_RCU or target_enum ==  ProtoCore.Node.NODE_SOB) and self.port == UART_SERIAL_PORT:
             self.serial_port.write(encBuf)
 
         return True

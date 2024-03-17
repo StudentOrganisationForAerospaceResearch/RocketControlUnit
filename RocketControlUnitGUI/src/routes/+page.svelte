@@ -2,7 +2,7 @@
 	import { getModalStore, SlideToggle } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
 	import Background from './background.svelte';
@@ -79,6 +79,37 @@
 	function nextState(state: string) {
 		currentState.set(state);
 	}
+
+	let containerElement: any;
+
+	onMount(() => {
+		containerElement = document.querySelector('.container') as HTMLElement;
+
+		// Define the resize handler
+		const handleResize = () => {
+			if (containerElement) {
+				let containerWidth = containerElement.offsetWidth;
+				document.documentElement.style.setProperty('--container-width', `${containerWidth}px`);
+				document.documentElement.style.setProperty(
+					'--container-width-unitless',
+					`${containerWidth}`
+				);
+			} else {
+				console.error('No element with class "container" found');
+			}
+		};
+
+		// Call the resize handler once on mount
+		handleResize();
+
+		// Attach the resize handler to the resize event
+		window.addEventListener('resize', handleResize);
+
+		// Return a cleanup function to remove the event listener when the component is destroyed
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
+	});
 
 	const ac1_open = writable(undefined);
 	const ac2_open = writable(undefined);
@@ -469,7 +500,13 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$power_source}
-			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_POWER_TRANSITION_ONBOARD', 'RSC_POWER_TRANSITION_EXTERNAL')}
+			on:change={(e) =>
+				handleSliderChange(
+					e,
+					'NODE_DMB',
+					'RSC_POWER_TRANSITION_ONBOARD',
+					'RSC_POWER_TRANSITION_EXTERNAL'
+				)}
 		>
 			{power_display}</SlideToggle
 		>
@@ -512,7 +549,7 @@
 	<div class="nos1">
 		<p>{nos1_mass_display}</p>
 	</div>
-	
+
 	<div class="nos2">
 		<p>{nos2_mass_display}</p>
 	</div>
@@ -569,347 +606,340 @@
 		<p>{pv_temperature_display}</p>
 	</div>
 
-
-</div>
-
-<main>
-	<!-- <SlideToggle name="ac2_slider" bind:checked={$ac2_open} on:change={(e) => handleSliderChange(e, 'NODE_RCU','RCU_OPEN_AC2', 'RCU_CLOSE_AC2')}> AC2 {ac2_display}</SlideToggle>
-
-	<p>SOB TC1 Temperature: {sob_tc1_display}</p>
-	<p>SOB TC2 Temperature: {sob_tc2_display}</p> -->
-
 	<!-- Render different buttons based on the current state -->
 	{#if $currentState === states.RS_PRELAUNCH}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
-			style="bottom: 80px;"
+			style="top: calc(var(--container-width) * 0.51);"
 			on:click={() => confirmStateChange(states.RS_FILL)}>Go to Fill</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
-			style="bottom: 30px;"
+			style="top: calc(var(--container-width) * 0.55);"
 			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 		>
 	{:else if $currentState === states.RS_FILL}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
-			style="bottom: 80px;"
+			style="top: calc(var(--container-width) * 0.51);"
 			on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
 		>
 		<button
 			class="btn variant-filled-secondary next-state-btn"
-			style="bottom: 130px;"
+			style="top: calc(var(--container-width) * 0.47);"
 			on:click={() => confirmStateChange(states.RS_ARM)}>Go to Arm</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
-			style="bottom: 30px;"
+			style="top: calc(var(--container-width) * 0.55);"
 			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 		>
 	{:else if $currentState === states.RS_ARM}
 		<button
 			class="btn variant-filled-warning next-state-btn"
-			style="bottom: 80px;"
+			style="top: calc(var(--container-width) * 0.51);"
 			on:click={() => confirmStateChange(states.RS_IGNITION)}>Go to Ignition</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
-			style="bottom: 30px;"
+			style="top: calc(var(--container-width) * 0.55);"
 			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 		>
 	{:else if $currentState === states.RS_IGNITION}
 		<button
 			class="btn variant-filled-error next-state-btn"
-			style="bottom: 80px;"
+			style="top: calc(var(--container-width) * 0.51);"
 			on:click={() => nextState(states.RS_LAUNCH)}>LAUNCH</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
-			style="bottom: 30px;"
+			style="top: calc(var(--container-width) * 0.55);"
 			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
 		>
 	{:else if $currentState === states.RS_ABORT}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
-			style="bottom: 30px;"
+			style="top: calc(var(--container-width) * 0.55);"
 			on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
 		>
 	{:else if $currentState === states.RS_LAUNCH}
 		<h1>nice rocket bro</h1>
 	{/if}
-</main>
+</div>
 
 <style>
-	.next-state-btn {
-		position: fixed;
-		left: 100px;
-		width: 200px;
-	}
-
 	.container {
 		position: relative;
 		width: 100%;
 		height: 100%;
 	}
+
 	@media (min-width: 576px) {
 		.container {
 			max-width: 100%;
 		}
 	}
 
+	.next-state-btn {
+		position: absolute;
+		left: 8%;
+		width: 200px;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1400));
+	}
+
 	.ac1_slider {
 		position: absolute;
-		top: 4.4%;
+		top: calc(var(--container-width) * 0.025);
 		left: 8.6%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.pbv1_slider {
 		position: absolute;
-		top: 20.7%;
+		top: calc(var(--container-width) * 0.118);
 		left: 35.5%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.pbv2_slider {
 		position: absolute;
-		top: 33.1%;
+		top: calc(var(--container-width) * 0.188);
 		left: 35.5%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.pbv3_slider {
 		position: absolute;
-		top: 48.1%;
+		top: calc(var(--container-width) * 0.275);
 		left: 35.5%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.pbv4_slider {
 		position: absolute;
-		top: 25.3%;
+		top: calc(var(--container-width) * 0.144);
 		left: 47.5%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.sol5_slider {
 		position: absolute;
-		top: 46.8%;
+		top: calc(var(--container-width) * 0.269);
 		left: 63.3%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.sol6_slider {
 		position: absolute;
-		top: 54.4%;
+		top: calc(var(--container-width) * 0.313);
 		left: 63.3%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.sol7_slider {
 		position: absolute;
-		top: 62.1%;
+		top: calc(var(--container-width) * 0.356);
 		left: 63.3%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.sol8a_slider {
 		position: absolute;
-		top: 69%;
+		top: calc(var(--container-width) * 0.396);
 		left: 63.3%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.sol8b_slider {
 		position: absolute;
-		top: 76.7%;
+		top: calc(var(--container-width) * 0.44);
 		left: 63.3%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.vent_slider {
 		position: absolute;
-		top: 27%;
+		top: calc(var(--container-width) * 0.152);
 		left: 85.3%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.drain_slider {
 		position: absolute;
-		top: 46.8%;
+		top: calc(var(--container-width) * 0.265);
 		left: 85.3%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.power_source_slider {
 		position: absolute;
-		top: 4.5%;
+		top: calc(var(--container-width) * 0.025);
 		left: 95.5%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
-	
+
 	.box1_slider {
 		position: absolute;
-		top: 72.4%;
+		top: calc(var(--container-width) * 0.415);
 		left: 12.5%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.box2_slider {
 		position: absolute;
-		top: 75.8%;
+		top: calc(var(--container-width) * 0.433);
 		left: 12.5%;
-		transform: translate(-50%, -50%) scale(0.75);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.rcu_tc1 {
 		position: absolute;
-		top: 11.2%;
+		top: calc(var(--container-width) * 0.065);
 		left: 5.6%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.rcu_tc2 {
 		position: absolute;
-		top: 11.2%;
+		top: calc(var(--container-width) * 0.065);
 		left: 9.2%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.nos1 {
 		position: absolute;
-		top: 32%;
+		top: calc(var(--container-width) * 0.187);
 		left: 7.6%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.nos2 {
 		position: absolute;
-		top: 44%;
+		top: calc(var(--container-width) * 0.255);
 		left: 7.6%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt1_pressure {
 		position: absolute;
-		top: 20.5%;
+		top: calc(var(--container-width) * 0.117);
 		left: 14.7%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt2_pressure {
 		position: absolute;
-		top: 32.8%;
+		top: calc(var(--container-width) * 0.1882);
 		left: 14.7%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt3_pressure {
 		position: absolute;
-		top: 47.9%;
+		top: calc(var(--container-width) * 0.2743);
 		left: 14.9%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt4_pressure {
 		position: absolute;
-		top: 32.9%;
+		top: calc(var(--container-width) * 0.188);
 		left: 42%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.box1_continuity {
 		position: absolute;
-		top: 65.1%;
+		top: calc(var(--container-width) * 0.372);
 		left: 14.7%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.box2_continuity {
 		position: absolute;
-		top: 67.5%;
+		top: calc(var(--container-width) * 0.386);
 		left: 14.7%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.mev_status {
 		position: absolute;
-		top: 12%;
+		top: calc(var(--container-width) * 0.069);
 		left: 93.9%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.battery_voltage {
 		position: absolute;
-		top: 8.5%;
+		top: calc(var(--container-width) * 0.049);
 		left: 93.9%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.upper_pv_pressure {
 		position: absolute;
-		top: 18.1%;
+		top: calc(var(--container-width) * 0.104);
 		left: 92.9%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.rocket_mass {
 		position: absolute;
-		top: 15%;
+		top: calc(var(--container-width) * 0.09);
 		left: 74.3%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.ib_pressure {
 		position: absolute;
-		top: 68.3%;
+		top: calc(var(--container-width) * 0.391);
 		left: 93.1%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.lower_pv_pressure {
 		position: absolute;
-		top: 60.3%;
+		top: calc(var(--container-width) * 0.345);
 		left: 90.3%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pv_temperature {
 		position: absolute;
-		top: 60.3%;
+		top: calc(var(--container-width) * 0.345);
 		left: 95.5%;
-		transform: translate(-50%, -50%) scale(1);
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 </style>

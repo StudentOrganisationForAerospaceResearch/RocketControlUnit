@@ -22,11 +22,7 @@
 	initializeStores();
 </script>
 
-
-
-
 <Modal />
-
 
 <!-- App Shell -->
 <AppShell slotSidebarLeft="bg-surface-500/5">
@@ -75,7 +71,6 @@
 	<slot />
 
 </AppShell>
-
 
 <style>
 	.sideBar-center {

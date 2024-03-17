@@ -1,11 +1,12 @@
 <script lang="ts">
-	import { getModalStore, SlideToggle } from '@skeletonlabs/skeleton';
+	import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
-	import Background from './background.svelte';
+	import BackgroundDark from './background-dark.svelte';
+	import BackgroundLight from './background-light.svelte';
 
 	const modalStore = getModalStore();
 
@@ -79,6 +80,16 @@
 	function nextState(state: string) {
 		currentState.set(state);
 	}
+
+    let BackgroundComponent: any;
+
+    $: {
+        if ($modeCurrent) {
+            BackgroundComponent = BackgroundLight;
+        } else {
+            BackgroundComponent = BackgroundDark;
+        }
+    }
 
 	let containerElement: any;
 
@@ -348,7 +359,7 @@
 </script>
 
 <div class="container">
-	<Background />
+	<svelte:component this={BackgroundComponent} />
 
 	<div class="ac1_slider">
 		<SlideToggle

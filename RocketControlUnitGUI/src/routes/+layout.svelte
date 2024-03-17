@@ -33,7 +33,7 @@
 				<div class="flex items-center">
 					<div class="flex items-center">
 						<img
-							src="/Copy of Clear.png"
+							src="/soar_logo_dark.svg"
 							alt="SOAR Logo"
 							class="mr-2"
 							style="width: 70px; height: 35px;"

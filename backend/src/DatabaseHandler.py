@@ -25,7 +25,7 @@ class DatabaseHandler():
         DatabaseHandler.thread_workq = thread_workq
         DatabaseHandler.send_message_workq = message_handler_workq
         DatabaseHandler.thread_name = thread_name
-        DatabaseHandler.client = Client("http://10.13.141.121:8090/")
+        DatabaseHandler.client = Client('http://127.0.0.1:8090')
         DatabaseHandler.client.collection('CommandMessage').subscribe(DatabaseHandler._handle_command_callback)
         logger.success(f"Successfully started {thread_name} thread")
 
@@ -82,9 +82,8 @@ def database_thread(thread_name: str, db_workq: mp.Queue, message_handler_workq:
 
     while 1:
         # If there is any workq messages, process them
-        if not db_workq.empty():
-            if not process_workq_message(db_workq.get(block=True)):
-                return
+        if not process_workq_message(db_workq.get(block=True)):
+            return
         
 def process_workq_message(message: WorkQ_Message) -> bool:
     """

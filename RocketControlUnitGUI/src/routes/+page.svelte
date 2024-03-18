@@ -2,7 +2,7 @@
 	import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
 	import BackgroundDark from './background-dark.svelte';
@@ -90,6 +90,37 @@
             BackgroundComponent = BackgroundDark;
         }
     }
+
+	let containerElement: any;
+
+	onMount(() => {
+		containerElement = document.querySelector('.container') as HTMLElement;
+
+		// Define the resize handler
+		const handleResize = () => {
+			if (containerElement) {
+				let containerWidth = containerElement.offsetWidth;
+				document.documentElement.style.setProperty('--container-width', `${containerWidth}px`);
+				document.documentElement.style.setProperty(
+					'--container-width-unitless',
+					`${containerWidth}`
+				);
+			} else {
+				console.error('No element with class "container" found');
+			}
+		};
+
+		// Call the resize handler once on mount
+		handleResize();
+
+		// Attach the resize handler to the resize event
+		window.addEventListener('resize', handleResize);
+
+		// Return a cleanup function to remove the event listener when the component is destroyed
+		return () => {
+			window.removeEventListener('resize', handleResize);
+		};
+	});
 
 	let containerElement: any;
 

@@ -8,8 +8,8 @@ from pocketbase.services.realtime_service import MessageData
 
 # Project specific imports ========================================================================
 from src.support.CommonLogger import logger
-
-from src.Utils import Utils as utl, THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
+from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
+from src.Utils import Utils as utl
 
 # Class Definitions ===============================================================================
 class DatabaseHandler():
@@ -83,9 +83,8 @@ def database_thread(thread_name: str, db_workq: mp.Queue, message_handler_workq:
     while 1:
         # If there is any workq messages, process them
         if not db_workq.empty():
-            if not process_workq_message(db_workq.get()):
+            if not process_workq_message(db_workq.get(block=True)):
                 return
-        time.sleep(0.1)
         
 def process_workq_message(message: WorkQ_Message) -> bool:
     """

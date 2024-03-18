@@ -19,7 +19,8 @@ from src.support.Codec import Codec
 from src.support.ProtobufParser import ProtobufParser
 from src.support.CommonLogger import logger
 
-from src.Utils import Utils as utl, TEST_RECEIVE_SERIAL_MESSAGE, THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
+from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
+from src.Utils import Utils as utl
 
 # Constants ========================================================================================
 MIN_SERIAL_MESSAGE_LENGTH = 6
@@ -218,8 +219,6 @@ def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler)
             command_param = message.message[2]
             source_sequence_number = message.message[3]
             ser_han.send_serial_command_message(command, target, command_param, source_sequence_number)
-        elif messageID == TEST_RECEIVE_SERIAL_MESSAGE:
-            ser_han.handle_serial_message(message.message[0])
         return True
 
 def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread_workq: mp.Queue, message_handler_workq: mp.Queue):

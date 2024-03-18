@@ -17,7 +17,7 @@ export default {
 			themes: {
 				preset: [
 					{
-						name: 'modern',
+						name: 'crimson',
 						enhancements: true,
 					},
 				],

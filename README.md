@@ -187,14 +187,18 @@ Python dependencies are inside the requrements.txt
         one thread, maybe not even the backend thread but possibly a different
         logging thread.
   - [ ] Update DB URL.
+  - [ ] Cython
 - Database
   - [ ] Add BackendCommands Table
+  - [ ] Remove Unused fields
 - Frontend
-  - [ ] Finish Background Creation
-  - [ ] Move Components in Place
+  - [x] Finish Background Creation
+  - [x] Move Components in Place
   - [ ] Add Loadcell Calibration
   - [ ] Add Fluid Flow Animation
   - [ ] Add Authentication
   - [ ] Add Test State
+  - [ ] Tie Ignitors
+  - [ ] Verify Correct State on Refresh
   - [x] Figure Out Deployment
 - [ ] Integration Test

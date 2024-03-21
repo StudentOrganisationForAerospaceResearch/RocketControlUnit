@@ -140,8 +140,6 @@
 	const continuity2 = writable(undefined);
 	const box1_on = writable(undefined);
 	const box2_on = writable(undefined);
-	const box1_status = writable(undefined);
-	const box2_status = writable(undefined);
 
 	const vent_open = writable(undefined);
 	const drain_open = writable(undefined);
@@ -367,6 +365,18 @@
 			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}
 		>
 			{ac1_display}</SlideToggle
+		>
+	</div>
+
+	<div class="ac2_slider">
+		<SlideToggle
+			name="ac2_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$ac2_open}
+			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC2', 'RCU_CLOSE_AC2')}
+		>
+			{ac2_display}</SlideToggle
 		>
 	</div>
 
@@ -614,6 +624,14 @@
 		<p>{pv_temperature_display}</p>
 	</div>
 
+	<div class="sob_tc1">
+		<p>{sob_tc1_display}</p>
+	</div>
+
+	<div class="sob_tc2">
+		<p>{sob_tc2_display}</p>
+	</div>
+
 	<!-- Render different buttons based on the current state -->
 	{#if $currentState === states.RS_PRELAUNCH}
 		<button
@@ -699,6 +717,14 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.025);
 		left: 8.6%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		font-size: 16px;
+	}
+
+	.ac2_slider {
+		position: absolute;
+		top: calc(var(--container-width) * 0.10);
+		left: 80%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
@@ -947,6 +973,22 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.345);
 		left: 95.5%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.sob_tc1 {
+		position: absolute;
+		top: calc(var(--container-width) * 0.1405);
+		left: 69%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.sob_tc2 {
+		position: absolute;
+		top: calc(var(--container-width) * 0.179);
+		left: 69%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}

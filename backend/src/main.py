@@ -1,12 +1,12 @@
 
 # General imports =================================================================================
-import os, sys, git
+import os, sys
 import multiprocessing as mp
 
 # Project specific imports ========================================================================
-git_repo = git.Repo(__file__, search_parent_directories=True).git.rev_parse("--show-toplevel")
-sys.path.insert(0, os.path.join(git_repo, "backend", 'proto/Python'))
-sys.path.insert(0, os.path.join(git_repo, "backend"))
+dirname, _ = os.path.split(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(dirname.split("backend", 1)[0], 'backend', 'proto/Python'))
+sys.path.insert(0, os.path.join(dirname.split("backend", 1)[0], 'backend'))
 
 from src.support.CommonLogger import logger
 from src.DatabaseHandler import database_thread

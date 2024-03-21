@@ -1,9 +1,10 @@
 from datetime import datetime
-import os, git
+import os
 from loguru import logger
 
-git_repo = git.Repo(__file__, search_parent_directories=True).git.rev_parse("--show-toplevel")
-log_path = os.path.join(git_repo, "backend", "logs")
+
+dirname, _ = os.path.split(os.path.abspath(__file__))
+log_path = os.path.join(dirname.split("backend", 1)[0], 'backend', 'logs')
 
 LOG_TO_TERMINAL = True
 DISABLE_LOGGING = False

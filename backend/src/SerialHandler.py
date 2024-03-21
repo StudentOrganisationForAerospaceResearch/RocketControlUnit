@@ -1,11 +1,7 @@
 # General imports =================================================================================
-import datetime
 import enum
 import multiprocessing as mp
-import os
-import sys
 import time
-import git
 import serial           # You'll need to run `pip install pyserial`
 from cobs import cobs   # pip install cobs
 import google.protobuf.message as Message

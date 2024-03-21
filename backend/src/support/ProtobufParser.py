@@ -3,22 +3,22 @@
 #         and pushing telemetry messages to PocketBase
 
 # General imports =================================================================================
-import os, sys, git
+import os, sys
 import json
 from pocketbase import Client
 from google.protobuf.json_format import MessageToJson
 
 # Project specific imports ========================================================================
-git_repo = git.Repo(__file__, search_parent_directories=True).git.rev_parse("--show-toplevel")
-sys.path.insert(0, os.path.join(git_repo, "backend"))
-sys.path.insert(0, os.path.join(git_repo, "backend", 'proto/Python'))
+
+dirname, _ = os.path.split(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(dirname.split("backend", 1)[0], 'backend'))
+sys.path.insert(0, os.path.join(dirname.split("backend", 1)[0], 'proto/Python'))
 import proto.Python.CoreProto_pb2 as ProtoCore
 import proto.Python.ControlMessage_pb2 as ProtoCtrl
 import proto.Python.CommandMessage_pb2 as ProtoCmd
 import proto.Python.TelemetryMessage_pb2 as ProtoTele
 import proto.Python.CoreProto_pb2 as Core
 
-sys.path.insert(0, os.path.join(git_repo, "backend"))
 from src.Utils import Utils as utl
 
 # Class Definitions ===============================================================================

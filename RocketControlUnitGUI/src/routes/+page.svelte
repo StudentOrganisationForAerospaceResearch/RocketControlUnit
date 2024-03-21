@@ -2,7 +2,7 @@
 	import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
 	import BackgroundDark from './background-dark.svelte';
@@ -192,9 +192,6 @@
 
 	$: box1_display = $box1_on === undefined ? 'N/A' : $box1_on ? 'LIVE' : 'DEAD';
 	$: box2_display = $box2_on === undefined ? 'N/A' : $box2_on ? 'LIVE' : 'DEAD';
-
-	$: box1_status_display = $box1_status === undefined ? 'N/A' : $box1_status ? 'LIVE' : 'DEAD';
-	$: box2_status_display = $box2_status === undefined ? 'N/A' : $box2_status ? 'LIVE' : 'DEAD';
 
 	$: vent_display = $vent_open === undefined ? 'N/A' : $vent_open ? 'OPEN' : 'CLOSED';
 	$: drain_display = $drain_open === undefined ? 'N/A' : $drain_open ? 'OPEN' : 'CLOSED';

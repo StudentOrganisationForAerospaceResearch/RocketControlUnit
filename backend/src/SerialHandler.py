@@ -1,6 +1,7 @@
 # General imports =================================================================================
 import enum
 import multiprocessing as mp
+import threading
 import time
 import serial           # You'll need to run `pip install pyserial`
 from cobs import cobs   # pip install cobs
@@ -52,7 +53,8 @@ class SerialHandler():
         self.port = port
         self.baudrate = baudrate
         self.thread_name = thread_name
-        self.send_message_workq = message_handler_workq
+        self.send_message_workq = message_handler_workq    
+        self.kill_rx = False
         
         # Open serial serial port
         try:
@@ -195,6 +197,14 @@ class SerialHandler():
 
 # Procedures =======================================================================================
 
+def serial_rx_thread(ser_han: SerialHandler):
+    """
+    Thread function for the incoming serial data listening.
+    """
+    while (ser_han.kill_rx):
+        ser_han.handle_serial_message()
+        pass
+
 def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler) -> bool:
         """
         Process the message from the workq.
@@ -242,15 +252,14 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     ser_han = SerialHandler(thread_name, port, baudrate, message_handler_workq)
     if ser_han.serial_port == None:
         return
-
+    
+    rx_thread = threading.Thread(target=serial_rx_thread, args=(ser_han,))
+    rx_thread.start()
     while (1):
         # If there is any workq messages, process them first
         # then once the queue is empty read the serial port
         if not serial_workq.empty():
             if not process_serial_workq_message(serial_workq.get(), ser_han):
+                ser_han.kill_rx = True
+                rx_thread.join(10)
                 return
-        else:
-            ser_han.handle_serial_message()
-
-        time.sleep(0.1)
-

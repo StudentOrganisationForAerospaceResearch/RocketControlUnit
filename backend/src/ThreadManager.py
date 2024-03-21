@@ -47,7 +47,7 @@ class ThreadManager:
         '''
         for thread in ThreadManager.thread_pool:
             if ThreadManager.thread_pool[thread]['thread']:
-                ThreadManager.get_workq(thread).put(THREAD_MESSAGE_KILL)
+                ThreadManager._get_workq(thread).put(WorkQ_Message("all", "main", THREAD_MESSAGE_KILL, None))
                 ThreadManager._get_thread(thread).join()
 
     @staticmethod

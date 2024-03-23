@@ -256,10 +256,8 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     rx_thread = threading.Thread(target=serial_rx_thread, args=(ser_han,))
     rx_thread.start()
     while (1):
-        # If there is any workq messages, process them first
         # then once the queue is empty read the serial port
-        if not serial_workq.empty():
-            if not process_serial_workq_message(serial_workq.get(), ser_han):
-                ser_han.kill_rx = True
-                rx_thread.join(10)
-                return
+        if not process_serial_workq_message(serial_workq.get(), ser_han):
+            ser_han.kill_rx = True
+            rx_thread.join(10)
+            return

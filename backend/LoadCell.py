@@ -24,14 +24,13 @@ class CalLoadCell():
     def reset(self):
         self.current_state = self.State.NORMAL
 
-    def collect_zero(self, voltage):
-        self.current_state: self.State.STORE
-        self.vol_offset = voltage
-        self.cal_points = {0: voltage}
-
     def collect_point(self, voltage, mass):
-        self.current_state = self.State.STORE
-        self.cal_points[mass] = voltage
+        self.current_state: self.State.STORE
+        if not self.cal_points:
+            self.cal_points = {0: voltage}
+            self.vol_offset = voltage
+        else:
+            self.cal_points[mass] = voltage
 
     def discard_cal(self, num=1):
         for i in range(num):

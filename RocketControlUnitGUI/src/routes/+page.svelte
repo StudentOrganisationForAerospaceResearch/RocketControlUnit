@@ -494,7 +494,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$vent_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'DMB_OPEN_VENT', 'DMB_CLOSE_VENT')}
+			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_VENT', 'RSC_CLOSE_VENT')}
 		>
 			{vent_display}</SlideToggle
 		>
@@ -506,7 +506,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$drain_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'DMB_OPEN_DRAIN', 'DMB_CLOSE_DRAIN')}
+			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_DRAIN', 'RSC_CLOSE_DRAIN')}
 		>
 			{drain_display}</SlideToggle
 		>

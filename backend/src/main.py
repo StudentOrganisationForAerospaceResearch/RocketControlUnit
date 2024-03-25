@@ -15,7 +15,7 @@ from src.ThreadManager import ThreadManager as tm
 
 # Constants ========================================================================================
 UART_BAUDRATE = 115200
-RADIO_BAUDRATE = 115200 #NOTE: might need to change this (57600 ???)
+RADIO_BAUDRATE = 57600 #NOTE: might need to change this (57600 ???)
 
 # Local Procedures ================================================================================
 def initialize_threads():
@@ -49,6 +49,7 @@ def initialize_threads():
 
 if __name__ == "__main__":
   tm()
+  logger.info(f"Main process: {os.getpid()}")
   initialize_threads()
   tm.start_threads()
 

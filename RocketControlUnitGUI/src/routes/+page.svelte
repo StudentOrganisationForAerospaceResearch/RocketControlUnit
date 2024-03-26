@@ -353,6 +353,59 @@
 			command: command
 		});
 	}
+
+	function confirmTakeWeight(loadcell: string) {
+		const modal: ModalSettings = {
+			type: 'confirm',
+			title: 'Take all weight',
+			response: (r: boolean) => {
+				if (r) {
+					writeCommandMessage("NODE_RCU", "EnterCommandHere");
+					confirmWeightPlaced(loadcell);
+				}
+			}
+		};
+		modalStore.trigger(modal);
+	}
+
+	function confirmWeightPlaced(loadcell: string) {
+		const modal: ModalSettings = {
+			type: 'confirm',
+			title: 'Place weight on loadcell',
+			response: async (r: boolean) => {
+				if (r) {
+					writeCommandMessage("NODE_RCU", "EnterCommandHere");
+					promptEnterWeight(loadcell);
+				}
+			}
+		};
+		modalStore.trigger(modal);
+	}
+
+	function promptEnterWeight(loadcell: string) {
+		const modal: ModalSettings = {
+			type: 'prompt',
+			title: 'Enter Weight (kg)',
+			valueAttr: { type: 'text', required: true },
+			response: async (r: string) => {
+				if (r) {
+					writeCommandMessage("NODE_RCU", "EnterCommandHere");
+				}
+			}
+		};
+		modalStore.trigger(modal);
+	}
+
+	async function performTare(loadcell: string) {
+		// Create a change on the 'CommandMessage' collection
+		await PB.collection('CommandMessage').create({
+			// Write a new record with the tare command
+			target: 'NODE_RCU',
+			command: 'RCU_TARE'
+		});
+	}
+
+
 </script>
 
 <div class="container">
@@ -429,7 +482,7 @@
 			{pbv4_display}</SlideToggle
 		>
 	</div>
-
+	
 	<div class="sol5_slider">
 		<SlideToggle
 			name="sol5_slider"
@@ -557,6 +610,66 @@
 			>
 		</div>
 	{/if}
+
+	<div class="nos1_tare_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-secondary" 
+			on:click={() => performTare("nos1")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="nos1_cal_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-error" 
+			on:click={() => confirmTakeWeight("nos1")}
+		>
+			CAL
+		</button>
+	</div>
+
+	<div class="nos2_tare_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-secondary" 
+			on:click={() => performTare("nos2")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="nos2_cal_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-error" 
+			on:click={() => confirmTakeWeight("nos2")}
+		>
+			CAL
+		</button>
+	</div>
+
+	<div class="rail_tare_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-secondary" 
+			on:click={() => performTare("rail")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="rail_cal_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-error" 
+			on:click={() => confirmTakeWeight("rail")}
+		>
+			CAL
+		</button>
+	</div>
 
 	<div class="rcu_tc1">
 		<p>{rcu_tc1_display}</p>
@@ -841,6 +954,50 @@
 		left: 12.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
+	}
+
+	.nos1_tare_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.176);
+		left: 11.1%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.nos1_cal_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.195);
+		left: 11.0%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.nos2_tare_button {
+		color: #04AA6D;
+		position: absolute;
+		top: calc(var(--container-width) * 0.246);
+		left: 11.1%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.nos2_cal_button {
+		color: #04AA6D;
+		position: absolute;
+		top: calc(var(--container-width) * 0.265);
+		left: 11.0%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+	
+	.rail_tare_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.078);
+		left: 69.1%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.rail_cal_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.097);
+		left: 69.1%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.rcu_tc1 {

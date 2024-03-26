@@ -208,12 +208,12 @@ class SobTemperature(_message.Message):
     def __init__(self, tc1_temperature: _Optional[int] = ..., tc2_temperature: _Optional[int] = ...) -> None: ...
 
 class TelemetryMessage(_message.Message):
-    __slots__ = ["baro", "battery", "combustionControlStatus", "dmbPressure", "flashInfo", "gps", "imu", "launchRailLoadCell", "nosLoadCell", "padBoxStatus", "pbbPressure", "pbbTemperature", "rcuPressure", "rcuTemperature", "relayStatus", "sobTemperature", "source", "target"]
+    __slots__ = ["baro", "battery", "combustionControlStatus", "dmbPressure", "flashState", "gps", "imu", "launchRailLoadCell", "nosLoadCell", "padBoxStatus", "pbbPressure", "pbbTemperature", "rcuPressure", "rcuTemperature", "relayStatus", "sobTemperature", "source", "target"]
     BARO_FIELD_NUMBER: _ClassVar[int]
     BATTERY_FIELD_NUMBER: _ClassVar[int]
     COMBUSTIONCONTROLSTATUS_FIELD_NUMBER: _ClassVar[int]
     DMBPRESSURE_FIELD_NUMBER: _ClassVar[int]
-    FLASHINFO_FIELD_NUMBER: _ClassVar[int]
+    FLASHSTATE_FIELD_NUMBER: _ClassVar[int]
     GPS_FIELD_NUMBER: _ClassVar[int]
     IMU_FIELD_NUMBER: _ClassVar[int]
     LAUNCHRAILLOADCELL_FIELD_NUMBER: _ClassVar[int]
@@ -231,7 +231,7 @@ class TelemetryMessage(_message.Message):
     battery: Battery
     combustionControlStatus: CombustionControlStatus
     dmbPressure: DmbPressure
-    flashInfo: Flash
+    flashState: Flash
     gps: Gps
     imu: Imu
     launchRailLoadCell: LaunchRailLoadCell
@@ -245,4 +245,4 @@ class TelemetryMessage(_message.Message):
     sobTemperature: SobTemperature
     source: _CoreProto_pb2.Node
     target: _CoreProto_pb2.Node
-    def __init__(self, source: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., target: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., gps: _Optional[_Union[Gps, _Mapping]] = ..., baro: _Optional[_Union[Baro, _Mapping]] = ..., imu: _Optional[_Union[Imu, _Mapping]] = ..., battery: _Optional[_Union[Battery, _Mapping]] = ..., flashInfo: _Optional[_Union[Flash, _Mapping]] = ..., dmbPressure: _Optional[_Union[DmbPressure, _Mapping]] = ..., pbbPressure: _Optional[_Union[PbbPressure, _Mapping]] = ..., pbbTemperature: _Optional[_Union[PbbTemperature, _Mapping]] = ..., combustionControlStatus: _Optional[_Union[CombustionControlStatus, _Mapping]] = ..., rcuPressure: _Optional[_Union[RcuPressure, _Mapping]] = ..., rcuTemperature: _Optional[_Union[RcuTemperature, _Mapping]] = ..., nosLoadCell: _Optional[_Union[NosLoadCell, _Mapping]] = ..., relayStatus: _Optional[_Union[RelayStatus, _Mapping]] = ..., padBoxStatus: _Optional[_Union[PadBoxStatus, _Mapping]] = ..., launchRailLoadCell: _Optional[_Union[LaunchRailLoadCell, _Mapping]] = ..., sobTemperature: _Optional[_Union[SobTemperature, _Mapping]] = ...) -> None: ...
+    def __init__(self, source: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., target: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., gps: _Optional[_Union[Gps, _Mapping]] = ..., baro: _Optional[_Union[Baro, _Mapping]] = ..., imu: _Optional[_Union[Imu, _Mapping]] = ..., battery: _Optional[_Union[Battery, _Mapping]] = ..., flashState: _Optional[_Union[Flash, _Mapping]] = ..., dmbPressure: _Optional[_Union[DmbPressure, _Mapping]] = ..., pbbPressure: _Optional[_Union[PbbPressure, _Mapping]] = ..., pbbTemperature: _Optional[_Union[PbbTemperature, _Mapping]] = ..., combustionControlStatus: _Optional[_Union[CombustionControlStatus, _Mapping]] = ..., rcuPressure: _Optional[_Union[RcuPressure, _Mapping]] = ..., rcuTemperature: _Optional[_Union[RcuTemperature, _Mapping]] = ..., nosLoadCell: _Optional[_Union[NosLoadCell, _Mapping]] = ..., relayStatus: _Optional[_Union[RelayStatus, _Mapping]] = ..., padBoxStatus: _Optional[_Union[PadBoxStatus, _Mapping]] = ..., launchRailLoadCell: _Optional[_Union[LaunchRailLoadCell, _Mapping]] = ..., sobTemperature: _Optional[_Union[SobTemperature, _Mapping]] = ...) -> None: ...

@@ -260,6 +260,7 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     elif device == SerialDevices.RADIO:
         port = RADIO_SERIAL_PORT
     
+    # This log line should be removed once the pi core issue is solved
     logger.info(f"{device.name} process: {os.getpid()}")
     serial_workq = thread_workq
     ser_han = SerialHandler(thread_name, port, baudrate, message_handler_workq)
@@ -274,27 +275,3 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
             ser_han.kill_rx = True
             rx_thread.join(10)
             return
-
-
-
-
-# Exception in thread Thread-1 (serial_rx_thread):
-# Traceback (most recent call last):
-#   File "/usr/lib/python3.11/threading.py", line 1038, in _bootstrap_inner
-#     self.run()
-#   File "/usr/lib/python3.11/threading.py", line 975, in run
-#     self._target(*self._args, **self._kwargs)
-#   File "/home/jessegerbrandt/RocketControlUnit/backend/src/SerialHandler.py", line 213, in serial_rx_thread
-#     ser_han.handle_serial_message()
-#   File "/home/jessegerbrandt/RocketControlUnit/backend/src/SerialHandler.py", line 86, in handle_serial_message
-#     message = self._get_serial_message()
-#               ^^^^^^^^^^^^^^^^^^^^^^^^^^
-#   File "/home/jessegerbrandt/RocketControlUnit/backend/src/SerialHandler.py", line 73, in _get_serial_message
-#     temp = self.serial_port.read_until(expected = b'\x00', size = None)
-#            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-#   File "/usr/lib/python3/dist-packages/serial/serialutil.py", line 663, in read_until
-#     c = self.read(1)
-#         ^^^^^^^^^^^^
-#   File "/usr/lib/python3/dist-packages/serial/serialposix.py", line 595, in read
-#     raise SerialException(
-# serial.serialutil.SerialException: device reports readiness to read but returned no data (device disconnected or multiple access on port?)

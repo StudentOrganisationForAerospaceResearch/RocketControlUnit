@@ -83,6 +83,7 @@ def database_thread(thread_name: str, db_workq: mp.Queue, message_handler_workq:
     """
     The main loop of the database handler. It subscribes to the CommandMessage collection
     """
+    # This log line should be removed once the pi core issue is solved
     logger.info(f"Database process: {os.getpid()}")
 
     DatabaseHandler(thread_name, db_workq, message_handler_workq)

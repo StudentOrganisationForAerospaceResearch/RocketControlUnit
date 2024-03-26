@@ -49,6 +49,7 @@ def initialize_threads():
 
 if __name__ == "__main__":
   tm()
+  # This log line should be removed once the pi core issue is solved
   logger.info(f"Main process: {os.getpid()}")
   initialize_threads()
   tm.start_threads()

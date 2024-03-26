@@ -6,6 +6,7 @@
 *.hushlogin
 
 # Svelte
+build/
 node_modules
 /build
 .svelte-kit

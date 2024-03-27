@@ -28,7 +28,7 @@
 						});
 					}
 					writeStateChange(nextStatePending);
-					nextState(nextStatePending); //TODO: For easy testing before launch remove this line
+					// nextState(nextStatePending); //TODO: For easy testing before launch remove this line
 				}
 				nextStatePending = '';
 			}
@@ -345,12 +345,61 @@
 		});
 	}
 
-	async function writeCommandMessage(target: string, command: string) {
-		await PB.collection('CommandMessage').create({
+	async function writeLoadCellCommandMessage(target: string, command: string, weight: number) {
+		await PB.collection('LoadCellCommands').create({
 			target: target,
-			command: command
+			command: command,
+			weight: weight
 		});
 	}
+
+	function confirmRemoveWeight(loadcell: string) {
+		const modal: ModalSettings = {
+			type: 'confirm',
+			title: 'Remove All Weight',
+			response: (r: boolean) => {
+				if (r) {
+					writeLoadCellCommandMessage(loadcell, "CALIBRATE", 0);
+					confirmWeightPlaced(loadcell);
+				}
+			}
+		};
+		modalStore.trigger(modal);
+	}
+
+	function confirmWeightPlaced(loadcell: string) {
+		const modal: ModalSettings = {
+			type: 'confirm',
+			title: 'Place Weight on Load Cell',
+			response: async (r: boolean) => {
+				if (r) {
+					writeLoadCellCommandMessage(loadcell, "CALIBRATE", 0);
+					promptEnterWeight(loadcell);
+				}
+			}
+		};
+		modalStore.trigger(modal);
+	}
+
+	function promptEnterWeight(loadcell: string) {
+		const modal: ModalSettings = {
+			type: 'prompt',
+			title: 'Enter Weight (kg)',
+			valueAttr: { type: 'text', required: true },
+			response: async (r: string) => {
+				if (r) {
+					writeLoadCellCommandMessage(loadcell, "CALIBRATE", parseFloat(r));
+				}
+			}
+		};
+		modalStore.trigger(modal);
+	}
+
+	async function performTare(loadcell: string) {
+		writeLoadCellCommandMessage(loadcell, "TARE", 0);
+	}
+
+
 </script>
 
 <div class="container">
@@ -427,7 +476,7 @@
 			{pbv4_display}</SlideToggle
 		>
 	</div>
-
+	
 	<div class="sol5_slider">
 		<SlideToggle
 			name="sol5_slider"
@@ -494,7 +543,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$vent_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'DMB_OPEN_VENT', 'DMB_CLOSE_VENT')}
+			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_VENT', 'RSC_CLOSE_VENT')}
 		>
 			{vent_display}</SlideToggle
 		>
@@ -506,7 +555,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$drain_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'DMB_OPEN_DRAIN', 'DMB_CLOSE_DRAIN')}
+			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_DRAIN', 'RSC_CLOSE_DRAIN')}
 		>
 			{drain_display}</SlideToggle
 		>
@@ -555,6 +604,66 @@
 			>
 		</div>
 	{/if}
+
+	<div class="nos1_tare_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-secondary" 
+			on:click={() => performTare("NOS1")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="nos1_cal_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-error" 
+			on:click={() => confirmRemoveWeight("NOS1")}
+		>
+			CAL
+		</button>
+	</div>
+
+	<div class="nos2_tare_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-secondary" 
+			on:click={() => performTare("NOS2")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="nos2_cal_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-error" 
+			on:click={() => confirmRemoveWeight("NOS2")}
+		>
+			CAL
+		</button>
+	</div>
+
+	<div class="rail_tare_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-secondary" 
+			on:click={() => performTare("LaunchRail")}
+		>
+			TARE
+		</button>
+	</div>
+
+	<div class="rail_cal_button">
+		<button 
+			type="button" 
+			class="btn btn-sm variant-filled-error" 
+			on:click={() => confirmRemoveWeight("LaunchRail")}
+		>
+			CAL
+		</button>
+	</div>
 
 	<div class="rcu_tc1">
 		<p>{rcu_tc1_display}</p>
@@ -839,6 +948,50 @@
 		left: 12.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
+	}
+
+	.nos1_tare_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.176);
+		left: 11.1%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.nos1_cal_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.195);
+		left: 11.0%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.nos2_tare_button {
+		color: #04AA6D;
+		position: absolute;
+		top: calc(var(--container-width) * 0.246);
+		left: 11.1%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.nos2_cal_button {
+		color: #04AA6D;
+		position: absolute;
+		top: calc(var(--container-width) * 0.265);
+		left: 11.0%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+	
+	.rail_tare_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.078);
+		left: 69.1%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.rail_cal_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.097);
+		left: 69.1%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.rcu_tc1 {

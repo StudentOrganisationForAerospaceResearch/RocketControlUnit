@@ -28,7 +28,7 @@
 						});
 					}
 					writeStateChange(nextStatePending);
-					nextState(nextStatePending); //TODO: For easy testing before launch remove this line
+					// nextState(nextStatePending); //TODO: For easy testing before launch remove this line
 				}
 				nextStatePending = '';
 			}
@@ -345,20 +345,21 @@
 		});
 	}
 
-	async function writeCommandMessage(target: string, command: string) {
-		await PB.collection('CommandMessage').create({
+	async function writeLoadCellCommandMessage(target: string, command: string, weight: number) {
+		await PB.collection('LoadCellCommands').create({
 			target: target,
-			command: command
+			command: command,
+			weight: weight
 		});
 	}
 
-	function confirmTakeWeight(loadcell: string) {
+	function confirmRemoveWeight(loadcell: string) {
 		const modal: ModalSettings = {
 			type: 'confirm',
-			title: 'Take all weight',
+			title: 'Remove All Weight',
 			response: (r: boolean) => {
 				if (r) {
-					writeCommandMessage("NODE_RCU", "EnterCommandHere");
+					writeLoadCellCommandMessage(loadcell, "CALIBRATE", 0);
 					confirmWeightPlaced(loadcell);
 				}
 			}
@@ -369,10 +370,10 @@
 	function confirmWeightPlaced(loadcell: string) {
 		const modal: ModalSettings = {
 			type: 'confirm',
-			title: 'Place weight on loadcell',
+			title: 'Place Weight on Load Cell',
 			response: async (r: boolean) => {
 				if (r) {
-					writeCommandMessage("NODE_RCU", "EnterCommandHere");
+					writeLoadCellCommandMessage(loadcell, "CALIBRATE", 0);
 					promptEnterWeight(loadcell);
 				}
 			}
@@ -387,7 +388,7 @@
 			valueAttr: { type: 'text', required: true },
 			response: async (r: string) => {
 				if (r) {
-					writeCommandMessage("NODE_RCU", "EnterCommandHere");
+					writeLoadCellCommandMessage(loadcell, "CALIBRATE", parseFloat(r));
 				}
 			}
 		};
@@ -395,12 +396,7 @@
 	}
 
 	async function performTare(loadcell: string) {
-		// Create a change on the 'CommandMessage' collection
-		await PB.collection('CommandMessage').create({
-			// Write a new record with the tare command
-			target: 'NODE_RCU',
-			command: 'RCU_TARE'
-		});
+		writeLoadCellCommandMessage(loadcell, "TARE", 0);
 	}
 
 
@@ -613,7 +609,7 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("nos1")}
+			on:click={() => performTare("NOS1")}
 		>
 			TARE
 		</button>
@@ -623,7 +619,7 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
-			on:click={() => confirmTakeWeight("nos1")}
+			on:click={() => confirmRemoveWeight("NOS1")}
 		>
 			CAL
 		</button>
@@ -633,7 +629,7 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("nos2")}
+			on:click={() => performTare("NOS2")}
 		>
 			TARE
 		</button>
@@ -643,7 +639,7 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
-			on:click={() => confirmTakeWeight("nos2")}
+			on:click={() => confirmRemoveWeight("NOS2")}
 		>
 			CAL
 		</button>
@@ -653,7 +649,7 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("rail")}
+			on:click={() => performTare("LaunchRail")}
 		>
 			TARE
 		</button>
@@ -663,7 +659,7 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
-			on:click={() => confirmTakeWeight("rail")}
+			on:click={() => confirmRemoveWeight("LaunchRail")}
 		>
 			CAL
 		</button>

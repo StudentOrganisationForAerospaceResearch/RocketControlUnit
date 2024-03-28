@@ -334,6 +334,8 @@
 		openCommand: string,
 		closeCommand: string
 	) {
+		e.preventDefault();
+		
 		// Determine the command based on the current value of the slider
 		const command = e.target.checked ? openCommand : closeCommand;
 
@@ -411,7 +413,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$ac1_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}
 		>
 			{ac1_display}</SlideToggle
 		>
@@ -423,7 +425,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$ac2_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC2', 'RCU_CLOSE_AC2')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC2', 'RCU_CLOSE_AC2')}
 		>
 			{ac2_display}</SlideToggle
 		>
@@ -435,7 +437,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv1_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV1', 'RCU_CLOSE_PBV1')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV1', 'RCU_CLOSE_PBV1')}
 		>
 			{pbv1_display}</SlideToggle
 		>
@@ -447,7 +449,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv2_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV2', 'RCU_CLOSE_PBV2')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV2', 'RCU_CLOSE_PBV2')}
 		>
 			{pbv2_display}</SlideToggle
 		>
@@ -459,7 +461,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv3_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV3', 'RCU_CLOSE_PBV3')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV3', 'RCU_CLOSE_PBV3')}
 		>
 			{pbv3_display}</SlideToggle
 		>
@@ -471,7 +473,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$pbv4_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV4', 'RCU_CLOSE_PBV4')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV4', 'RCU_CLOSE_PBV4')}
 		>
 			{pbv4_display}</SlideToggle
 		>
@@ -483,7 +485,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol5_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL5', 'RCU_CLOSE_SOL5')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL5', 'RCU_CLOSE_SOL5')}
 		>
 			{sol5_display}</SlideToggle
 		>
@@ -495,7 +497,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol6_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL6', 'RCU_CLOSE_SOL6')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL6', 'RCU_CLOSE_SOL6')}
 		>
 			{sol6_display}</SlideToggle
 		>
@@ -507,7 +509,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol7_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL7', 'RCU_CLOSE_SOL7')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL7', 'RCU_CLOSE_SOL7')}
 		>
 			{sol7_display}</SlideToggle
 		>
@@ -519,7 +521,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol8a_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8A', 'RCU_CLOSE_SOL8A')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8A', 'RCU_CLOSE_SOL8A')}
 		>
 			{sol8a_display}</SlideToggle
 		>
@@ -531,7 +533,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol8b_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8B', 'RCU_CLOSE_SOL8B')}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8B', 'RCU_CLOSE_SOL8B')}
 		>
 			{sol8b_display}</SlideToggle
 		>
@@ -543,7 +545,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$vent_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_VENT', 'RSC_CLOSE_VENT')}
+			on:click={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_VENT', 'RSC_CLOSE_VENT')}
 		>
 			{vent_display}</SlideToggle
 		>
@@ -555,7 +557,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$drain_open}
-			on:change={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_DRAIN', 'RSC_CLOSE_DRAIN')}
+			on:click={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_DRAIN', 'RSC_CLOSE_DRAIN')}
 		>
 			{drain_display}</SlideToggle
 		>
@@ -567,7 +569,7 @@
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$power_source}
-			on:change={(e) =>
+			on:click={(e) =>
 				handleSliderChange(
 					e,
 					'NODE_DMB',
@@ -586,7 +588,7 @@
 				active="bg-primary-500 dark:bg-primary-500"
 				size="sm"
 				bind:checked={$box1_on}
-				on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX1', 'RCU_IGNITE_BOX1')}
+				on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX1', 'RCU_IGNITE_BOX1')}
 			>
 				{box1_display}</SlideToggle
 			>
@@ -598,7 +600,7 @@
 				active="bg-primary-500 dark:bg-primary-500"
 				size="sm"
 				bind:checked={$box2_on}
-				on:change={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX2', 'RCU_IGNITE_BOX2')}
+				on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX2', 'RCU_IGNITE_BOX2')}
 			>
 				{box2_display}</SlideToggle
 			>

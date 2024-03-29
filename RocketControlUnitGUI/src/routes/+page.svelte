@@ -361,6 +361,7 @@
 			title: 'Remove All Weight',
 			response: (r: boolean) => {
 				if (r) {
+					writeLoadCellCommandMessage(loadcell, "CANCEL", 0);
 					writeLoadCellCommandMessage(loadcell, "CALIBRATE", 0);
 					promptEnterNumberOfWeights(loadcell);
 				} else {

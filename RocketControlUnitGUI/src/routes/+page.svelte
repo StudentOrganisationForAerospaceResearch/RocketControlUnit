@@ -419,6 +419,12 @@
 		writeLoadCellCommandMessage(loadcell, "TARE", 0);
 	}
 
+	// NOTE: This seems odd but since the event will switch these MUST be swapped
+	// Open to alternate ways of doing it. Everything I tried didn't work.
+	async function handleIgnition(e: MouseEvent) {
+		await handleSliderChange(e, 'NODE_RCU', 'RCU_IGNITE_PAD_BOX1', 'RCU_KILL_BOX1');
+		await handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX2', 'RCU_IGNITE_PAD_BOX2');
+	}
 
 </script>
 
@@ -606,7 +612,7 @@
 				active="bg-primary-500 dark:bg-primary-500"
 				size="sm"
 				bind:checked={$box1_on}
-				on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX1', 'RCU_IGNITE_BOX1')}
+				on:click={handleIgnition}
 			>
 				{box1_display}</SlideToggle
 			>
@@ -618,7 +624,7 @@
 				active="bg-primary-500 dark:bg-primary-500"
 				size="sm"
 				bind:checked={$box2_on}
-				on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX2', 'RCU_IGNITE_BOX2')}
+				on:click={handleIgnition}
 			>
 				{box2_display}</SlideToggle
 			>

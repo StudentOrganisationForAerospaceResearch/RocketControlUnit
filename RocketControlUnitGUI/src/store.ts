@@ -14,4 +14,4 @@ const states = {
     RS_TEST: 'Test'
 };
 
-export const currentState = writable(states.RS_PRELAUNCH);
+export const currentState = writable(states.RS_ABORT);

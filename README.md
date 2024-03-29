@@ -165,6 +165,12 @@ Python dependencies are inside the requrements.txt
     npm run preview
     ```
 
+  > **_NOTE:_**  For testing state transition locally you must uncomment this line in src/routes/+page.svelte
+
+  ```js
+  nextState(nextStatePending);
+  ```
+
 ## TODO
 
 - General

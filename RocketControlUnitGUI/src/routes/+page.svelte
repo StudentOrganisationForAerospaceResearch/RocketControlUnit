@@ -28,7 +28,7 @@
 						});
 					}
 					writeStateChange(nextStatePending);
-					// nextState(nextStatePending); //TODO: For easy testing before launch remove this line
+					// nextState(nextStatePending); // Uncomment this line to test state transition
 				}
 				nextStatePending = '';
 			}

@@ -204,7 +204,7 @@ Python dependencies are inside the requrements.txt
   - [ ] Add Fluid Flow Animation
   - [ ] Add Authentication
   - [ ] Add Test State
-  - [ ] Tie Ignitors
+  - [x] Tie Ignitors
   - [ ] Verify Correct State on Refresh
   - [x] Figure Out Deployment
 - [x] Integration Test

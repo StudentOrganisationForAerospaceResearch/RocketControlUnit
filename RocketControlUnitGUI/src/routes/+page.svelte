@@ -361,7 +361,6 @@
 			title: 'Remove All Weight',
 			response: (r: boolean) => {
 				if (r) {
-					writeLoadCellCommandMessage(loadcell, "CANCEL", 0);
 					writeLoadCellCommandMessage(loadcell, "CALIBRATE", 0);
 					promptEnterNumberOfWeights(loadcell);
 				} else {
@@ -646,7 +645,9 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
-			on:click={() => confirmRemoveWeight("NOS1")}
+			on:click={() => {
+				writeLoadCellCommandMessage("NOS1", "CANCEL", 0);
+				confirmRemoveWeight("NOS1");}}
 		>
 			CAL
 		</button>
@@ -666,7 +667,9 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
-			on:click={() => confirmRemoveWeight("NOS2")}
+			on:click={() => {
+				writeLoadCellCommandMessage("NOS2", "CANCEL", 0);	
+				confirmRemoveWeight("NOS2");}}
 		>
 			CAL
 		</button>
@@ -686,7 +689,9 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
-			on:click={() => confirmRemoveWeight("LaunchRail")}
+			on:click={() => { 
+				writeLoadCellCommandMessage("LaunchRail", "CANCEL", 0);
+				confirmRemoveWeight("LaunchRail");}}
 		>
 			CAL
 		</button>

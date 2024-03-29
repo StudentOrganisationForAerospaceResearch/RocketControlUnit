@@ -398,8 +398,13 @@
 			valueAttr: { type: 'text', required: true },
 			response: async (r: any) => {
 				if (r) {
-					// The modal was confirmed, send the calibrate command
-					writeLoadCellCommandMessage(loadcell, "CALIBRATE", parseFloat(r));
+					// If this is the last weight, send the finish command
+					if (numberOfWeights === 1) {
+						writeLoadCellCommandMessage(loadcell, "FINISH", parseFloat(r));
+					} else {
+						// The modal was confirmed, send the calibrate command
+						writeLoadCellCommandMessage(loadcell, "CALIBRATE", parseFloat(r));
+					}
 
 					// Decrease the number of weights and open the modal again if there are more weights to enter
 					numberOfWeights--;

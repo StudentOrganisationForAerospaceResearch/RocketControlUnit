@@ -335,7 +335,7 @@
 		closeCommand: string
 	) {
 		e.preventDefault();
-		
+
 		// Determine the command based on the current value of the slider
 		const command = e.target.checked ? openCommand : closeCommand;
 
@@ -362,21 +362,29 @@
 			response: (r: boolean) => {
 				if (r) {
 					writeLoadCellCommandMessage(loadcell, "CALIBRATE", 0);
-					confirmWeightPlaced(loadcell);
+					promptEnterNumberOfWeights(loadcell);
+				} else {
+					writeLoadCellCommandMessage(loadcell, "CANCEL", 0);
 				}
 			}
 		};
 		modalStore.trigger(modal);
 	}
 
-	function confirmWeightPlaced(loadcell: string) {
+	let numberOfWeights = 0;
+
+	function promptEnterNumberOfWeights(loadcell: string) {
 		const modal: ModalSettings = {
-			type: 'confirm',
-			title: 'Place Weight on Load Cell',
-			response: async (r: boolean) => {
+			type: 'prompt',
+			title: 'Enter number of weights',
+			valueAttr: { type: 'number', required: true },
+			response: async (r: any) => {
 				if (r) {
-					writeLoadCellCommandMessage(loadcell, "CALIBRATE", 0);
-					promptEnterWeight(loadcell);
+					// The modal was confirmed, set the number of weights
+					numberOfWeights = parseInt(r);
+					if (numberOfWeights > 0) {
+						promptEnterWeight(loadcell);
+					}
 				}
 			}
 		};
@@ -386,11 +394,21 @@
 	function promptEnterWeight(loadcell: string) {
 		const modal: ModalSettings = {
 			type: 'prompt',
-			title: 'Enter Weight (kg)',
+			title: `Enter Weight (kg) (${numberOfWeights} remaining)`,
 			valueAttr: { type: 'text', required: true },
-			response: async (r: string) => {
+			response: async (r: any) => {
 				if (r) {
+					// The modal was confirmed, send the calibrate command
 					writeLoadCellCommandMessage(loadcell, "CALIBRATE", parseFloat(r));
+
+					// Decrease the number of weights and open the modal again if there are more weights to enter
+					numberOfWeights--;
+					if (numberOfWeights > 0) {
+						promptEnterWeight(loadcell);
+					}
+				} else {
+					// The modal was cancelled, send a cancel command
+					writeLoadCellCommandMessage(loadcell, "CANCEL", 0);
 				}
 			}
 		};

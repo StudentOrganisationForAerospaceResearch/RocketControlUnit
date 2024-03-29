@@ -347,11 +347,11 @@
 		});
 	}
 
-	async function writeLoadCellCommandMessage(target: string, command: string, weight: number) {
+	async function writeLoadCellCommandMessage(target: string, command: string, weight_kg: number) {
 		await PB.collection('LoadCellCommands').create({
 			target: target,
 			command: command,
-			weight: weight
+			weight: weight_kg
 		});
 	}
 

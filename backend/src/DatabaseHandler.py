@@ -1,4 +1,5 @@
 # General imports =================================================================================
+import os
 import json
 import multiprocessing as mp
 from pocketbase import Client
@@ -62,19 +63,28 @@ class DatabaseHandler():
         """
         # Extract the table name from the JSON data
         json_data = json.loads(json_data)
+        if len(list(json_data.keys())) < 3:
+            logger.warning(f"Received, poorly formed json: {json_data}")
+            return
+
         table_name = list(json_data.keys())[2]
 
         logger.info(f"Adding an entry to the {table_name} table")
-        logger.trace(f"Entry: {json_data[table_name]}")
+        logger.info(f"Entry: {json_data[table_name]}")
 
         # Push the JSON data to PocketBase using the correct schema
-        DatabaseHandler.client.collection(table_name).create(json_data[table_name])
+        try:
+            DatabaseHandler.client.collection(table_name).create(json_data[table_name])
+        except Exception:
+            logger.error(f"Failed to create entry in {table_name}: {json_data}")
 
 # Procedures ======================================================================================
 def database_thread(thread_name: str, db_workq: mp.Queue, message_handler_workq: mp.Queue):
     """
     The main loop of the database handler. It subscribes to the CommandMessage collection
     """
+    # This log line should be removed once the pi core issue is solved
+    logger.info(f"Database process: {os.getpid()}")
 
     DatabaseHandler(thread_name, db_workq, message_handler_workq)
 

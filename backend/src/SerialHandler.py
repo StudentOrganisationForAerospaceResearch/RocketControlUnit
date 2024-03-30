@@ -1,4 +1,5 @@
 # General imports =================================================================================
+import os
 import enum
 import multiprocessing as mp
 import threading
@@ -22,7 +23,7 @@ from src.Utils import Utils as utl
 # Constants ========================================================================================
 MIN_SERIAL_MESSAGE_LENGTH = 6
 
-UART_SERIAL_PORT = "/dev/ttyS0"
+UART_SERIAL_PORT = "/dev/ttyAMA0"
 RADIO_SERIAL_PORT = "/dev/ttyUSB0"
 
 # Data Classes =====================================================================================
@@ -69,7 +70,10 @@ class SerialHandler():
         """
         Get the serial message from the serial port.
         """
-        return self.serial_port.read_until(expected = b'\x00', size = None)
+        try:
+            return self.serial_port.read_until(expected = b'\x00', size = None)
+        except Exception:
+            return None
 
     def handle_serial_message(self):
         """
@@ -81,6 +85,9 @@ class SerialHandler():
         """
         # Read the serial port
         message = self._get_serial_message()
+        
+        if message == None:
+            return
 
         # Check message length
         if len(message) < MIN_SERIAL_MESSAGE_LENGTH:
@@ -91,7 +98,7 @@ class SerialHandler():
         try:
             msgId, data = Codec.Decode(message[:-1], len(message) - 1)
         except cobs.DecodeError:
-            logger.warning("Invalid cobs message")
+            logger.warning(f"Invalid cobs message from {self.port}")
             return
         
         # Process message according to ID
@@ -100,7 +107,7 @@ class SerialHandler():
         elif msgId == ProtoCore.MessageID.MSG_CONTROL:
             self.process_control_message(data)
         else:
-            logger.warning("Received invalid MessageID")
+            logger.warning(f"Received invalid MessageID from {self.port}")
 
     def process_telemetry_message(self, data):
         """
@@ -176,7 +183,12 @@ class SerialHandler():
                 True if the message was successfully sent, False otherwise.
         """
 
-        command_message = ProtobufParser.create_command_proto(command, target, command_param, source_sequence_number)
+        try:
+            command_message = ProtobufParser.create_command_proto(command, target, command_param, source_sequence_number)
+        except KeyError:
+            logger.error(f"Attempting to send invalid command {command}")
+            return False
+
 
         if command_message == None:
             logger.warning(f"Cannot send command {command} to {target}")
@@ -201,7 +213,7 @@ def serial_rx_thread(ser_han: SerialHandler):
     """
     Thread function for the incoming serial data listening.
     """
-    while (ser_han.kill_rx):
+    while not (ser_han.kill_rx):
         ser_han.handle_serial_message()
         pass
 
@@ -248,6 +260,8 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     elif device == SerialDevices.RADIO:
         port = RADIO_SERIAL_PORT
     
+    # This log line should be removed once the pi core issue is solved
+    logger.info(f"{device.name} process: {os.getpid()}")
     serial_workq = thread_workq
     ser_han = SerialHandler(thread_name, port, baudrate, message_handler_workq)
     if ser_han.serial_port == None:

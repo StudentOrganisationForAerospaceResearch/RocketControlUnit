@@ -24,7 +24,7 @@ class DatabaseHandler():
         DatabaseHandler.thread_workq = thread_workq
         DatabaseHandler.send_message_workq = message_handler_workq
         DatabaseHandler.thread_name = thread_name
-        DatabaseHandler.client = Client('http://127.0.0.1:8090')
+        DatabaseHandler.client = Client('http://192.168.0.194:8090')
         DatabaseHandler.client.collection('CommandMessage').subscribe(DatabaseHandler._handle_command_callback)
         logger.success(f"Successfully started {thread_name} thread")
 

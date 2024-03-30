@@ -10,7 +10,7 @@
 
 	const modalStore = getModalStore();
 
-	const PB = new PocketBase('http://127.0.0.1:8090');
+	const PB = new PocketBase('http://192.168.0.194:8090');
 
 	let nextStatePending: string = '';
 	function confirmStateChange(state: string): void {

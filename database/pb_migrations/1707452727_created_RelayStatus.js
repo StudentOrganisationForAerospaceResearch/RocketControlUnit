@@ -51,7 +51,7 @@ migrate((db) => {
       {
         "system": false,
         "id": "vwso5m6b",
-        "name": "pbv3_oepn",
+        "name": "pbv3_open",
         "type": "bool",
         "required": false,
         "presentable": false,

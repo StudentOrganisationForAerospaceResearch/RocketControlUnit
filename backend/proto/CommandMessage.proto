@@ -113,8 +113,10 @@ message PbbCommand {
     Command command_enum = 1;
 }
 
+// Not used in GUI V2
 message SobCommand {
     enum Command {
+        
         SOB_NONE = 0;
 
         SOB_SLOW_SAMPLE_IR = 1;
@@ -134,8 +136,8 @@ message RcuCommand {
     enum Command {
         RCU_NONE = 0;
 
-        RCU_OPEN_AC1 = 3;   // Unused
-        RCU_CLOSE_AC1 = 4;  // Unused
+        RCU_OPEN_AC1 = 3;
+        RCU_CLOSE_AC1 = 4;
         RCU_OPEN_AC2 = 5;   // Unused
         RCU_CLOSE_AC2 = 6;  // Unused
 
@@ -146,16 +148,10 @@ message RcuCommand {
         RCU_CLOSE_PBV2 = 10;
         RCU_OPEN_PBV3 = 11;
         RCU_CLOSE_PBV3 = 12;
+        RCU_OPEN_PBV4 = 13;
+        RCU_CLOSE_PBV4 = 14;
 
         // RCU Solenoid Controls
-        RCU_OPEN_SOL1 = 13;
-        RCU_CLOSE_SOL1 = 14;
-        RCU_OPEN_SOL2 = 15;
-        RCU_CLOSE_SOL2 = 16;
-        RCU_OPEN_SOL3 = 17;
-        RCU_CLOSE_SOL3 = 18;
-        RCU_OPEN_SOL4 = 19;
-        RCU_CLOSE_SOL4 = 20;
         RCU_OPEN_SOL5 = 21;
         RCU_CLOSE_SOL5 = 22;
         RCU_OPEN_SOL6 = 23;
@@ -167,7 +163,7 @@ message RcuCommand {
         RCU_OPEN_SOL8B = 29;
         RCU_CLOSE_SOL8B = 30;
 
-        // RCU LOAD CELL Control
+        // RCU LOAD CELL Control (Not used in GUI V2)
         RCU_TARE_NOS1_LOAD_CELL = 33;
         RCU_TARE_NOS2_LOAD_CELL = 34;
         RCU_CALIBRATE_NOS1_LOAD_CELL = 35;

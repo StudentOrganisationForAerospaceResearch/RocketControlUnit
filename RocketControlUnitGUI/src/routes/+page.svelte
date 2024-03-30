@@ -22,9 +22,10 @@
 			response: (r: boolean) => {
 				if (r) {
 					async function writeStateChange(state: string) {
+						// state string : contains the state to transition to
 						await PB.collection('CommandMessage').create({
 							target: 'NODE_DMB',
-							command: stateCommands[state]
+							command: stateToCommand[stateCommands[state]]
 						});
 					}
 					writeStateChange(nextStatePending);
@@ -47,6 +48,19 @@
 		RS_RECOVERY: 'Recovery',
 		RS_ABORT: 'Abort',
 		RS_TEST: 'Test'
+	};
+
+	const stateToCommand: { [key: string]: string } = {
+		RS_ABORT: 'RSC_ANY_TO_ABORT',
+		RS_FILL: "RSC_GOTO_FILL",
+		RS_ARM: "RSC_GOTO_ARM",
+		RS_IGNITION: "RSC_GOTO_IGNITION",
+		RS_LAUNCH: "RSC_GOTO_LAUNCH",
+		RS_BURN: "RSC_GOTO_BURN",
+		RS_COAST: "RSC_GOTO_COAST",
+		RS_DESCENT: "RSC_GOTO_DESCENT",
+		RS_RECOVERY: "RSC_GOTO_RECOVERY",
+		RS_TEST: "RSC_GOTO_TEST"
 	};
 
 	// Define a type for the keys of the `states` object

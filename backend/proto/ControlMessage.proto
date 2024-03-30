@@ -82,6 +82,8 @@ message SystemState {
 
         // These are used to signal current operation status
         SYS_NORMAL_OPERATION = 4;       // System is in normal operation
+
+        // SoarProto v1.3.2
         SYS_HEARTBEAT_LOSS_HALF_WARNING = 5; // The system has lost heartbeat and 1/2 of the time to abort has passed
         SYS_HEARTBEAT_LOST_ABORTING = 6;     // The system has lost heartbeat and is aborting
     }

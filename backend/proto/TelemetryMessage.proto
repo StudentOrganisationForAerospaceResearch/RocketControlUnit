@@ -87,7 +87,7 @@ message Battery{
     int32 voltage = 2; // voltage of battery
 }
 
-message Flash{
+message Flash {
     uint32 sector_address = 1;
     uint32 logging_rate = 2;
 }
@@ -110,7 +110,7 @@ message PbbTemperature {
 
 message CombustionControlStatus {
     bool vent_open = 1;
-    bool drain_open = 2; // Currently not used
+    bool drain_open = 2;
     bool mev_open = 3; 
 }
 
@@ -135,18 +135,15 @@ message NosLoadCell {
 
 message RelayStatus {
 
-    bool ac1_open = 1; // air conditioner state
+    bool ac1_open = 1; // air conditioner states
     bool ac2_open = 2;
 
-    bool pbv1_open = 3; //pneumatic ball valev state
+    bool pbv1_open = 3; //pneumatic ball valve states
     bool pbv2_open = 4;
     bool pbv3_open = 5;
+    bool pbv4_open = 6;
 
-    bool sol1_open = 6; //solenoid states
-    bool sol2_open = 7;
-    bool sol3_open = 8;
-    bool sol4_open = 9;
-    bool sol5_open = 10;
+    bool sol5_open = 10; // solenoid states
     bool sol6_open = 11;
     bool sol7_open = 12;
     bool sol8a_open = 13;

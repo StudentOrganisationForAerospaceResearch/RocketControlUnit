@@ -319,7 +319,7 @@
 			sob_tc2_temperature.set(e.record.tc2_temperature);
 		});
 
-		// Subscribe to changes in the 'SystemState' collection
+		// Subscribe to changes in the 'sys_state' collection
 		PB.collection('SystemState').subscribe('*', function (e) {
 			// Update the SystemState data store whenever a change is detected
 

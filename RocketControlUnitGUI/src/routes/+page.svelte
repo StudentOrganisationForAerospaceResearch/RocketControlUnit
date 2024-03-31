@@ -323,14 +323,14 @@
 		// Subscribe to changes in the 'PbbPressure' collection
 		PB.collection('PbbPressure').subscribe('*', function (e) {
 			// Update the PbbPressure data store whenever a change is detected
-			ib_pressure.set(e.record.ib_pressure);
-			lower_pv_pressure.set(e.record.lower_pv_pressure);
+			ib_pressure.set(e.record.ib_pressure/1000);
+			lower_pv_pressure.set(e.record.lower_pv_pressure/1000);
 		});
 
 		// Subscribe to changes in the 'PbbTemperature' collection
 		PB.collection('PbbTemperature').subscribe('*', function (e) {
 			// Update the PbbTemperature data store whenever a change is detected
-			pv_temperature.set(e.record.ib_temperature);
+			pv_temperature.set(e.record.ib_temperature/100);
 		});
 
 		// Subscribe to changes in the 'RcuPressure' collection

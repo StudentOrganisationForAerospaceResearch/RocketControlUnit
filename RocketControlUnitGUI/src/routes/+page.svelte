@@ -36,6 +36,21 @@
 		};
 		modalStore.trigger(modal);
 	}
+
+	function instantStateChange(state: string): void {
+		nextStatePending = state;
+		async function writeStateChange(state: string) {
+			// state string : contains the state to transition to
+			await PB.collection('CommandMessage').create({
+				target: 'NODE_DMB',
+				command: stateToCommand[stateCommands[state]]
+			});
+		}
+		writeStateChange(nextStatePending);
+		nextStatePending = '';
+		modalStore.trigger(modal);
+	}
+
 	const states = {
 		RS_PRELAUNCH: 'Pre-Launch',
 		RS_FILL: 'Fill',
@@ -52,6 +67,7 @@
 
 	const stateToCommand: { [key: string]: string } = {
 		RS_ABORT: 'RSC_ANY_TO_ABORT',
+		RS_PRELAUNCH: 'RSC_GOTO_PRELAUNCH',
 		RS_FILL: "RSC_GOTO_FILL",
 		RS_ARM: "RSC_GOTO_ARM",
 		RS_IGNITION: "RSC_GOTO_IGNITION",
@@ -334,11 +350,11 @@
 		});
 
 		// Subscribe to changes in the 'sys_state' collection
-		PB.collection('SystemState').subscribe('*', function (e) {
+		PB.collection('sys_state').subscribe('*', function (e) {
 			// Update the SystemState data store whenever a change is detected
 
 			const state = e.record.rocket_state;
-			nextState(getStateName(state));
+			nextState(state);
 		});
 	});
 
@@ -793,7 +809,7 @@
 	</div>
 
 	<!-- Render different buttons based on the current state -->
-	{#if $currentState === states.RS_PRELAUNCH}
+	{#if $currentState == "RS_PRELAUNCH"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.51);"
@@ -802,9 +818,9 @@
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.55);"
-			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
+			on:click={() => instantStateChange(states.RS_ABORT)}>Go to Abort</button
 		>
-	{:else if $currentState === states.RS_FILL}
+	{:else if $currentState == "RS_FILL"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.51);"
@@ -818,9 +834,9 @@
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.55);"
-			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
+			on:click={() => instantStateChange(states.RS_ABORT)}>Go to Abort</button
 		>
-	{:else if $currentState === states.RS_ARM}
+	{:else if $currentState == "RS_ARM"}
 		<button
 			class="btn variant-filled-warning next-state-btn"
 			style="top: calc(var(--container-width) * 0.51);"
@@ -829,26 +845,26 @@
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.55);"
-			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
+			on:click={() => instantStateChange(states.RS_ABORT)}>Go to Abort</button
 		>
-	{:else if $currentState === states.RS_IGNITION}
+	{:else if $currentState == "RS_IGNITION"}
 		<button
 			class="btn variant-filled-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.51);"
-			on:click={() => nextState(states.RS_LAUNCH)}>LAUNCH</button
+			on:click={() => nextState("RS_LAUNCH")}>LAUNCH</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.55);"
-			on:click={() => nextState(states.RS_ABORT)}>Go to Abort</button
+			on:click={() => instantStateChange(states.RS_ABORT)}>Go to Abort</button
 		>
-	{:else if $currentState === states.RS_ABORT}
+	{:else if $currentState == "RS_ABORT"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.55);"
 			on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
 		>
-	{:else if $currentState === states.RS_LAUNCH}
+	{:else if $currentState == "RS_LAUNCH"}
 		<h1>nice rocket bro</h1>
 	{/if}
 </div>

@@ -330,7 +330,7 @@
 		// Subscribe to changes in the 'PbbTemperature' collection
 		PB.collection('PbbTemperature').subscribe('*', function (e) {
 			// Update the PbbTemperature data store whenever a change is detected
-			pv_temperature.set(e.record.pv_temperature);
+			pv_temperature.set(e.record.ib_temperature);
 		});
 
 		// Subscribe to changes in the 'RcuPressure' collection

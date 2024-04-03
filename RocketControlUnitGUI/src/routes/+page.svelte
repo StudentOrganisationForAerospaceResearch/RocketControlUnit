@@ -130,11 +130,16 @@
 		const handleResize = () => {
 			if (containerElement) {
 				let containerWidth = containerElement.offsetWidth;
+				let containerHeight = containerElement.offsetHeight;
+				let aspectRatio = (containerWidth / containerHeight);
+
 				document.documentElement.style.setProperty('--container-width', `${containerWidth}px`);
+				document.documentElement.style.setProperty('--container-height', `${containerHeight}px`);
 				document.documentElement.style.setProperty(
 					'--container-width-unitless',
 					`${containerWidth}`
 				);
+				document.documentElement.style.setProperty('--aspect-ratio', `${aspectRatio}%`);
 			} else {
 				console.error('No element with class "container" found');
 			}
@@ -352,7 +357,6 @@
 		// Subscribe to changes in the 'sys_state' collection
 		PB.collection('sys_state').subscribe('*', function (e) {
 			// Update the SystemState data store whenever a change is detected
-
 			const state = e.record.rocket_state;
 			nextState(state);
 		});
@@ -1095,7 +1099,7 @@
 
 	.pt1_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.117);
+		top: calc(var(--aspect-ratio) * 11.75);
 		left: 14.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;

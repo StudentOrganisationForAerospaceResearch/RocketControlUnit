@@ -18,52 +18,35 @@
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: 'Please Confirm',
-			body: `Are you sure you wish to proceed to ${state}?`,
+			body: `Are you sure you wish to proceed to ${commandToState[state]}?`,
 			response: (r: boolean) => {
 				if (r) {
 					async function writeStateChange(state: string) {
-						// state string : contains the state to transition to
 						await PB.collection('CommandMessage').create({
 							target: 'NODE_DMB',
-							command: stateToCommand[stateCommands[state]]
+							command: state
 						});
 					}
 					writeStateChange(nextStatePending);
-					// nextState(nextStatePending); // Uncomment this line to test state transition
 				}
 				nextStatePending = '';
 			}
 		};
 		modalStore.trigger(modal);
 	}
-
+	
 	function instantStateChange(state: string): void {
 		nextStatePending = state;
 		async function writeStateChange(state: string) {
 			// state string : contains the state to transition to
 			await PB.collection('CommandMessage').create({
 				target: 'NODE_DMB',
-				command: stateToCommand[stateCommands[state]]
+				command: state
 			});
 		}
 		writeStateChange(nextStatePending);
 		nextStatePending = '';
-		modalStore.trigger(modal);
 	}
-
-	const states = {
-		RS_PRELAUNCH: 'Pre-Launch',
-		RS_FILL: 'Fill',
-		RS_ARM: 'Arm',
-		RS_IGNITION: 'Ignition',
-		RS_LAUNCH: 'Launch',
-		RS_BURN: 'Burn',
-		RS_COAST: 'Coast',
-		RS_DESCENT: 'Descent',
-		RS_RECOVERY: 'Recovery',
-		RS_ABORT: 'Abort',
-		RS_TEST: 'Test'
-	};
 
 	const stateToCommand: { [key: string]: string } = {
 		RS_ABORT: 'RSC_ANY_TO_ABORT',
@@ -79,37 +62,9 @@
 		RS_TEST: "RSC_GOTO_TEST"
 	};
 
-	// Define a type for the keys of the `states` object
-	type StateKey =
-		| 'RS_PRELAUNCH'
-		| 'RS_FILL'
-		| 'RS_ARM'
-		| 'RS_IGNITION'
-		| 'RS_LAUNCH'
-		| 'RS_BURN'
-		| 'RS_COAST'
-		| 'RS_DESCENT'
-		| 'RS_RECOVERY'
-		| 'RS_ABORT'
-		| 'RS_TEST';
-
-	// Use the `StateKey` type to index the `states` object
-	function getStateName(key: StateKey) {
-		return states[key];
-	}
-
-	// Create a reverse mapping of states
-	const stateCommands: Record<string, string> = Object.entries(states).reduce(
-		(acc: Record<string, string>, [key, value]) => {
-			acc[value] = key;
-			return acc;
-		},
-		{}
-	);
-
-	function nextState(state: string) {
-		currentState.set(state);
-	}
+	const commandToState = Object.fromEntries(
+    	Object.entries(stateToCommand).map(([key, value]) => [value, key])
+  	);
 
     let BackgroundComponent: any;
 
@@ -131,7 +86,6 @@
 			if (containerElement) {
 				let containerWidth = containerElement.offsetWidth;
 				let containerHeight = containerElement.offsetHeight;
-				let aspectRatio = (containerWidth / containerHeight);
 
 				document.documentElement.style.setProperty('--container-width', `${containerWidth}px`);
 				document.documentElement.style.setProperty('--container-height', `${containerHeight}px`);
@@ -139,7 +93,6 @@
 					'--container-width-unitless',
 					`${containerWidth}`
 				);
-				document.documentElement.style.setProperty('--aspect-ratio', `${aspectRatio}%`);
 			} else {
 				console.error('No element with class "container" found');
 			}
@@ -357,8 +310,10 @@
 		// Subscribe to changes in the 'sys_state' collection
 		PB.collection('sys_state').subscribe('*', function (e) {
 			// Update the SystemState data store whenever a change is detected
-			const state = e.record.rocket_state;
-			nextState(state);
+			console.log(e.record.rocket_state);
+			currentState.set(e.record.rocket_state);
+			console.log($currentState);
+
 		});
 	});
 
@@ -644,7 +599,7 @@
 		>
 	</div>
 
-	{#if $currentState === states.RS_IGNITION}
+	{#if $currentState === "RS_IGNITION"}
 		<div class="box1_slider">
 			<SlideToggle
 				name="box1_slider"
@@ -817,59 +772,82 @@
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.51);"
-			on:click={() => confirmStateChange(states.RS_FILL)}>Go to Fill</button
+			on:click={() => confirmStateChange("RSC_GOTO_FILL")}>Go to Fill</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.55);"
-			on:click={() => instantStateChange(states.RS_ABORT)}>Go to Abort</button
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
 		>
 	{:else if $currentState == "RS_FILL"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.51);"
-			on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
+			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
+		>
+		<button
+		class="btn variant-filled-warning arm_button"
+		style="top: calc(var(--container-width) * 0.47);"
+		on:click={() => instantStateChange("RSC_ARM_CONFIRM_1")}>ARM CONFIRM 1</button
+		>
+		<button
+		class="btn variant-filled-warning arm_button"
+		style="top: calc(var(--container-width) * 0.51);"
+		on:click={() => instantStateChange("RSC_ARM_CONFIRM_2")}>ARM CONFIRM 2</button
 		>
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.47);"
-			on:click={() => confirmStateChange(states.RS_ARM)}>Go to Arm</button
+			on:click={() => confirmStateChange("RSC_GOTO_ARM")}>Go to Arm</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.55);"
-			on:click={() => instantStateChange(states.RS_ABORT)}>Go to Abort</button
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
 		>
 	{:else if $currentState == "RS_ARM"}
 		<button
+		class="btn variant-filled-secondary next-state-btn"
+		style="top: calc(var(--container-width) * 0.51);"
+		on:click={() => confirmStateChange("RSC_GOTO_FILL")}>Go to Fill</button
+		>
+		<button
 			class="btn variant-filled-warning next-state-btn"
-			style="top: calc(var(--container-width) * 0.51);"
-			on:click={() => confirmStateChange(states.RS_IGNITION)}>Go to Ignition</button
+			style="top: calc(var(--container-width) * 0.47);"
+			on:click={() => confirmStateChange("RSC_GOTO_IGNITION")}>Go to Ignition</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.55);"
-			on:click={() => instantStateChange(states.RS_ABORT)}>Go to Abort</button
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
 		>
 	{:else if $currentState == "RS_IGNITION"}
 		<button
 			class="btn variant-filled-error next-state-btn"
-			style="top: calc(var(--container-width) * 0.51);"
-			on:click={() => nextState("RS_LAUNCH")}>LAUNCH</button
+			style="top: calc(var(--container-width) * 0.47);"
+			on:click={() => instantStateChange("RSC_IGNITION_TO_LAUNCH")}>LAUNCH</button
+		>
+		<button
+		class="btn variant-filled-secondary next-state-btn"
+		style="top: calc(var(--container-width) * 0.51);"
+		on:click={() => confirmStateChange("RSC_GOTO_ARM")}>Go to Arm</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.55);"
-			on:click={() => instantStateChange(states.RS_ABORT)}>Go to Abort</button
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+		>
+		<button
+		class="btn variant-filled-secondary arm_button"
+		style="top: calc(var(--container-width) * 0.55);"
+		on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
 		>
 	{:else if $currentState == "RS_ABORT"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.55);"
-			on:click={() => confirmStateChange(states.RS_PRELAUNCH)}>Go to Pre-Launch</button
+			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
 		>
-	{:else if $currentState == "RS_LAUNCH"}
-		<h1>nice rocket bro</h1>
 	{/if}
 </div>
 
@@ -889,6 +867,13 @@
 	.next-state-btn {
 		position: absolute;
 		left: 8%;
+		width: 200px;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1400));
+	}
+
+	.arm_button {
+		position: absolute;
+		left: 23%;
 		width: 200px;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1400));
 	}
@@ -1099,7 +1084,7 @@
 
 	.pt1_pressure {
 		position: absolute;
-		top: calc(var(--aspect-ratio) * 11.75);
+		top: calc(var(--container-width) * 0.117);
 		left: 14.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;

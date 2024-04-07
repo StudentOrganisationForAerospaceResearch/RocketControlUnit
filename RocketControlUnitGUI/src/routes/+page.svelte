@@ -10,7 +10,7 @@
 
 	const modalStore = getModalStore();
 
-	const PB = new PocketBase('http://192.168.0.194:8090');
+	const PB = new PocketBase('http://192.168.0.69:8090');
 
 	let nextStatePending: string = '';
 	function confirmStateChange(state: string): void {
@@ -239,8 +239,19 @@
 		// Subscribe to changes in the 'RcuTemp' collection
 		PB.collection('RcuTemperature').subscribe('*', function (e) {
 			// Update the RcuTemp data store whenever a change is detected
-			rcu_tc1_temperature.set(e.record.tc1_temperature);
-			rcu_tc2_temperature.set(e.record.tc2_temperature);
+			if(e.record.tc1_temperature == 9999) {
+				rcu_tc1_temperature.set('DC');
+			}
+			else {
+				rcu_tc1_temperature.set(Math.round(e.record.tc1_temperature/100));
+			}
+
+			if(e.record.tc2_temperature == 9999) {
+				rcu_tc2_temperature.set('DC');
+			}
+			else {
+				rcu_tc2_temperature.set(Math.round(e.record.tc2_temperature/100));
+			}
 		});
 
 		// Subscribe to changes in the 'PadBoxStatus' collection
@@ -262,7 +273,7 @@
 		// Subscribe to changes in the 'DmbPressure' collection
 		PB.collection('DmbPressure').subscribe('*', function (e) {
 			// Update the DmbPressure data store whenever a change is detected
-			upper_pv_pressure.set(e.record.upper_pv_pressure);
+			upper_pv_pressure.set(Math.round(e.record.upper_pv_pressure/1000));
 		});
 
 		// Subscribe to changes in the 'LaunchRailLoadCell' collection
@@ -281,14 +292,19 @@
 		// Subscribe to changes in the 'PbbPressure' collection
 		PB.collection('PbbPressure').subscribe('*', function (e) {
 			// Update the PbbPressure data store whenever a change is detected
-			ib_pressure.set(e.record.ib_pressure/1000);
-			lower_pv_pressure.set(e.record.lower_pv_pressure/1000);
+			ib_pressure.set(Math.round(e.record.ib_pressure/1000));
+			lower_pv_pressure.set(Math.round(e.record.lower_pv_pressure/1000));
 		});
 
 		// Subscribe to changes in the 'PbbTemperature' collection
 		PB.collection('PbbTemperature').subscribe('*', function (e) {
 			// Update the PbbTemperature data store whenever a change is detected
-			pv_temperature.set(e.record.ib_temperature/100);
+			if(e.record.ib_temperature == 9999) {
+				pv_temperature.set('DC');
+			}
+			else {
+				pv_temperature.set(Math.round(e.record.ib_temperature/100));
+			}
 		});
 
 		// Subscribe to changes in the 'RcuPressure' collection
@@ -303,17 +319,25 @@
 		// Subscribe to changes in the 'SobTemperature' collection
 		PB.collection('SobTemperature').subscribe('*', function (e) {
 			// Update the SobTemperature data store whenever a change is detected
-			sob_tc1_temperature.set(e.record.tc1_temperature);
-			sob_tc2_temperature.set(e.record.tc2_temperature);
+			if(e.record.tc1_temperature == 9999) {
+				sob_tc1_temperature.set('DC');
+			}
+			else {
+				sob_tc1_temperature.set(Math.round(e.record.tc1_temperature/100));
+			}
+
+			if(e.record.tc2_temperature == 9999) {
+				sob_tc2_temperature.set('DC');
+			}
+			else {
+				sob_tc2_temperature.set(Math.round(e.record.tc2_temperature/100));
+			}
 		});
 
 		// Subscribe to changes in the 'sys_state' collection
 		PB.collection('sys_state').subscribe('*', function (e) {
 			// Update the SystemState data store whenever a change is detected
-			console.log(e.record.rocket_state);
 			currentState.set(e.record.rocket_state);
-			console.log($currentState);
-
 		});
 	});
 
@@ -771,18 +795,18 @@
 	{#if $currentState == "RS_PRELAUNCH"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
-			style="top: calc(var(--container-width) * 0.51);"
+			style="top: calc(var(--container-width) * 0.5);"
 			on:click={() => confirmStateChange("RSC_GOTO_FILL")}>Go to Fill</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
-			style="top: calc(var(--container-width) * 0.55);"
+			style="top: calc(var(--container-width) * 0.53);"
 			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
 		>
 	{:else if $currentState == "RS_FILL"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
-			style="top: calc(var(--container-width) * 0.51);"
+			style="top: calc(var(--container-width) * 0.5);"
 			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
 		>
 		<button
@@ -792,7 +816,7 @@
 		>
 		<button
 		class="btn variant-filled-warning arm_button"
-		style="top: calc(var(--container-width) * 0.51);"
+		style="top: calc(var(--container-width) * 0.5);"
 		on:click={() => instantStateChange("RSC_ARM_CONFIRM_2")}>ARM CONFIRM 2</button
 		>
 		<button
@@ -802,13 +826,13 @@
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
-			style="top: calc(var(--container-width) * 0.55);"
+			style="top: calc(var(--container-width) * 0.53);"
 			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
 		>
 	{:else if $currentState == "RS_ARM"}
 		<button
 		class="btn variant-filled-secondary next-state-btn"
-		style="top: calc(var(--container-width) * 0.51);"
+		style="top: calc(var(--container-width) * 0.5);"
 		on:click={() => confirmStateChange("RSC_GOTO_FILL")}>Go to Fill</button
 		>
 		<button
@@ -818,7 +842,7 @@
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
-			style="top: calc(var(--container-width) * 0.55);"
+			style="top: calc(var(--container-width) * 0.53);"
 			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
 		>
 	{:else if $currentState == "RS_IGNITION"}
@@ -829,24 +853,30 @@
 		>
 		<button
 		class="btn variant-filled-secondary next-state-btn"
-		style="top: calc(var(--container-width) * 0.51);"
+		style="top: calc(var(--container-width) * 0.5);"
 		on:click={() => confirmStateChange("RSC_GOTO_ARM")}>Go to Arm</button
 		>
 		<button
 			class="btn variant-ghost-error next-state-btn"
-			style="top: calc(var(--container-width) * 0.55);"
+			style="top: calc(var(--container-width) * 0.53);"
 			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
 		>
 		<button
 		class="btn variant-filled-secondary arm_button"
-		style="top: calc(var(--container-width) * 0.55);"
+		style="top: calc(var(--container-width) * 0.53);"
 		on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
 		>
 	{:else if $currentState == "RS_ABORT"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
-			style="top: calc(var(--container-width) * 0.55);"
+			style="top: calc(var(--container-width) * 0.53);"
 			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
+		>
+	{:else if $currentState == "RS_RECOVERY"}
+		<button
+			class="btn variant-filled-secondary next-state-btn"
+			style="top: calc(var(--container-width) * 0.53);"
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
 		>
 	{/if}
 </div>
@@ -868,14 +898,14 @@
 		position: absolute;
 		left: 8%;
 		width: 200px;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1400));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
 	}
 
 	.arm_button {
 		position: absolute;
-		left: 23%;
+		left: 21%;
 		width: 200px;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1400));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
 	}
 
 	.ac1_slider {

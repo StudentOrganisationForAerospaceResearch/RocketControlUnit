@@ -152,10 +152,10 @@
 
 	const pv_temperature: Writable<string | number | undefined> = writable(undefined);
 
-	const pt1_pressure = writable(undefined);
-	const pt2_pressure = writable(undefined);
-	const pt3_pressure = writable(undefined);
-	const pt4_pressure = writable(undefined);
+	const pt1_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt2_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt3_pressure: Writable<string | number | undefined> = writable(undefined);
+	const pt4_pressure: Writable<string | number | undefined> = writable(undefined);
 
 	const sob_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
 	const sob_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
@@ -274,7 +274,12 @@
 		// Subscribe to changes in the 'DmbPressure' collection
 		PB.collection('DmbPressure').subscribe('*', function (e) {
 			// Update the DmbPressure data store whenever a change is detected
-			upper_pv_pressure.set(Math.round(e.record.upper_pv_pressure/1000));
+			if (e.record.upper_pv_pressure < -100) {
+				upper_pv_pressure.set('DC');
+			}
+			else {
+				upper_pv_pressure.set(Math.round(e.record.upper_pv_pressure/1000));
+			}
 		});
 
 		// Subscribe to changes in the 'LaunchRailLoadCell' collection
@@ -293,8 +298,18 @@
 		// Subscribe to changes in the 'PbbPressure' collection
 		PB.collection('PbbPressure').subscribe('*', function (e) {
 			// Update the PbbPressure data store whenever a change is detected
-			ib_pressure.set(Math.round(e.record.ib_pressure/1000));
-			lower_pv_pressure.set(Math.round(e.record.lower_pv_pressure/1000));
+			if (e.record.ib_pressure < -100) {
+				ib_pressure.set('DC');
+			}
+			else {
+				ib_pressure.set(Math.round(e.record.ib_pressure/1000));
+			}
+			if (e.record.lower_pv_pressure < -100) {
+				lower_pv_pressure.set('DC');
+			}
+			else {
+				lower_pv_pressure.set(Math.round(e.record.lower_pv_pressure/1000));
+			}
 		});
 
 		// Subscribe to changes in the 'PbbTemperature' collection
@@ -311,10 +326,30 @@
 		// Subscribe to changes in the 'RcuPressure' collection
 		PB.collection('RcuPressure').subscribe('*', function (e) {
 			// Update the RcuPressure data store whenever a change is detected
-			pt1_pressure.set(e.record.pt1_pressure);
-			pt2_pressure.set(e.record.pt2_pressure);
-			pt3_pressure.set(e.record.pt3_pressure);
-			pt4_pressure.set(e.record.pt4_pressure);
+			if(e.record.pt1_pressure <-100) {
+				pt1_pressure.set('DC');
+			}
+			else {
+				pt1_pressure.set(e.record.pt1_pressure);
+			}
+			if(e.record.pt2_pressure <-100) {
+				pt2_pressure.set('DC');
+			}
+			else {
+				pt2_pressure.set(e.record.pt2_pressure);
+			}
+			if(e.record.pt3_pressure <-100) {
+				pt3_pressure.set('DC');
+			}
+			else {
+				pt3_pressure.set(e.record.pt3_pressure);
+			}
+			if(e.record.pt4_pressure <-100) {
+				pt4_pressure.set('DC');
+			}
+			else {
+				pt4_pressure.set(e.record.pt4_pressure);
+			}
 		});
 
 		// Subscribe to changes in the 'SobTemperature' collection

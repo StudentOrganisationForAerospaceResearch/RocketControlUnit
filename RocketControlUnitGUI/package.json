@@ -1,6 +1,6 @@
 {
-  "name": "my-skeleton-app",
-  "version": "0.0.1",
+  "name": "Rocket-Control-Unit",
+  "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "vite dev",
@@ -16,9 +16,7 @@
     "@playwright/test": "^1.28.1",
     "@skeletonlabs/skeleton": "2.5.1",
     "@skeletonlabs/tw-plugin": "0.2.4",
-    "@sveltejs/adapter-auto": "^2.0.0",
     "@sveltejs/adapter-node": "^4.0.1",
-    "@sveltejs/kit": "^1.27.4",
     "@tailwindcss/forms": "0.5.7",
     "@tailwindcss/typography": "0.5.10",
     "@types/node": "20.10.0",
@@ -37,8 +35,7 @@
     "tailwindcss": "3.3.5",
     "tslib": "^2.4.1",
     "typescript": "^5.0.0",
-    "vite": "^4.4.2",
-    "vite-plugin-tailwind-purgecss": "0.1.4"
+    "vite-plugin-tailwind-purgecss": "^0.2.1"
   },
   "type": "module",
   "dependencies": {

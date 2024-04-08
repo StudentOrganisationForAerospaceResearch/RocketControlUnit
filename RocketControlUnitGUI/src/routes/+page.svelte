@@ -4,6 +4,7 @@
 	import { currentState } from '../store';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	import type { Writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
 	import BackgroundDark from './background-dark.svelte';
 	import BackgroundLight from './background-light.svelte';
@@ -133,31 +134,31 @@
 	const drain_open = writable(undefined);
 	const mev_open = writable(undefined);
 
-	const rcu_tc1_temperature = writable(undefined);
-	const rcu_tc2_temperature = writable(undefined);
+	const rcu_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
+	const rcu_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
 
 	const battery_voltage = writable(undefined);
 	const power_source = writable(undefined);
 
-	const upper_pv_pressure = writable(undefined);
+	const upper_pv_pressure: Writable<string | number | undefined> = writable(undefined);
 
 	const rocket_mass = writable(undefined);
 
 	const nos1_mass = writable(undefined);
 	const nos2_mass = writable(undefined);
 
-	const ib_pressure = writable(undefined);
-	const lower_pv_pressure = writable(undefined);
+	const ib_pressure: Writable<string | number | undefined> = writable(undefined);
+	const lower_pv_pressure: Writable<string | number | undefined> = writable(undefined);
 
-	const pv_temperature = writable(undefined);
+	const pv_temperature: Writable<string | number | undefined> = writable(undefined);
 
 	const pt1_pressure = writable(undefined);
 	const pt2_pressure = writable(undefined);
 	const pt3_pressure = writable(undefined);
 	const pt4_pressure = writable(undefined);
 
-	const sob_tc1_temperature = writable(undefined);
-	const sob_tc2_temperature = writable(undefined);
+	const sob_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
+	const sob_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
 
 	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
 	$: ac2_display = $ac2_open === undefined ? 'N/A' : $ac2_open ? 'ON' : 'OFF';

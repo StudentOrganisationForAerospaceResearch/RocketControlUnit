@@ -659,7 +659,7 @@
 		>
 	</div>
 
-	{#if $currentState === "RS_IGNITION"}
+	{#if $currentState === "RS_IGNITION" || $currentState ==="RS_TEST"}
 		<div class="box1_slider">
 			<SlideToggle
 				name="box1_slider"
@@ -908,11 +908,32 @@
 			style="top: calc(var(--container-width) * 0.53);"
 			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
 		>
+		<button
+		class="btn variant-filled-secondary next-state-btn"
+		style="top: calc(var(--container-width) * 0.5);"
+		on:click={() => confirmStateChange("RSC_GOTO_TEST")}>Go to Test</button
+		>
 	{:else if $currentState == "RS_RECOVERY"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.53);"
 			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+		>
+	{:else if $currentState == "RS_TEST"}
+		<button
+			class="btn variant-filled-secondary next-state-btn"
+			style="top: calc(var(--container-width) * 0.53);"
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+		>
+		<button
+			class="btn variant-filled-secondary next-state-btn"
+			style="top: calc(var(--container-width) * 0.5);"
+			on:click={() => instantStateChange("RSC_TEST_MEV_OPEN")}>Open MEV</button
+		>
+		<button
+		class="btn variant-filled-secondary next-state-btn"
+		style="top: calc(var(--container-width) * 0.47);"
+		on:click={() => instantStateChange("RSC_MEV_CLOSE")}>Close MEV</button
 		>
 	{/if}
 </div>

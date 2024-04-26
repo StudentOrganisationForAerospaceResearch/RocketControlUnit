@@ -7,12 +7,12 @@ from pocketbase.services.realtime_service import MessageData
 
 # Project specific imports ========================================================================
 from src.support.CommonLogger import logger
-from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
+from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_SERIAL_WRITE, THREAD_MESSAGE_HEARTBEAT, WorkQ_Message
 from src.Utils import Utils as utl
 
 # Class Definitions ===============================================================================
 class DatabaseHandler():
-    def __init__(self,thread_name: str, thread_workq: mp.Queue, message_handler_workq: mp.Queue):
+    def __init__(self, thread_name: str, thread_workq: mp.Queue, message_handler_workq: mp.Queue):
         """
         Thread to handle the pocketbase database communication.
         The Thread is subscribed to the CommandMessage
@@ -24,9 +24,36 @@ class DatabaseHandler():
         DatabaseHandler.thread_workq = thread_workq
         DatabaseHandler.send_message_workq = message_handler_workq
         DatabaseHandler.thread_name = thread_name
-        DatabaseHandler.client = Client('http://192.168.0.194:8090')
+
+        DatabaseHandler.client = Client('http://192.168.0.69:8090')
+        #DatabaseHandler.client = Client('http://127.0.0.1:8090') # for local development comment out before committing
+
+        DatabaseHandler.client.collection('Heartbeat').subscribe(DatabaseHandler._handle_heartbeat_callback)
         DatabaseHandler.client.collection('CommandMessage').subscribe(DatabaseHandler._handle_command_callback)
+
         logger.success(f"Successfully started {thread_name} thread")
+
+    @staticmethod
+    def _handle_heartbeat_callback(document: MessageData):
+        """
+        Whenever a new entry is created in the Heartbeat
+        collection, this function is called to handle the
+        command and forward it to the HeartbeatHandler.
+
+        Args:
+            document (MessageData): the change notification from the database.
+        """
+
+        logger.info("Received new heartbeat from the database")
+        logger.debug(f"Record command: {document.record.message}")
+        DatabaseHandler.send_message_workq.put(
+            WorkQ_Message(
+                DatabaseHandler.thread_name,
+                'heartbeat', 
+                THREAD_MESSAGE_HEARTBEAT, 
+                (document.record.message,)
+            )
+        )
 
     @staticmethod
     def _handle_command_callback(document: MessageData):
@@ -79,12 +106,10 @@ class DatabaseHandler():
             logger.error(f"Failed to create entry in {table_name}: {json_data}")
 
 # Procedures ======================================================================================
-def database_thread(thread_name: str, db_workq: mp.Queue, message_handler_workq: mp.Queue):
+def database_thread(thread_name: str, db_workq: mp.Queue, message_handler_workq: mp.Queue) -> None:
     """
     The main loop of the database handler. It subscribes to the CommandMessage collection
     """
-    # This log line should be removed once the pi core issue is solved
-    logger.info(f"Database process: {os.getpid()}")
 
     DatabaseHandler(thread_name, db_workq, message_handler_workq)
 
@@ -112,18 +137,3 @@ def process_workq_message(message: WorkQ_Message) -> bool:
         DatabaseHandler.send_message_to_database(message.message[1])
         return True
     return True
-
-# EXPECTED DATA FORMAT
-#
-# json = """
-# {
-#   "source": "NODE_DMB",
-#   "target": "NODE_RCU",
-#   "RcuPressure": {
-#     "pt1_pressure": 100,
-#     "pt2_pressure": 200,
-#     "pt3_pressure": 300,
-#     "pt4_pressure": 400
-#   }
-# }
-# """

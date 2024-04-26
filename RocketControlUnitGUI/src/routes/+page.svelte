@@ -747,7 +747,7 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("LaunchRail")}
+			on:click={() => performTare("LAUNCHRAIL")}
 		>
 			TARE
 		</button>
@@ -758,8 +758,8 @@
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
 			on:click={() => { 
-				writeLoadCellCommandMessage("LaunchRail", "CANCEL", 0);
-				confirmRemoveWeight("LaunchRail");}}
+				writeLoadCellCommandMessage("LAUNCHRAIL", "CANCEL", 0);
+				confirmRemoveWeight("LAUNCHRAIL");}}
 		>
 			CAL
 		</button>

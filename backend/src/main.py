@@ -12,6 +12,7 @@ from src.support.CommonLogger import logger
 from src.DatabaseHandler import database_thread
 from src.SerialHandler import SerialDevices as sd, serial_thread
 from src.ThreadManager import ThreadManager as tm
+from src.LoadCellHandler import load_cell_thread
 
 # Constants ========================================================================================
 UART_BAUDRATE = 115200
@@ -27,6 +28,7 @@ def initialize_threads():
         uart_workq = mp.Queue()
         radio_workq = mp.Queue()
         db_workq = mp.Queue()
+        loadcell_workq = mp.Queue()
         message_handler_workq = mp.Queue()
 
         # Create a main thread for handling thread messages
@@ -37,12 +39,16 @@ def initialize_threads():
         radio_thread = mp.Process(target=serial_thread, args=('radio', sd.RADIO, RADIO_BAUDRATE, radio_workq, message_handler_workq))
         # Initialize the database handler thread
         db_thread = mp.Process(target=database_thread, args=('database', db_workq, message_handler_workq))
+        # Initialize the loadcell handler thread
+        lc_thread = mp.Process(target=load_cell_thread, args=('loadcell', loadcell_workq, message_handler_workq))
         
         # Add the threads to the thread pool
         thread_pool['uart'] = {'thread': uart_thread, 'workq': uart_workq}
         thread_pool['radio'] = {'thread': radio_thread, 'workq': radio_workq}
         # Add the database thread to the thread pool
         thread_pool['database'] = {'thread': db_thread, 'workq': db_workq}
+        # Add the loadcell thread to the thread pool
+        thread_pool['loadcell'] = {'thread': lc_thread, 'workq': loadcell_workq}
         
         tm.thread_pool = thread_pool
         return

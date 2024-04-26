@@ -19,6 +19,9 @@ THREAD_MESSAGE_HEARTBEAT = 'heartbeat'
 THREAD_MESSAGE_HEARTBEAT_SERIAL = 'heartbeat_serial'
 THREAD_MESSAGE_LOAD_CELL_VOLTAGE = 'loadcell_voltage'
 THREAD_MESSAGE_LOAD_CELL_COMMAND = 'loadcell_command'
+THREAD_MESSAGE_STORE_LOAD_CELL_SLOPE = 'store_load_cell_slope'
+THREAD_MESSAGE_REQUEST_LOAD_CELL_SLOPE = 'get_last_loadcell_slope'
+THREAD_MESSAGE_LOAD_CELL_SLOPE = 'loadcell_slope'
 
 
 # Data Classes =====================================================================================

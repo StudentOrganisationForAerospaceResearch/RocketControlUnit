@@ -8,12 +8,7 @@ import multiprocessing as mp
 import time
 
 # Project specific imports ========================================================================
-dirname, _ = os.path.split(os.path.abspath(__file__))
-import sys
-sys.path.insert(0, os.path.join(dirname.split("backend", 1)[0], 'backend', 'proto/Python'))
-sys.path.insert(0, os.path.join(dirname.split("backend", 1)[0], 'backend'))
-
-from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_COMMAND, THREAD_MESSAGE_LOAD_CELL_VOLTAGE, WorkQ_Message
+from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_COMMAND, THREAD_MESSAGE_LOAD_CELL_SLOPE, THREAD_MESSAGE_LOAD_CELL_VOLTAGE, THREAD_MESSAGE_REQUEST_LOAD_CELL_SLOPE, THREAD_MESSAGE_STORE_LOAD_CELL_SLOPE, WorkQ_Message
 from src.support.CommonLogger import logger
 import proto.Python.CoreProto_pb2 as ProtoCore
 
@@ -38,7 +33,8 @@ class LoadCellHandler():
         self.tare_offset = 0
         self.cali_slope = 1
         self.state = self.State.CONVERT_MASS
-        self.voltage_offset = 0
+        self.y_intercept = 0
+
         self.calibration_points = []
         self._request_stored_calibration()
 
@@ -54,16 +50,19 @@ class LoadCellHandler():
         """
         Request the last calibration values from the database.
         """
-        pass
-        # TODO: Send the new calibration slope to the DB
-        # self.message_handler_workq.put(
-        # )
+        self.message_handler_workq.put(
+            WorkQ_Message("loadcell", 
+                          "database", 
+                          THREAD_MESSAGE_REQUEST_LOAD_CELL_SLOPE, 
+                          (self.load_cell_name,))
+        )
 
-    def set_calibration_slope(self, slope: float):
+    def set_calibration(self, slope: float, intercept: float):
         """
         Set the calibration slope to the given value
         """
         self.cali_slope = slope
+        self.y_intercept = intercept
 
     def _convert_voltage_to_mass(self, raw_voltage: float) -> float:
         """
@@ -78,7 +77,7 @@ class LoadCellHandler():
             float: 
                 The calibrated weight corresponding to the voltage reading.
         """
-        return (raw_voltage - self.voltage_offset) * self.cali_slope - self.tare_offset
+        return (raw_voltage * self.cali_slope) + self.y_intercept - self.tare_offset
     
     def add_calibration_mass(self, mass: float):
         """
@@ -123,6 +122,7 @@ class LoadCellHandler():
         used to calculate the slope used by the load cell to get corrected mass.
         """
         if not self.calibration_points:
+            logger.error("Trying to finalize load cell calibration without any calibration points")
             return
         masses = [x[0] for x in self.calibration_points]
         voltages = [x[1] for x in self.calibration_points]
@@ -131,12 +131,23 @@ class LoadCellHandler():
         numerator = sum((mass - mass_mean) * ((voltage) - voltage_mean) for mass, voltage in zip(masses, voltages))
         denominator = sum((mass - mass_mean) ** 2 for mass in masses)
         slope = numerator/ denominator
-        self.set_calibration_slope(slope)
+
+        self.y_intercept = voltages[0] - slope * masses[0]
+        self.set_calibration(slope, self.y_intercept)
         self.calibration_points = []
         self.current_state = self.State.CONVERT_MASS
-        # TODO: Send the new calibration slope to the DB
-        # self.message_handler_workq.put(
-        # )
+        # Update the slope stored in the database
+        logger.success(f"Finalized {self.load_cell_name} calibration, slope: {self.cali_slope}, intercept: {self.y_intercept}")
+        self.message_handler_workq.put(
+            WorkQ_Message("loadcell", 
+                          "database", 
+                          THREAD_MESSAGE_STORE_LOAD_CELL_SLOPE,
+                          (self.load_cell_name, f'''{{
+                                                    "name": "{self.load_cell_name}",
+                                                    "slope": {self.cali_slope},
+                                                    "intercept": {self.y_intercept}
+                                                }}'''))
+        )
 
     def tare_mass(self, tare_mass: float):
         """
@@ -187,8 +198,6 @@ def load_cell_thread(thread_name: str, db_workq: mp.Queue, message_handler_workq
     """
     The main loop of the database handler. It subscribes to the CommandMessage collection
     """
-    # This log line should be removed once the pi core issue is solved
-    logger.info(f"Loadcell process: {os.getpid()}")
     # Sleep to allow time to connect to the database as
     # loadcell needs a connection in order to get its initial values.
     time.sleep(2)
@@ -240,7 +249,6 @@ def process_workq_message(message: WorkQ_Message, load_cells: Dict[str, LoadCell
         message_handler_workq.put(
             WorkQ_Message("loadcell", "database", THREAD_MESSAGE_DB_WRITE, (ProtoCore.MessageID.MSG_TELEMETRY, json.dumps(db_load_cell_package)))
         )
-        return True
     elif messageID == THREAD_MESSAGE_LOAD_CELL_COMMAND:
         logger.debug(f"Received load cell command {message.message[1]} for {message.message[0]}")
         if message.message[1] == "CALIBRATE":
@@ -251,36 +259,8 @@ def process_workq_message(message: WorkQ_Message, load_cells: Dict[str, LoadCell
             load_cells[message.message[0]].add_calibration_mass(message.message[2])
         elif message.message[1] == "FINISH":
             load_cells[message.message[0]].finalize()
-        return True
+    elif messageID == THREAD_MESSAGE_LOAD_CELL_SLOPE:
+        logger.debug(f"Received load cell slope for {message.message[0]}")
+        load_cells[message.message[0]].set_calibration(message.message[1], message.message[2])
+    
     return True
-
-# if __name__ == "__main__":
-#     # Instantiate a calibration load cell
-#     load_cell = LoadCellHandler("test", None)
-
-
-#     print(f"initial mass (3v): {load_cell.consume_incoming_voltage(3)}")
-#     print(f"initial slope: {load_cell.cali_slope}")
-
-
-#     # Test collecting calibration points
-#     print(f"points: {load_cell.calibration_points}")
-#     load_cell.add_calibration_mass(0.0)
-#     load_cell.consume_incoming_voltage(3)
-#     print(f"points: {load_cell.calibration_points}")
-#     load_cell.add_calibration_mass(1)
-#     load_cell.consume_incoming_voltage(5)
-#     print(f"points: {load_cell.calibration_points}")
-#     load_cell.add_calibration_mass(2)
-#     load_cell.consume_incoming_voltage(6)
-#     print(f"points: {load_cell.calibration_points}")
-
-#     # load_cell.cancel_new_calibration()
-#     # load_cell.tare_mass(3)
-
-#     # Finalize calibration
-#     load_cell.finalize()
-#     print(f"points: {load_cell.calibration_points}")
-
-#     print(f"final mass (3v): {load_cell.consume_incoming_voltage(3)}")
-#     print(f"final slope: {load_cell.cali_slope}")

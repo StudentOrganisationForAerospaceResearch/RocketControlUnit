@@ -15,6 +15,8 @@ THREAD_MESSAGE_DB_WRITE = 'db_write'
 THREAD_MESSAGE_SERIAL_WRITE = 'serial_write'
 THREAD_MESSAGE_DB_COMMAND_NOTIF = 'db_command_notif'
 THREAD_MESSAGE_DB_BACKEND_NOTIF = 'db_backend_notif'
+THREAD_MESSAGE_HEARTBEAT = 'heartbeat'
+THREAD_MESSAGE_HEARTBEAT_SERIAL = 'heartbeat_serial'
 
 
 # Data Classes =====================================================================================
@@ -85,7 +87,7 @@ class ThreadManager:
         else:
             if ((message.dest_thread not in ThreadManager.thread_pool) or 
                 (not ThreadManager.thread_pool[message.dest_thread]['thread'].is_alive())):
-                ThreadManager.error(f"Attempting to send message to non-existent thread: {message.dest_thread}")
+                logger.error(f"Attempting to send message to non-existent thread: {message.dest_thread}")
                 return
             dest_workq = ThreadManager.thread_pool[message.dest_thread]['workq']
             if dest_workq:

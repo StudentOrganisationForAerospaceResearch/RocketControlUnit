@@ -178,7 +178,7 @@ def get_voltage_and_load_cell_json(json_str: str) -> Tuple[float, str]:
         load_cell_names.append("NOS2")
         voltages.append(json_data[load_cell]["nos2Mass"])
     elif load_cell == "launchRailLoadCell":
-        load_cell_names.append("ROCKET")
+        load_cell_names.append("LAUNCHRAIL")
         voltages.append(json_data[load_cell]["rocketMass"])
 
     return voltages, load_cell_names
@@ -193,7 +193,7 @@ def load_cell_thread(thread_name: str, db_workq: mp.Queue, message_handler_workq
     # loadcell needs a connection in order to get its initial values.
     time.sleep(2)
     load_cells = {}
-    load_cells["ROCKET"] = LoadCellHandler("ROCKET", message_handler_workq)
+    load_cells["LAUNCHRAIL"] = LoadCellHandler("LAUNCHRAIL", message_handler_workq)
     load_cells["NOS1"] = LoadCellHandler("NOS1", message_handler_workq)
     load_cells["NOS2"] = LoadCellHandler("NOS2", message_handler_workq)
     logger.success(f"Successfully initialized load cell thread")
@@ -224,8 +224,8 @@ def process_workq_message(message: WorkQ_Message, load_cells: Dict[str, LoadCell
         db_load_cell_package = {}
         db_load_cell_package["source"] = "LOADCELL"
         db_load_cell_package["target"] = "RCU"
-        if "ROCKET" in load_cell_names:
-            rocket_mass = load_cells["ROCKET"].consume_incoming_voltage(voltages[0])
+        if "LAUNCHRAIL" in load_cell_names:
+            rocket_mass = load_cells["LAUNCHRAIL"].consume_incoming_voltage(voltages[0])
             db_load_cell_package["launchRailLoadCell"] = {}
             db_load_cell_package["launchRailLoadCell"]["rocketMass"] = rocket_mass
 
@@ -242,15 +242,15 @@ def process_workq_message(message: WorkQ_Message, load_cells: Dict[str, LoadCell
         )
         return True
     elif messageID == THREAD_MESSAGE_LOAD_CELL_COMMAND:
-        logger.debug(f"Received load cell command: {message.message[0]}")
-        if message.message[0] == "CALIBRATE":
-            load_cells[message.message[1]].cancel_new_calibration()
-        elif message.message[0] == "TARE":
-            load_cells[message.message[1]].tare_mass(message.message[2])
-        elif message.message[0] == "CANCEL":
-            load_cells[message.message[1]].add_calibration_mass(message.message[2])
-        elif message.message[0] == "FINISH":
-            load_cells[message.message[1]].finalize()
+        logger.debug(f"Received load cell command {message.message[1]} for {message.message[0]}")
+        if message.message[1] == "CALIBRATE":
+            load_cells[message.message[0]].cancel_new_calibration()
+        elif message.message[1] == "TARE":
+            load_cells[message.message[0]].tare_mass(message.message[2])
+        elif message.message[1] == "CANCEL":
+            load_cells[message.message[0]].add_calibration_mass(message.message[2])
+        elif message.message[1] == "FINISH":
+            load_cells[message.message[0]].finalize()
         return True
     return True
 

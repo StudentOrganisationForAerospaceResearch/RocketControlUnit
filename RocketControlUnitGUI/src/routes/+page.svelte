@@ -2,7 +2,7 @@
 	import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import type { Writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
@@ -110,6 +110,20 @@
 			window.removeEventListener('resize', handleResize);
 		};
 	});
+
+    let intervalId: any;
+
+    onMount(() => {
+        intervalId = setInterval(async () => {
+            await PB.collection('Heartbeat').create({
+                message: 'heartbeat'
+            });
+        }, 5000); // 5000 milliseconds = 5 seconds
+    });
+
+    onDestroy(() => {
+        clearInterval(intervalId); // Stop the interval when the component is destroyed
+    });
 
 	const ac1_open = writable(undefined);
 	const ac2_open = writable(undefined);
@@ -733,7 +747,7 @@
 		<button 
 			type="button" 
 			class="btn btn-sm variant-filled-secondary" 
-			on:click={() => performTare("LaunchRail")}
+			on:click={() => performTare("LAUNCHRAIL")}
 		>
 			TARE
 		</button>
@@ -744,8 +758,8 @@
 			type="button" 
 			class="btn btn-sm variant-filled-error" 
 			on:click={() => { 
-				writeLoadCellCommandMessage("LaunchRail", "CANCEL", 0);
-				confirmRemoveWeight("LaunchRail");}}
+				writeLoadCellCommandMessage("LAUNCHRAIL", "CANCEL", 0);
+				confirmRemoveWeight("LAUNCHRAIL");}}
 		>
 			CAL
 		</button>

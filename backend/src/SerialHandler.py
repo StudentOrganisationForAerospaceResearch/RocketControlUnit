@@ -18,7 +18,7 @@ from src.support.Codec import Codec
 from src.support.ProtobufParser import ProtobufParser
 from src.support.CommonLogger import logger
 
-from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_VOLTAGE, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
+from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_HEARTBEAT_SERIAL, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_VOLTAGE, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
 from src.Utils import Utils as utl
 
 # Constants ========================================================================================
@@ -229,6 +229,24 @@ class SerialHandler():
             self.serial_port.write(encBuf)
 
         return True
+    
+    def send_serial_control_message(self, message: bytes):
+        """
+        Sends a control message over the serial port.
+
+        Args:
+            message (bytes):
+                The message to be sent. TODO Generalize this function. 
+
+        Returns:
+            bool: 
+                True if the message was successfully sent, False otherwise.
+        """
+
+        buf = message
+        encBuf = Codec.Encode(buf, len(buf), ProtoCore.MessageID.MSG_CONTROL)
+        self.serial_port.write(encBuf)
+        return True
 
 # Procedures =======================================================================================
 
@@ -260,6 +278,8 @@ def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler)
             command_param = message.message[2]
             source_sequence_number = message.message[3]
             ser_han.send_serial_command_message(command, target, command_param, source_sequence_number)
+        elif messageID == THREAD_MESSAGE_HEARTBEAT_SERIAL:
+            ser_han.send_serial_control_message(message.message[0])
         return True
 
 def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread_workq: mp.Queue, message_handler_workq: mp.Queue):

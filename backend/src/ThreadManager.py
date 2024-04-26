@@ -15,8 +15,13 @@ THREAD_MESSAGE_DB_WRITE = 'db_write'
 THREAD_MESSAGE_SERIAL_WRITE = 'serial_write'
 THREAD_MESSAGE_DB_COMMAND_NOTIF = 'db_command_notif'
 THREAD_MESSAGE_DB_BACKEND_NOTIF = 'db_backend_notif'
+THREAD_MESSAGE_HEARTBEAT = 'heartbeat'
+THREAD_MESSAGE_HEARTBEAT_SERIAL = 'heartbeat_serial'
 THREAD_MESSAGE_LOAD_CELL_VOLTAGE = 'loadcell_voltage'
 THREAD_MESSAGE_LOAD_CELL_COMMAND = 'loadcell_command'
+THREAD_MESSAGE_STORE_LOAD_CELL_SLOPE = 'store_load_cell_slope'
+THREAD_MESSAGE_REQUEST_LOAD_CELL_SLOPE = 'get_last_loadcell_slope'
+THREAD_MESSAGE_LOAD_CELL_SLOPE = 'loadcell_slope'
 
 
 # Data Classes =====================================================================================
@@ -87,7 +92,7 @@ class ThreadManager:
         else:
             if ((message.dest_thread not in ThreadManager.thread_pool) or 
                 (not ThreadManager.thread_pool[message.dest_thread]['thread'].is_alive())):
-                ThreadManager.error(f"Attempting to send message to non-existent thread: {message.dest_thread}")
+                logger.error(f"Attempting to send message to non-existent thread: {message.dest_thread}")
                 return
             dest_workq = ThreadManager.thread_pool[message.dest_thread]['workq']
             if dest_workq:

@@ -35,7 +35,7 @@ class Codec:
             encodedBuf[i+1] = buf[i]
 
         # Calculate a checksum
-        calc = Calculator(Crc16.CCITT)
+        calc = Calculator(Crc16.XMODEM)
         chksum = calc.checksum(encodedBuf)
 
         #print(f'Calculated checksum: {chksum}')
@@ -66,7 +66,7 @@ class Codec:
         # Verify the checksum (untested)
         bufChksm = decodedBuf[-2:]
         bufChksm = bufChksm[0] + (bufChksm[1] << 8)
-        calc = Calculator(Crc16.CCITT)
+        calc = Calculator(Crc16.XMODEM)
         chksum = calc.checksum(decodedBuf[:-2])
 
         #TODO: This is untested, may not work

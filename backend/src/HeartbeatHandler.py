@@ -19,6 +19,8 @@ class HeartbeatHandler:
         self.running = False
         self.dmb_thread = None
 
+        logger.success(f"Successfully started {thread_name} thread")
+
     def reset_timer(self):
         if self.timer is not None:
             self.timer.cancel()

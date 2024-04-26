@@ -1,4 +1,5 @@
 # General imports =================================================================================
+import json
 import os
 import enum
 import multiprocessing as mp
@@ -17,7 +18,7 @@ from src.support.Codec import Codec
 from src.support.ProtobufParser import ProtobufParser
 from src.support.CommonLogger import logger
 
-from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_HEARTBEAT_SERIAL, THREAD_MESSAGE_KILL, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
+from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_HEARTBEAT_SERIAL, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_VOLTAGE, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
 from src.Utils import Utils as utl
 
 # Constants ========================================================================================
@@ -133,6 +134,28 @@ class SerialHandler():
             return
         
         json_str = ProtobufParser.parse_serial_to_json(data, ProtoCore.MessageID.MSG_TELEMETRY)
+
+        # Try to check if the received message is load_cell_information
+        try:
+            json_data = json.loads(json_data)
+            if len(list(json_data.keys())) < 3:
+                logger.warning(f"Json is poorly formed: {json_data}")
+                return
+            # Check if the json data is load cell information
+            # if it does send it to the load cell thread instead of the database
+            if ("launchRailLoadCell" in json_data.keys()) or ("nosLoadCell" in json_data.keys()):
+                self.send_message_workq.put(WorkQ_Message(self.thread_name,
+                                            'loadcell',
+                                            THREAD_MESSAGE_LOAD_CELL_VOLTAGE, 
+                                            (
+                                             list(json_data.keys())[2],
+                                             json_str
+                                             )
+                                           ))
+                return
+        except Exception:
+            pass
+
 
         self.send_message_workq.put(WorkQ_Message(self.thread_name, 'database', THREAD_MESSAGE_DB_WRITE, (ProtoCore.MessageID.MSG_TELEMETRY, json_str)))
         

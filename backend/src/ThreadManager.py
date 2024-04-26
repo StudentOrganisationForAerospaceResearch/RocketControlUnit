@@ -17,6 +17,8 @@ THREAD_MESSAGE_DB_COMMAND_NOTIF = 'db_command_notif'
 THREAD_MESSAGE_DB_BACKEND_NOTIF = 'db_backend_notif'
 THREAD_MESSAGE_HEARTBEAT = 'heartbeat'
 THREAD_MESSAGE_HEARTBEAT_SERIAL = 'heartbeat_serial'
+THREAD_MESSAGE_LOAD_CELL_VOLTAGE = 'loadcell_voltage'
+THREAD_MESSAGE_LOAD_CELL_COMMAND = 'loadcell_command'
 
 
 # Data Classes =====================================================================================

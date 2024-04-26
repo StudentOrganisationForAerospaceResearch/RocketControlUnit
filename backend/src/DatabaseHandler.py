@@ -7,7 +7,7 @@ from pocketbase.services.realtime_service import MessageData
 
 # Project specific imports ========================================================================
 from src.support.CommonLogger import logger
-from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_SERIAL_WRITE, THREAD_MESSAGE_HEARTBEAT, WorkQ_Message
+from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_COMMAND, THREAD_MESSAGE_SERIAL_WRITE, THREAD_MESSAGE_HEARTBEAT, WorkQ_Message
 from src.Utils import Utils as utl
 
 # Class Definitions ===============================================================================
@@ -30,7 +30,7 @@ class DatabaseHandler():
 
         DatabaseHandler.client.collection('Heartbeat').subscribe(DatabaseHandler._handle_heartbeat_callback)
         DatabaseHandler.client.collection('CommandMessage').subscribe(DatabaseHandler._handle_command_callback)
-
+        DatabaseHandler.client.collection('LoadCellCommands').subscribe(DatabaseHandler._handle_load_cell_command_callback)
         logger.success(f"Successfully started {thread_name} thread")
 
     @staticmethod
@@ -78,6 +78,28 @@ class DatabaseHandler():
                  document.record.command_param,
                  document.record.source_sequence_num
                 )
+            )
+        )
+
+    @staticmethod
+    def _handle_load_cell_command_callback(document: MessageData):
+        """
+        Whenever a new entry is created in the LoadCellCommands
+        collection, this function is called to handle the command
+        and forward it to the load cell handler.
+
+        Args:
+            document (MessageData): 
+                the change notification from the database.
+        """
+        logger.info("Received new load cell command from the database")
+        logger.debug(f"Record command: {document.record.command}")
+        DatabaseHandler.send_message_workq.put(
+            WorkQ_Message(
+                DatabaseHandler.thread_name,
+                'loadcell',
+                THREAD_MESSAGE_LOAD_CELL_COMMAND,
+                (document.record.target, document.record.command, document.record.weight)
             )
         )
 

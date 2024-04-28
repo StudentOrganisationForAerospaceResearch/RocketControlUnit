@@ -1,4 +1,3 @@
-
 # General imports =================================================================================
 from enum import Enum
 import json
@@ -20,6 +19,7 @@ class LoadCellHandler():
         CONVERT_MASS = 0
         WAIT_FOR_CALI_VOLTAGE = 1
         WAIT_FOR_TARE_MASS = 2
+        WAIT_FOR_FINALE_VOLTAGE = 3
 
     def __init__(self, load_cell_name: str, message_handler_workq: mp.Queue):
         self.load_cell_name = load_cell_name
@@ -64,7 +64,7 @@ class LoadCellHandler():
         self.cali_slope = slope
         self.y_intercept = intercept
 
-    def _convert_voltage_to_mass(self, raw_voltage: float) -> float:
+    def _convert_voltage_to_mass(self, raw_voltage: float, with_tare: bool = True) -> float:
         """
         Convert the raw voltage from the serial handler
         to a mass value to send to the database.
@@ -77,16 +77,23 @@ class LoadCellHandler():
             float: 
                 The calibrated weight corresponding to the voltage reading.
         """
-        return (raw_voltage * self.cali_slope) + self.y_intercept - self.tare_offset
+        if with_tare:
+            return (raw_voltage * self.cali_slope) + self.y_intercept - self.tare_offset
+        else:
+            return (raw_voltage * self.cali_slope) + self.y_intercept
     
-    def add_calibration_mass(self, mass: float):
+    def add_calibration_mass(self, mass: float, final_mass: bool = False):
         """
         Add a calibration point to the local slope
         and puts the load cell handler into a wait state
         to wait for a voltage that matches the mass
         """
+        
         self.current_cali_mass = mass
-        self.state = self.State.WAIT_FOR_CALI_VOLTAGE
+        if final_mass:
+            self.state = self.State.WAIT_FOR_FINALE_VOLTAGE
+        else:
+            self.state = self.State.WAIT_FOR_CALI_VOLTAGE
 
     def _add_calibration_voltage(self, voltage: float):
         """
@@ -109,7 +116,11 @@ class LoadCellHandler():
         elif self.state == self.State.WAIT_FOR_CALI_VOLTAGE:
             self._add_calibration_voltage(raw_voltage)
         elif self.state == self.State.WAIT_FOR_TARE_MASS:
-            self.tare_mass(self._convert_voltage_to_mass(raw_voltage))
+            self.tare_offset = self._convert_voltage_to_mass(raw_voltage, with_tare=False)
+            self.state = self.State.CONVERT_MASS
+        elif self.state == self.State.WAIT_FOR_FINALE_VOLTAGE:
+            self._add_calibration_voltage(raw_voltage)
+            self.finalize()
         
         # This function will always return mass, even while calibrating
         # if calibrating the mass will use the previous/current slope instead
@@ -121,21 +132,26 @@ class LoadCellHandler():
         Perform final calculations for calibration and update the slope
         used to calculate the slope used by the load cell to get corrected mass.
         """
+        
         if not self.calibration_points:
             logger.error("Trying to finalize load cell calibration without any calibration points")
             return
+        
+        self.tare_offset = 0
+        
         masses = [x[0] for x in self.calibration_points]
         voltages = [x[1] for x in self.calibration_points]
+        
         mass_mean = sum(masses) / len(masses)
         voltage_mean = sum(voltages) / len(voltages)
         numerator = sum((mass - mass_mean) * ((voltage) - voltage_mean) for mass, voltage in zip(masses, voltages))
-        denominator = sum((mass - mass_mean) ** 2 for mass in masses)
+        denominator = sum((voltage - voltage_mean) ** 2 for voltage in voltages)
         slope = numerator/ denominator
 
-        self.y_intercept = voltages[0] - slope * masses[0]
+        self.y_intercept = masses[0] - slope * voltages[0]
         self.set_calibration(slope, self.y_intercept)
         self.calibration_points = []
-        self.current_state = self.State.CONVERT_MASS
+        self.state = self.State.CONVERT_MASS
         # Update the slope stored in the database
         logger.success(f"Finalized {self.load_cell_name} calibration, slope: {self.cali_slope}, intercept: {self.y_intercept}")
         self.message_handler_workq.put(
@@ -149,15 +165,11 @@ class LoadCellHandler():
                                                 }}'''))
         )
 
-    def tare_mass(self, tare_mass: float):
+    def tare_mass(self):
         """
         Set the tare offset value to the current mass
-
-        Parameters:
-            tare_mass (float): 
-                The mass to set as the tare offset.
         """
-        self.tare_offset = tare_mass
+        self.state = self.State.WAIT_FOR_TARE_MASS
 
 # Procedures ======================================================================================
 
@@ -185,12 +197,12 @@ def get_voltage_and_load_cell_json(json_str: str) -> Tuple[float, str]:
 
     if load_cell == "nosLoadCell":
         load_cell_names.append("NOS1")
-        voltages.append(json_data[load_cell]["nos1Mass"]) # These keys get converted to a weird value
+        voltages.append(json_data[load_cell]["nos1_mass"]) # These keys get converted to a weird value
         load_cell_names.append("NOS2")
-        voltages.append(json_data[load_cell]["nos2Mass"])
+        voltages.append(json_data[load_cell]["nos2_mass"])
     elif load_cell == "launchRailLoadCell":
         load_cell_names.append("LAUNCHRAIL")
-        voltages.append(json_data[load_cell]["rocketMass"])
+        voltages.append(json_data[load_cell]["rocket_mass"])
 
     return voltages, load_cell_names
 
@@ -236,14 +248,14 @@ def process_workq_message(message: WorkQ_Message, load_cells: Dict[str, LoadCell
         if "LAUNCHRAIL" in load_cell_names:
             rocket_mass = load_cells["LAUNCHRAIL"].consume_incoming_voltage(voltages[0])
             db_load_cell_package["launchRailLoadCell"] = {}
-            db_load_cell_package["launchRailLoadCell"]["rocketMass"] = rocket_mass
+            db_load_cell_package["launchRailLoadCell"]["rocket_mass"] = rocket_mass
 
         elif "NOS1" in load_cell_names:
             nos1_mass = load_cells["NOS1"].consume_incoming_voltage(voltages[0])
             nos2_mass = load_cells["NOS2"].consume_incoming_voltage(voltages[1])
             db_load_cell_package["nosLoadCell"] = {}
-            db_load_cell_package["nosLoadCell"]["nos1Mass"] = nos1_mass
-            db_load_cell_package["nosLoadCell"]["nos2Mass"] = nos2_mass
+            db_load_cell_package["nosLoadCell"]["nos1_mass"] = nos1_mass
+            db_load_cell_package["nosLoadCell"]["nos2_mass"] = nos2_mass
 
         # Send the loadcell data to the database
         message_handler_workq.put(
@@ -251,14 +263,14 @@ def process_workq_message(message: WorkQ_Message, load_cells: Dict[str, LoadCell
         )
     elif messageID == THREAD_MESSAGE_LOAD_CELL_COMMAND:
         logger.debug(f"Received load cell command {message.message[1]} for {message.message[0]}")
-        if message.message[1] == "CALIBRATE":
+        if message.message[1] == "CANCEL":
             load_cells[message.message[0]].cancel_new_calibration()
         elif message.message[1] == "TARE":
-            load_cells[message.message[0]].tare_mass(message.message[2])
-        elif message.message[1] == "CANCEL":
+            load_cells[message.message[0]].tare_mass()
+        elif message.message[1] == "CALIBRATE":
             load_cells[message.message[0]].add_calibration_mass(message.message[2])
         elif message.message[1] == "FINISH":
-            load_cells[message.message[0]].finalize()
+            load_cells[message.message[0]].add_calibration_mass(message.message[2], final_mass=True)
     elif messageID == THREAD_MESSAGE_LOAD_CELL_SLOPE:
         logger.debug(f"Received load cell slope for {message.message[0]}")
         load_cells[message.message[0]].set_calibration(message.message[1], message.message[2])

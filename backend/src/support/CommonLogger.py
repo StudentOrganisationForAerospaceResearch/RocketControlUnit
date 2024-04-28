@@ -7,7 +7,7 @@ dirname, _ = os.path.split(os.path.abspath(__file__))
 log_path = os.path.join(dirname.split("backend", 1)[0], 'backend', 'logs')
 
 LOG_TO_TERMINAL = True
-DISABLE_LOGGING = False
+DISABLE_LOGGING = True
 
 logger = logger
 

@@ -8,7 +8,7 @@ from pocketbase.services.realtime_service import MessageData
 
 # Project specific imports ========================================================================
 from src.support.CommonLogger import logger
-from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_COMMAND, THREAD_MESSAGE_LOAD_CELL_SLOPE, THREAD_MESSAGE_REQUEST_LOAD_CELL_SLOPE, THREAD_MESSAGE_SERIAL_WRITE, THREAD_MESSAGE_STORE_LOAD_CELL_SLOPE, WorkQ_Message
+from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_COMMAND, THREAD_MESSAGE_LOAD_CELL_SLOPE, THREAD_MESSAGE_REQUEST_LOAD_CELL_SLOPE, THREAD_MESSAGE_SERIAL_WRITE, THREAD_MESSAGE_STORE_LOAD_CELL_SLOPE, THREAD_MESSAGE_HEARTBEAT, WorkQ_Message
 from src.Utils import Utils as utl
 
 # Class Definitions ===============================================================================
@@ -44,7 +44,6 @@ class DatabaseHandler():
         Args:
             document (MessageData): the change notification from the database.
         """
-
         logger.info("Received new heartbeat from the database")
         logger.debug(f"Record command: {document.record.message}")
         DatabaseHandler.send_message_workq.put(

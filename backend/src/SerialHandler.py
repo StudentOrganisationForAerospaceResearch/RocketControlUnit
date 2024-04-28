@@ -137,7 +137,7 @@ class SerialHandler():
 
         # Try to check if the received message is load_cell_information
         try:
-            json_data = json.loads(json_data)
+            json_data = json.loads(json_str)
             if len(list(json_data.keys())) < 3:
                 logger.warning(f"Json is poorly formed: {json_data}")
                 return

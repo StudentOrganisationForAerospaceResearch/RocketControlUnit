@@ -175,19 +175,19 @@ Python dependencies are inside the requrements.txt
 
 - General
   - [ ] Add secrets.ini for db URL
-  - [ ] Need to add heartbeat
+  - [x] Need to add heartbeat
 - RaspberryPi
-  - [ ] Add script to run backend on startup
+  - [x] Add script to run backend on startup
 - Backend
-  - [ ] Fix PBV4 Proto
-  - [ ] Fix GPS showing NULL
-  - [ ] Fix system state proto
-  - [ ] Fix PBV3 telemetry issue
-  - [ ] Fix launch rail load cell telemetry
+  - [x] Fix PBV4 Proto
+  - [x] Fix GPS showing NULL
+  - [x] Fix system state proto
+  - [x] Fix PBV3 telemetry issue
+  - [x] Fix launch rail load cell telemetry
   - [x] Finish serial handler
   - [x] Finish database handler
   - [ ] Add backend handler thread
-  - [ ] Add loadcell calibration and tare
+  - [x] Add loadcell calibration and tare
   - [ ] Look into overhauling the threading system
   - [ ] In the backend handler thread add an error
         handling or a push error to db table.
@@ -198,19 +198,19 @@ Python dependencies are inside the requrements.txt
         switching log levels and having the logs possibly be handled by
         one thread, maybe not even the backend thread but possibly a different
         logging thread.
-  - [ ] Update DB URL.
+  - [x] Update DB URL.
   - [ ] Cython
 - Database
   - [x] Add LoadCellCommands Table
-  - [ ] Remove Unused fields
+  - [x] Remove Unused fields
 - Frontend
   - [x] Finish Background Creation
   - [x] Move Components in Place
   - [x] Add Loadcell Calibration
   - [ ] Add Fluid Flow Animation
   - [ ] Add Authentication
-  - [ ] Add Test State
+  - [x] Add Test State
   - [x] Tie Ignitors
-  - [ ] Verify Correct State on Refresh
+  - [x] Verify Correct State on Refresh
   - [x] Figure Out Deployment
 - [x] Integration Test

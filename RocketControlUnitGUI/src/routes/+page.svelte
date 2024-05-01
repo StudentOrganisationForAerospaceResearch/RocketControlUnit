@@ -203,7 +203,7 @@
 	$: mev_display = $mev_open === undefined ? 'N/A' : $mev_open ? 'OPEN' : 'CLOSED';
 
 	$: battery_display = $battery_voltage === undefined ? 'N/A' : $battery_voltage;
-	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'ONBOARD' : 'GROUND';
+	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'ROCKET' : 'GROUND';
 
 	$: upper_pv_display = $upper_pv_pressure === undefined ? 'N/A' : $upper_pv_pressure;
 

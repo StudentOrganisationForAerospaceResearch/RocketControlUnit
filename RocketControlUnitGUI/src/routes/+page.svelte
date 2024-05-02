@@ -288,7 +288,7 @@
 		// Subscribe to changes in the 'DmbPressure' collection
 		PB.collection('DmbPressure').subscribe('*', function (e) {
 			// Update the DmbPressure data store whenever a change is detected
-			if (e.record.upper_pv_pressure < -100) {
+			if (e.record.upper_pv_pressure < -100000) {
 				upper_pv_pressure.set('DC');
 			}
 			else {
@@ -312,13 +312,13 @@
 		// Subscribe to changes in the 'PbbPressure' collection
 		PB.collection('PbbPressure').subscribe('*', function (e) {
 			// Update the PbbPressure data store whenever a change is detected
-			if (e.record.ib_pressure < -100) {
+			if (e.record.ib_pressure < -100000) {
 				ib_pressure.set('DC');
 			}
 			else {
 				ib_pressure.set(Math.round(e.record.ib_pressure/1000));
 			}
-			if (e.record.lower_pv_pressure < -100) {
+			if (e.record.lower_pv_pressure < -100000) {
 				lower_pv_pressure.set('DC');
 			}
 			else {

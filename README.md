@@ -186,7 +186,7 @@ Python dependencies are inside the requrements.txt
   - [x] Fix launch rail load cell telemetry
   - [x] Finish serial handler
   - [x] Finish database handler
-  - [ ] Add backend handler thread
+  - [x] Add backend handler thread
   - [x] Add loadcell calibration and tare
   - [ ] Look into overhauling the threading system
   - [ ] In the backend handler thread add an error

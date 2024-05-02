@@ -491,6 +491,9 @@
 	// Open to alternate ways of doing it. Everything I tried didn't work.
 	async function handleIgnition(e: MouseEvent) {
 		await handleSliderChange(e, 'NODE_RCU', 'RCU_IGNITE_PAD_BOX1', 'RCU_KILL_BOX1');
+
+		await new Promise(resolve=> setTimeout(resolve, 3500));
+		
 		await handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX2', 'RCU_IGNITE_PAD_BOX2');
 	}
 

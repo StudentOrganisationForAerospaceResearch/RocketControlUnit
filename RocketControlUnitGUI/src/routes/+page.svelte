@@ -126,7 +126,6 @@
     });
 
 	const ac1_open = writable(undefined);
-	const ac2_open = writable(undefined);
 
 	const pbv1_open = writable(undefined);
 	const pbv2_open = writable(undefined);
@@ -175,7 +174,6 @@
 	const sob_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
 
 	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
-	$: ac2_display = $ac2_open === undefined ? 'N/A' : $ac2_open ? 'ON' : 'OFF';
 
 	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSE';
 	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'OPEN' : 'CLOSE';
@@ -229,7 +227,6 @@
 		// Subscribe to changes in the 'RelayStatus' collection
 		PB.collection('RelayStatus').subscribe('*', function (e) {
 			ac1_open.set(e.record.ac1_open);
-			ac2_open.set(e.record.ac2_open);
 
 			pbv1_open.set(e.record.pbv1_open);
 			pbv2_open.set(e.record.pbv2_open);
@@ -490,12 +487,28 @@
 	// NOTE: This seems odd but since the event will switch these MUST be swapped
 	// Open to alternate ways of doing it. Everything I tried didn't work.
 	async function handleIgnition(e: MouseEvent) {
-		await handleSliderChange(e, 'NODE_RCU', 'RCU_IGNITE_PAD_BOX1', 'RCU_KILL_BOX1');
-
-		await new Promise(resolve=> setTimeout(resolve, 3500));
-		
+		await handleSliderChange(e, 'NODE_RCU', 'RCU_IGNITE_PAD_BOX1', 'RCU_KILL_PAD_BOX1');
 		await handleSliderChange(e, 'NODE_RCU', 'RCU_KILL_PAD_BOX2', 'RCU_IGNITE_PAD_BOX2');
+
+		setTimeout(() => {
+			instantStateChange("RSC_IGNITION_TO_LAUNCH");
+		}, 3500);
+
+		setTimeout(() => {
+			PB.collection('CommandMessage').create({
+				// Write a new record with all current values
+				target: "NODE_RCU",
+				command: "RCU_KILL_PAD_BOX1"
+			});
+			PB.collection('CommandMessage').create({
+				// Write a new record with all current values
+				target: "NODE_RCU",
+				command: "RCU_KILL_PAD_BOX2"
+			});
+		}, 10000);
 	}
+
+
 
 </script>
 
@@ -511,18 +524,6 @@
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}
 		>
 			{ac1_display}</SlideToggle
-		>
-	</div>
-
-	<div class="ac2_slider">
-		<SlideToggle
-			name="ac2_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$ac2_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC2', 'RCU_CLOSE_AC2')}
-		>
-			{ac2_display}</SlideToggle
 		>
 	</div>
 
@@ -986,14 +987,6 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.025);
 		left: 8.6%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-		font-size: 16px;
-	}
-
-	.ac2_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.10);
-		left: 80%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}

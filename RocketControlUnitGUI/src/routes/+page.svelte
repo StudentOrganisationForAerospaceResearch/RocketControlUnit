@@ -201,7 +201,7 @@
 	$: mev_display = $mev_open === undefined ? 'N/A' : $mev_open ? 'OPEN' : 'CLOSED';
 
 	$: battery_display = $battery_voltage === undefined ? 'N/A' : $battery_voltage;
-	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'ROCKET' : 'GROUND';
+	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'GROUND' : 'ROCKET';
 
 	$: upper_pv_display = $upper_pv_pressure === undefined ? 'N/A' : $upper_pv_pressure;
 
@@ -279,7 +279,12 @@
 		PB.collection('Battery').subscribe('*', function (e) {
 			// Update the Battery data store whenever a change is detected
 			battery_voltage.set(e.record.voltage);
-			power_source.set(e.record.power_source);
+			if (e.record.power_source == "GROUND") {
+				power_source.set(true);
+			}
+			if (e.record.power_source == "ROCKET") {
+				power_source.set(false);
+			}
 		});
 
 		// Subscribe to changes in the 'DmbPressure' collection

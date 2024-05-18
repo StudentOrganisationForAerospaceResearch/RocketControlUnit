@@ -19,7 +19,8 @@
 	initializeStores();
 
 	$: logoSrc = $modeCurrent ? '/soar_logo_light.svg' : '/soar_logo_dark.svg';
-	$: homeIcon = $modeCurrent ? '/rocket-light.png' : '/rocket-dark.png';
+	$: homeIcon = $modeCurrent ? '/gauge-icon-light.png' : '/gauge-icon-dark.png';
+	$: rocketIcon = $modeCurrent ? '/rocket-light.png' : '/rocket-dark.png';
 	$: aboutIcon = $modeCurrent ? '/info-light.png' : '/info-dark.png';
 	$: cameraIcon = $modeCurrent ? '/camera-light.png' : '/camera-dark.png';
 	$: statsIcon = $modeCurrent ? '/stats-light.png' : '/stats-dark.png';
@@ -60,7 +61,10 @@
 		<AppRail>
 			<AppRailAnchor hover="bg-primary-hover-token" href="/" selected={$page.url.pathname === '/'}><img src={homeIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
-			
+
+			<AppRailAnchor hover="bg-primary-hover-token" href="/rocket" selected={$page.url.pathname === "/rocket/"}><img src={rocketIcon} class="sideBar-center" 
+			alt="Icon" /></AppRailAnchor>
+			 
 			<AppRailAnchor href="/data" selected={$page.url.pathname === "/data"}><img src={statsIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
 			

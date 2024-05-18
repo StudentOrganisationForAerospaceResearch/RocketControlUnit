@@ -410,6 +410,43 @@
 		});
 	}
 
+	let wasLiveAtAnyPoint = false;
+
+	async function pollIgnitors() {
+		if (box1_display === 'LIVE' || box2_display === 'LIVE') {
+			return wasLiveAtAnyPoint = true;
+		}
+
+		return wasLiveAtAnyPoint;
+	}
+
+	async function handleLaunchSequence() {
+		await PB.collection('CommandMessage').create({
+			target: 'NODE_RCU',
+			command: 'RCU_IGNITE_PAD_BOX1'
+		});
+
+		await PB.collection('CommandMessage').create({
+			target: 'NODE_RCU',
+			command: 'RCU_IGNITE_PAD_BOX2'
+		});
+
+		const pollInterval = setInterval(pollIgnitors, 100);
+
+		await new Promise(resolve => setTimeout(resolve, 3500));
+
+		clearInterval(pollInterval);
+
+		if (wasLiveAtAnyPoint) {
+			await PB.collection('CommandMessage').create({
+				target: 'NODE_DMB',
+				command: 'RSC_IGNITION_TO_LAUNCH'
+			});
+		}
+
+		wasLiveAtAnyPoint = false;
+	}
+
 	async function writeLoadCellCommandMessage(target: string, command: string, weight_kg: number) {
 		await PB.collection('LoadCellCommands').create({
 			target: target,
@@ -902,7 +939,7 @@
 		<button
 			class="btn variant-filled-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.47);"
-			on:click={() => instantStateChange("RSC_IGNITION_TO_LAUNCH")}>LAUNCH</button
+			on:click={() => handleLaunchSequence()}>LAUNCH</button
 		>
 		<button
 		class="btn variant-filled-secondary next-state-btn"

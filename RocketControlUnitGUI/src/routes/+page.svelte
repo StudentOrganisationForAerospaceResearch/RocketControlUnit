@@ -5,13 +5,11 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import type { Writable } from 'svelte/store';
-	import PocketBase from 'pocketbase';
+	import { PB } from '$lib/database-client';
 	import BackgroundDark from './background-dark.svelte';
 	import BackgroundLight from './background-light.svelte';
 
 	const modalStore = getModalStore();
-
-	const PB = new PocketBase('http://192.168.0.69:8090');
 
 	let nextStatePending: string = '';
 	function confirmStateChange(state: string): void {

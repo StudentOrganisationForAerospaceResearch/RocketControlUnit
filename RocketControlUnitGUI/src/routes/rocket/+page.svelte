@@ -29,7 +29,7 @@ onMount(() => {
         width: 60vw;
     }
     .rocket-vis {
-        padding-top: 13vw;
+        padding-top: 17vh;
         position: relative;
         display: flex;
         justify-content: center; 
@@ -39,7 +39,7 @@ onMount(() => {
     }
     .rocket-vis-3d {
         position: absolute;
-        top: 74%;
+        top: 72%;
         left: 50.75%;
         transform: translate(-50%, -50%);
         display: flex;

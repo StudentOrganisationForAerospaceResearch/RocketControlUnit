@@ -37,9 +37,10 @@
   position.z={10}
 />
 <T.AmbientLight intensity={0.3} />
-<T.GridHelper args={[10, 10]} />
+<T.GridHelper args={[9, 9]} />
+
 <T.Mesh
   position.y={1}
-  geometry={new BoxGeometry(2, 2, 2)}
+  geometry={new BoxGeometry(1, 4, 1)}
   material={new MeshStandardMaterial()}
 />

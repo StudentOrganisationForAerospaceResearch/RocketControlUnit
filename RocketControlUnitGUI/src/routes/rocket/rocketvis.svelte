@@ -27,11 +27,11 @@
     {enableZoom}
   />
 </T.PerspectiveCamera>
-<Gizmo
+<!-- <Gizmo
   horizontalPlacement="left"
   paddingX={20}
   paddingY={20}
-/>
+/> -->
 <T.DirectionalLight
   position.y={10}
   position.z={10}

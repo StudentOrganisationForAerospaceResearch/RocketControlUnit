@@ -62,16 +62,16 @@
 			<AppRailAnchor hover="bg-primary-hover-token" href="/" selected={$page.url.pathname === '/'}><img src={homeIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
 
-			<AppRailAnchor hover="bg-primary-hover-token" href="/rocket" selected={$page.url.pathname === "/rocket/"}><img src={rocketIcon} class="sideBar-center" 
+			<AppRailAnchor hover="bg-primary-hover-token" href="/rocket" selected={$page.url.pathname.startsWith("/rocket")}><img src={rocketIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
 			 
-			<AppRailAnchor href="/data" selected={$page.url.pathname === "/data"}><img src={statsIcon} class="sideBar-center" 
+			<AppRailAnchor href="/data" selected={$page.url.pathname.startsWith("/data")}><img src={statsIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
 			
-			<AppRailAnchor href="/live-feed" selected={$page.url.pathname === "/live-feed"}><img src={cameraIcon} class="sideBar-center" 
+			<AppRailAnchor href="/live-feed" selected={$page.url.pathname.startsWith("/live-feed")}><img src={cameraIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
 			
-			<AppRailAnchor href="/about" selected={$page.url.pathname === "/about"}><img src={aboutIcon} class="sideBar-center" 
+			<AppRailAnchor href="/about" selected={$page.url.pathname.startsWith("/about")}><img src={aboutIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
 		</AppRail>
 	</svelte:fragment>

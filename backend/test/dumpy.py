@@ -210,4 +210,4 @@ while True:
     for function in functions:
         executor.submit(function)
     # Pause for 3 seconds
-    time.sleep(3)
+    time.sleep(0.333)

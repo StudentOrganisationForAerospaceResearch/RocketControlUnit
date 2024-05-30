@@ -13,7 +13,7 @@
 	} from '@skeletonlabs/skeleton';
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
-	import { currentState } from '../store';
+	import { currentState } from '$lib/store';
 	import { page } from '$app/stores';
 
 	initializeStores();

@@ -1,13 +1,14 @@
 <script lang="ts">
-	import { PB } from '$lib/database-client';
+	import { PB, pt1_pressure, start_subscriptions } from '$lib/store';
+	import { get_class_color, rgb_str_to_hex } from '$lib/utils';
 	import { modeCurrent } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 
-	let data = [];
+	let ib_pressure_data_points = [];
 
-	var options: any = {
+	var ib_pressure_options: any = {
         series: [{
-          data: data.slice()
+          data: ib_pressure_data_points.slice()
         }],
 		title: {
           text: 'Dynamic Updating Chart',
@@ -35,7 +36,7 @@
             enabled: true,
             easing: 'linear',
             dynamicAnimation: {
-              speed: 500
+              speed: 333
             }
           },
           toolbar: {
@@ -92,6 +93,7 @@
 
 	var chart:any = null;
 
+
 	async function make_line_chart(options: any) {
 		if ($modeCurrent){
 			options = change_options_for_mode("light", options);
@@ -104,29 +106,6 @@
 		const ApexCharts = (await import('apexcharts')).default
 		chart = new ApexCharts(document.querySelector('.container'), options);
 		chart.render();
-	}
-
-	function get_class_color(class_name: string){
-		// Create an element with the bg-primary-500 class
-        const el = document.createElement('div');
-        el.className = class_name;
-
-		document.body.appendChild(el);
-        // Get the computed background color
-        const color = getComputedStyle(el).backgroundColor;
-        // Remove the element from the body
-        document.body.removeChild(el);
-
-		return color
-	}
-
-	function rgb_str_to_hex(color: string){
-		var rgb_vec = (color.split("(")[1].split(")")[0]).split(",");
-		var hex_str = "#";
-		hex_str += parseInt(rgb_vec[0]).toString(16);
-		hex_str += parseInt(rgb_vec[1]).toString(16);
-		hex_str += parseInt(rgb_vec[2]).toString(16);
-		return hex_str;
 	}
 
 	function change_options_for_mode(mode: string, options:any):any {
@@ -211,48 +190,32 @@
 	$: {
 		if (mounted){
 			if ($modeCurrent){
-				options = change_options_for_mode("light", options);
+				ib_pressure_options = change_options_for_mode("light", ib_pressure_options);
 			} else{
-				options = change_options_for_mode("dark", options);
+				ib_pressure_options = change_options_for_mode("dark", ib_pressure_options);
 			}
 			if (chart != null){
-				(async () => {chart.updateOptions(options);})();
+				(async () => {chart.updateOptions(ib_pressure_options);})();
 			}
 		}
     }
 
 	onMount(() => {
-		options.series[0].color = rgb_str_to_hex(get_class_color('bg-primary-500'));
-		make_line_chart(options);
-
+		start_subscriptions();
+		ib_pressure_options.series[0].color = rgb_str_to_hex(get_class_color('bg-primary-500'));
+		make_line_chart(ib_pressure_options);
 		mounted = true;
 	});
 
 
-
-
-	let intervalId: any;
-	let last_val = 50;
-	let record = null;
-    onMount(() => {
-        intervalId = setInterval(async () => {
-			last_val =+ Math.floor(Math.random() * 60) - 30
-            // await PB.collection('Test').create({
-            //     height: last_val,
-            // });
-			data.push(last_val);
-			chart.updateSeries([{
-				data: data
-			}])
-
-        }, 500); // 5000 milliseconds = 5 seconds
-    });
-
-
-
-
-
-
+	$: {
+		if(mounted){
+			if(typeof $pt1_pressure !== "undefined" && chart != null){
+				ib_pressure_data_points.push($pt1_pressure);
+				chart.updateSeries([{data: ib_pressure_data_points}])
+			}
+		}
+    }
 
 </script>
 

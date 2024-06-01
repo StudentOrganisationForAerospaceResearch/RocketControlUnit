@@ -12,6 +12,18 @@
 	const modalStore = getModalStore();
 
 	const PB = new PocketBase('http://192.168.0.69:8090');
+	
+	PB.authStore.clear();
+	let auth = false;
+
+	onMount(async () => {
+		const email = import.meta.env.VITE_EMAIL;
+		const password = import.meta.env.VITE_PASSWORD;
+		if (email && password) {
+			await PB.admins.authWithPassword(email, password);
+			auth = true;
+		}
+	});
 
 	let nextStatePending: string = '';
 	function confirmStateChange(state: string): void {
@@ -114,11 +126,13 @@
     let intervalId: any;
 
     onMount(() => {
-        intervalId = setInterval(async () => {
-            await PB.collection('Heartbeat').create({
-                message: 'heartbeat'
-            });
-        }, 5000); // 5000 milliseconds = 5 seconds
+		if (auth === true) {
+			intervalId = setInterval(async () => {
+				await PB.collection('Heartbeat').create({
+					message: 'heartbeat'
+				});
+			}, 5000); // 5000 milliseconds = 5 seconds
+		}
     });
 
     onDestroy(() => {

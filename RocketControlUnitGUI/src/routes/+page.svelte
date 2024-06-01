@@ -79,8 +79,45 @@
 
 	let containerElement: any;
 
+	interface Timestamps {
+		[key: string]: number;
+	}
+
+	let timestamps: Timestamps = {
+		relay_status: Date.now(),
+		combustion_control_status: Date.now(),
+		rcu_temp: Date.now(),
+		pad_box_status: Date.now(),
+		battery: Date.now(),
+		dmb_pressure: Date.now(),
+		launch_rail_load_cell: Date.now(),
+		nos_load_cell: Date.now(),
+		pbb_pressure: Date.now(),
+		pbb_temperature: Date.now(),
+		rcu_pressure: Date.now(),
+		sob_temperature: Date.now(),
+		sys_state: Date.now()
+	};
+
 	onMount(() => {
 		containerElement = document.querySelector('.container') as HTMLElement;
+
+		setInterval(() => {
+			for (let variable in timestamps) {
+				let elements = document.getElementsByClassName(variable);
+				if (!elements.length) continue;
+
+				for(let i = 0; i < elements.length; i++) {
+					let element = elements[i];
+
+					if (Date.now() - timestamps[variable] > 5000) {
+						element.classList.add('outdated');
+					} else {
+						element.classList.remove('outdated');
+					}
+				}
+			}
+		}, 1000);
 
 		// Define the resize handler
 		const handleResize = () => {
@@ -225,6 +262,20 @@
 	$: sob_tc1_display = $sob_tc1_temperature === undefined ? 'N/A' : $sob_tc1_temperature;
 	$: sob_tc2_display = $sob_tc2_temperature === undefined ? 'N/A' : $sob_tc2_temperature;
 
+	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
+	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
+	$: rcuTempOutdated = Date.now() - timestamps.rcu_temp > 5000;
+	$: padBoxStatusOutdated = Date.now() - timestamps.pad_box_status > 5000;
+	$: batteryOutdated = Date.now() - timestamps.battery > 5000;
+	$: dmbPressureOutdated = Date.now() - timestamps.dmb_pressure > 5000;
+	$: launchRailLoadCellOutdated = Date.now() - timestamps.launch_rail_load_cell > 5000;
+	$: nosLoadCellOutdated = Date.now() - timestamps.nos_load_cell > 5000;
+	$: pbbPressureOutdated = Date.now() - timestamps.pbb_pressure > 5000;
+	$: pbbTemperatureOutdated = Date.now() - timestamps.pbb_temperature > 5000;
+	$: rcuPressureOutdated = Date.now() - timestamps.rcu_pressure > 5000;
+	$: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
+	$: sysStateOutdated = Date.now() - timestamps.sys_state > 5000;
+
 	onMount(async () => {
 		// Subscribe to changes in the 'RelayStatus' collection
 		PB.collection('RelayStatus').subscribe('*', function (e) {
@@ -241,6 +292,7 @@
 			sol7_open.set(e.record.sol7_open);
 			sol8a_open.set(e.record.sol8a_open);
 			sol8b_open.set(e.record.sol8b_open);
+			timestamps.relay_status = Date.now();
 		});
 
 		// Subscribe to changes in the 'CombustionControlStatus' collection
@@ -249,6 +301,7 @@
 			vent_open.set(e.record.vent_open);
 			drain_open.set(e.record.drain_open);
 			mev_open.set(e.record.mev_open);
+			timestamps.combustion_control_status = Date.now();
 		});
 
 		// Subscribe to changes in the 'RcuTemp' collection
@@ -267,6 +320,7 @@
 			else {
 				rcu_tc2_temperature.set(Math.round(e.record.tc2_temperature/100));
 			}
+			timestamps.rcu_temp = Date.now();
 		});
 
 		// Subscribe to changes in the 'PadBoxStatus' collection
@@ -276,6 +330,7 @@
 			continuity2.set(e.record.continuity_2);
 			box1_on.set(e.record.box1_on);
 			box2_on.set(e.record.box2_on);
+			timestamps.pad_box_status = Date.now();
 		});
 
 		// Subscribe to changes in the 'Battery' collection
@@ -283,6 +338,7 @@
 			// Update the Battery data store whenever a change is detected
 			battery_voltage.set(e.record.voltage);
 			power_source.set(e.record.power_source);
+			timestamps.battery = Date.now();
 		});
 
 		// Subscribe to changes in the 'DmbPressure' collection
@@ -294,12 +350,14 @@
 			else {
 				upper_pv_pressure.set(Math.round(e.record.upper_pv_pressure/1000));
 			}
+			timestamps.dmb_pressure = Date.now();
 		});
 
 		// Subscribe to changes in the 'LaunchRailLoadCell' collection
 		PB.collection('LaunchRailLoadCell').subscribe('*', function (e) {
 			// Update the LaunchRailLoadCell data store whenever a change is detected
 			rocket_mass.set(e.record.rocket_mass);
+			timestamps.launch_rail_load_cell = Date.now();
 		});
 
 		// Subscribe to changes in the 'NosLoadCell' collection
@@ -307,6 +365,7 @@
 			// Update the NosLoadCell data store whenever a change is detected
 			nos1_mass.set(e.record.nos1_mass);
 			nos2_mass.set(e.record.nos2_mass);
+			timestamps.nos_load_cell = Date.now();
 		});
 
 		// Subscribe to changes in the 'PbbPressure' collection
@@ -324,6 +383,7 @@
 			else {
 				lower_pv_pressure.set(Math.round(e.record.lower_pv_pressure/1000));
 			}
+			timestamps.pbb_pressure = Date.now();
 		});
 
 		// Subscribe to changes in the 'PbbTemperature' collection
@@ -335,6 +395,7 @@
 			else {
 				pv_temperature.set(Math.round(e.record.ib_temperature/100));
 			}
+			timestamps.pbb_temperature = Date.now();
 		});
 
 		// Subscribe to changes in the 'RcuPressure' collection
@@ -364,6 +425,7 @@
 			else {
 				pt4_pressure.set(e.record.pt4_pressure);
 			}
+			timestamps.rcu_pressure = Date.now();
 		});
 
 		// Subscribe to changes in the 'SobTemperature' collection
@@ -382,12 +444,14 @@
 			else {
 				sob_tc2_temperature.set(Math.round(e.record.tc2_temperature/100));
 			}
+			timestamps.sob_temperature = Date.now();
 		});
 
 		// Subscribe to changes in the 'sys_state' collection
 		PB.collection('sys_state').subscribe('*', function (e) {
 			// Update the SystemState data store whenever a change is detected
 			currentState.set(e.record.rocket_state);
+			timestamps.sys_state = Date.now();
 		});
 	});
 
@@ -539,7 +603,7 @@
 <div class="container">
 	<svelte:component this={BackgroundComponent} />
 
-	<div class="ac1_slider">
+	<div class="ac1_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="ac1_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -551,7 +615,7 @@
 		>
 	</div>
 
-	<div class="ac2_slider">
+	<div class="ac2_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="ac2_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -563,7 +627,7 @@
 		>
 	</div>
 
-	<div class="pbv1_slider">
+	<div class="pbv1_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="pbv1_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -575,7 +639,7 @@
 		>
 	</div>
 
-	<div class="pbv2_slider">
+	<div class="pbv2_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="pbv2_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -587,7 +651,7 @@
 		>
 	</div>
 
-	<div class="pbv3_slider">
+	<div class="pbv3_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="pbv3_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -599,7 +663,7 @@
 		>
 	</div>
 
-	<div class="pbv4_slider">
+	<div class="pbv4_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="pbv4_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -611,7 +675,7 @@
 		>
 	</div>
 	
-	<div class="sol5_slider">
+	<div class="sol5_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="sol5_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -623,7 +687,7 @@
 		>
 	</div>
 
-	<div class="sol6_slider">
+	<div class="sol6_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="sol6_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -635,7 +699,7 @@
 		>
 	</div>
 
-	<div class="sol7_slider">
+	<div class="sol7_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="sol7_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -647,7 +711,7 @@
 		>
 	</div>
 
-	<div class="sol8a_slider">
+	<div class="sol8a_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="sol8a_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -659,7 +723,7 @@
 		>
 	</div>
 
-	<div class="sol8b_slider">
+	<div class="sol8b_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="sol8b_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -671,7 +735,7 @@
 		>
 	</div>
 
-	<div class="vent_slider">
+	<div class="vent_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="vent_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -683,7 +747,7 @@
 		>
 	</div>
 
-	<div class="drain_slider">
+	<div class="drain_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="drain_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -695,7 +759,7 @@
 		>
 	</div>
 
-	<div class="power_source_slider">
+	<div class="power_source_slider battery {batteryOutdated  ? 'outdated' : ''}">
 		<SlideToggle
 			name="power_source_slider"
 			active="bg-primary-500 dark:bg-primary-500"
@@ -805,79 +869,79 @@
 		</button>
 	</div>
 
-	<div class="rcu_tc1">
+	<div class="rcu_tc1 rcu_temp {rcuTempOutdated ? 'outdated' : ''}">
 		<p>{rcu_tc1_display}</p>
 	</div>
 
-	<div class="rcu_tc2">
+	<div class="rcu_tc2 rcu_temp {rcuTempOutdated ? 'outdated' : ''}">
 		<p>{rcu_tc2_display}</p>
 	</div>
 
-	<div class="nos1">
+	<div class="nos1 nos_load_cell {nosLoadCellOutdated ? 'outdated' : ''}">
 		<p>{nos1_mass_display}</p>
 	</div>
 
-	<div class="nos2">
+	<div class="nos2 nos_load_cell {nosLoadCellOutdated ? 'outdated' : ''}">
 		<p>{nos2_mass_display}</p>
 	</div>
 
-	<div class="pt1_pressure">
+	<div class="pt1_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
 		<p>{pt1_pressure_display}</p>
 	</div>
 
-	<div class="pt2_pressure">
+	<div class="pt2_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
 		<p>{pt2_pressure_display}</p>
 	</div>
 
-	<div class="pt3_pressure">
+	<div class="pt3_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
 		<p>{pt3_pressure_display}</p>
 	</div>
 
-	<div class="pt4_pressure">
+	<div class="pt4_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
 		<p>{pt4_pressure_display}</p>
 	</div>
 
-	<div class="box1_continuity">
+	<div class="box1_continuity pad_box_status {padBoxStatusOutdated ? 'outdated' : ''}">
 		<p>{continuity1_display}</p>
 	</div>
 
-	<div class="box2_continuity">
+	<div class="box2_continuity pad_box_status {padBoxStatusOutdated ? 'outdated' : ''}">
 		<p>{continuity2_display}</p>
 	</div>
 
-	<div class="mev_status">
+	<div class="mev_status combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
 		<p>{mev_display}</p>
 	</div>
 
-	<div class="battery_voltage">
+	<div class="battery_voltage  battery {batteryOutdated ? 'outdated' : ''}">
 		<p>{battery_display}</p>
 	</div>
 
-	<div class="upper_pv_pressure">
+	<div class="upper_pv_pressure dmb_pressure {dmbPressureOutdated ? 'outdated' : ''}">
 		<p>{upper_pv_display}</p>
 	</div>
 
-	<div class="rocket_mass">
+	<div class="rocket_mass launch_rail_load_cell {launchRailLoadCellOutdated ? 'outdated' : ''}">
 		<p>{rocket_mass_display}</p>
 	</div>
 
-	<div class="ib_pressure">
+	<div class="ib_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
 		<p>{ib_pressure_display}</p>
 	</div>
 
-	<div class="lower_pv_pressure">
+	<div class="lower_pv_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
 		<p>{lower_pv_display}</p>
 	</div>
 
-	<div class="pv_temperature">
+	<div class="pv_temperature pbb_temperature {pbbTemperatureOutdated ? 'outdated' : ''}">
 		<p>{pv_temperature_display}</p>
 	</div>
 
-	<div class="sob_tc1">
+	<div class="sob_tc1 sob_temperature {sobTemperatureOutdated ? 'outdated' : ''}">
 		<p>{sob_tc1_display}</p>
 	</div>
 
-	<div class="sob_tc2">
+	<div class="sob_tc2 sob_temperature {sobTemperatureOutdated ? 'outdated' : ''}">
 		<p>{sob_tc2_display}</p>
 	</div>
 
@@ -1341,5 +1405,10 @@
 		left: 69%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
+	}
+
+	.outdated {
+		color: #d4163c
+
 	}
 </style>

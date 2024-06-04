@@ -2,39 +2,22 @@
 import { onMount } from 'svelte';
 import HexaBox from './HexaBox.svelte';
 import CompassRose from './compass-rose-dark.svelte';
-import * as THREE from 'three';
+import { Canvas } from '@threlte/core'
+import RocketVis from './rocketvis.svelte'
+import Settings from './setpane.svelte'
+let autoRotate: boolean = false
+let enableDamping: boolean = true
+let rotateSpeed: number = 1
+let zoomToCursor: boolean = false
+let zoomSpeed: number = 1
+let minPolarAngle: number = 0
+let maxPolarAngle: number = Math.PI
+let enableZoom: boolean = true
 
 let fieldNames = ['LAT','LON', 'ALT (TOTAL)', '', '', 'ALT-GEO'];
 let fieldText = [1,2,3,' ',' ',6];
 
-let container;
-
 onMount(() => {
-    container = document.createElement('div');
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer();
-
-    renderer.setSize(container.clientWidth, container.clientHeight);
-    container.appendChild(renderer.domElement);
-
-    const geometry = new THREE.BoxGeometry();
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
-
-    camera.position.z = 5;
-
-    const animate = function () {
-        requestAnimationFrame(animate);
-
-        // Use quaternion for rotation
-        cube.quaternion.multiply(new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), 0.01));
-
-        renderer.render(scene, camera);
-};
-
-animate();
 });
 
 </script>
@@ -46,14 +29,25 @@ animate();
         width: 60vw;
     }
     .rocket-vis {
+        padding-top: 17vh;
+        position: relative;
         display: flex;
         justify-content: center; 
+        align-items: center;
         width: 80vw;
+        height: 40vh;
+    }
+    .rocket-vis-3d {
+        position: absolute;
+        top: 72%;
+        left: 50.75%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        justify-content: center;
+        width: 80vw;
+        height: 40vh;
     }
 </style>
-
-
-<svelte:head></svelte:head>
 
 <main>
 	<p>ROCKET PAGE</p>
@@ -65,9 +59,55 @@ animate();
         <HexaBox bind:fieldNames={fieldNames} bind:fieldTexts={fieldText}/>
     </div>
 
+    <!-- <canvas bind:this={container}></canvas> -->
+
+    <!-- <div class="rocket-vis">
+        <svelte:component this={CompassRose}/>
+        <div class="rocket-vis-3d">
+        <Canvas>
+            <RocketVis
+              {enableDamping}
+              {autoRotate}
+              {rotateSpeed}
+              {zoomToCursor}
+              {zoomSpeed}
+              {minPolarAngle}
+              {maxPolarAngle}
+              {enableZoom}
+            />
+          </Canvas>
+        </div>
+    </div> -->
+
     <div class="rocket-vis">
         <svelte:component this={CompassRose}/>
-        <div bind:this={container}></div>
+            <div class="rocket-vis-3d">
+                <Canvas>
+                    <RocketVis
+                      {enableDamping}
+                      {autoRotate}
+                      {rotateSpeed}
+                      {zoomToCursor}
+                      {zoomSpeed}
+                      {minPolarAngle}
+                      {maxPolarAngle}
+                      {enableZoom}
+                    />
+                </Canvas>
+            </div>
     </div>
-    
+
+    <div class="rocket-vis">
+
+      </div>
+      <!-- <Settings
+        bind:enableDamping
+        bind:autoRotate
+        bind:rotateSpeed
+        bind:zoomToCursor
+        bind:zoomSpeed
+        bind:minPolarAngle
+        bind:maxPolarAngle
+        bind:enableZoom
+      /> -->
 </main>

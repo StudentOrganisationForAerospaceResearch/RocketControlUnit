@@ -37,7 +37,6 @@ message ControlMessage {
         Heartbeat hb = 8;
         SystemState sys_state = 9;
         SystemControl sys_ctrl = 10;
-        HeartbeatState hb_state = 11;
     }
 }
 
@@ -115,18 +114,4 @@ message SystemControl {
 
     Command sys_cmd = 1;  // The current state of the system
     uint32 cmd_param = 2; // The parameter for the command, if applicable
-}
-
-/* Heartbeat Telemetry ------------------------------------------------------------------*/
-message HeartbeatState {
-    enum TimerState {
-        UNINITIALIZED = 0;
-        COUNTING = 1;
-        PAUSED = 2;
-        COMPLETE = 3;
-    }
- 
-    TimerState timer_state = 1; // The current state of the timer
-    uint32 timer_period = 2; // The original period of the timer in milliseconds
-    uint32 timer_remaining = 3; // The remaining time on the timer in milliseconds
 }

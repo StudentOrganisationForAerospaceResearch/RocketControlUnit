@@ -437,13 +437,12 @@
 
 		if (wasLiveAtAnyPoint) {
 			for (let i = 0; i < 3; i++) {
-				setTimeout(async () => {
-					await PB.collection('CommandMessage').create({
-						target: 'NODE_DMB',
-						command: 'RSC_IGNITION_TO_LAUNCH'
-					});
-				}, 100);
-			}
+				await PB.collection('CommandMessage').create({
+					target: 'NODE_DMB',
+					command: 'RSC_IGNITION_TO_LAUNCH'
+				});
+				await new Promise(resolve => setTimeout(resolve, 100));
+			} 
 		}
 		wasLiveAtAnyPoint = false;
 	}

@@ -436,12 +436,15 @@
 		clearInterval(pollInterval);
 
 		if (wasLiveAtAnyPoint) {
-			await PB.collection('CommandMessage').create({
-				target: 'NODE_DMB',
-				command: 'RSC_IGNITION_TO_LAUNCH'
-			});
+			for (let i = 0; i < 3; i++) {
+				setTimeout(async () => {
+					await PB.collection('CommandMessage').create({
+						target: 'NODE_DMB',
+						command: 'RSC_IGNITION_TO_LAUNCH'
+					});
+				}, 100);
+			}
 		}
-
 		wasLiveAtAnyPoint = false;
 	}
 

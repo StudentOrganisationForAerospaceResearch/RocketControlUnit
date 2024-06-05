@@ -23,6 +23,7 @@
 	$: aboutIcon = $modeCurrent ? '/info-light.png' : '/info-dark.png';
 	$: cameraIcon = $modeCurrent ? '/camera-light.png' : '/camera-dark.png';
 	$: statsIcon = $modeCurrent ? '/stats-light.png' : '/stats-dark.png';
+	let readOnlyIcon = '/read-only.svg';
 
 </script>
 
@@ -52,6 +53,12 @@
 
 			<svelte:fragment slot="trail">
 				<LightSwitch class="ml-auto" />
+				<img
+					src={readOnlyIcon}
+					alt="Read Only"
+					class="mr-2"
+					style="width: 20px; height: 20px;"
+				/>
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>

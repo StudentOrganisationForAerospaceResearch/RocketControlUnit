@@ -1,10 +1,12 @@
 # General imports =================================================================================
+import asyncio
 import os
 import json
 import multiprocessing as mp
 from typing import Tuple
 from pocketbase import Client
 from pocketbase.services.realtime_service import MessageData
+from dotenv import load_dotenv
 
 # Project specific imports ========================================================================
 from src.support.CommonLogger import logger
@@ -26,8 +28,16 @@ class DatabaseHandler():
         DatabaseHandler.send_message_workq = message_handler_workq
         DatabaseHandler.thread_name = thread_name
 
-        DatabaseHandler.client = Client('http://192.168.0.69:8090')
-        #DatabaseHandler.client = Client('http://127.0.0.1:8090') # for local development comment out before committing
+        asyncio.run(self.db_setup())
+
+        async def db_setup(self):
+            load_dotenv()
+            db_user = os.getenv('DB_USER')
+            db_password = os.getenv('DB_PASSWORD')
+
+            DatabaseHandler.client = Client('http://192.168.0.69:8090')
+            DatabaseHandler.client.authStore.clear()
+            await DatabaseHandler.client.admins.authWithPassword(db_user, db_password)
 
         DatabaseHandler.client.collection('Heartbeat').subscribe(DatabaseHandler._handle_heartbeat_callback)
         DatabaseHandler.client.collection('CommandMessage').subscribe(DatabaseHandler._handle_command_callback)

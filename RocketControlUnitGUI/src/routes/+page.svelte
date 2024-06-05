@@ -721,6 +721,7 @@
 				size="sm"
 				bind:checked={$box1_on}
 				on:click={handleIgnition}
+				disabled={$currentState === "RS_IGNITION"}
 			>
 				{box1_display}</SlideToggle
 			>
@@ -733,6 +734,7 @@
 				size="sm"
 				bind:checked={$box2_on}
 				on:click={handleIgnition}
+				disabled={$currentState === "RS_IGNITION"}
 			>
 				{box2_display}</SlideToggle
 			>

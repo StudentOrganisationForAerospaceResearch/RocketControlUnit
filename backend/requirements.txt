@@ -5,4 +5,3 @@ crc >= 6.1.1
 loguru >= 0.7.2
 pocketbase >= 0.10.0
 dotenv
-asyncio

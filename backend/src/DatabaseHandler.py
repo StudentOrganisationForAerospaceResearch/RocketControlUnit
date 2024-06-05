@@ -1,5 +1,4 @@
 # General imports =================================================================================
-import asyncio
 import os
 import json
 import multiprocessing as mp
@@ -28,16 +27,13 @@ class DatabaseHandler():
         DatabaseHandler.send_message_workq = message_handler_workq
         DatabaseHandler.thread_name = thread_name
 
-        asyncio.run(self.db_setup())
+        load_dotenv()
+        db_user = os.getenv('DB_USER')
+        db_password = os.getenv('DB_PASSWORD')
 
-        async def db_setup(self):
-            load_dotenv()
-            db_user = os.getenv('DB_USER')
-            db_password = os.getenv('DB_PASSWORD')
-
-            DatabaseHandler.client = Client('http://192.168.0.69:8090')
-            DatabaseHandler.client.authStore.clear()
-            await DatabaseHandler.client.admins.authWithPassword(db_user, db_password)
+        DatabaseHandler.client = Client('http://192.168.0.69:8090')
+        DatabaseHandler.client.authStore.clear()
+        DatabaseHandler.client.admins.authWithPassword(db_user, db_password)
 
         DatabaseHandler.client.collection('Heartbeat').subscribe(DatabaseHandler._handle_heartbeat_callback)
         DatabaseHandler.client.collection('CommandMessage').subscribe(DatabaseHandler._handle_command_callback)

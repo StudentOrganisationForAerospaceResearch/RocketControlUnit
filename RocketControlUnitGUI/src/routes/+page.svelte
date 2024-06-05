@@ -414,10 +414,8 @@
 
 	async function pollIgnitors() {
 		if (box1_display === 'LIVE' || box2_display === 'LIVE') {
-			return wasLiveAtAnyPoint = true;
+			wasLiveAtAnyPoint = true;
 		}
-
-		return wasLiveAtAnyPoint;
 	}
 
 	async function handleLaunchSequence() {

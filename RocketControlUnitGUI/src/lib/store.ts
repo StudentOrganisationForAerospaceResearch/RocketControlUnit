@@ -147,6 +147,8 @@ export async function start_subscriptions() {
 
     // Subscribe to changes in the 'PbbPressure' collection
     PB.collection('PbbPressure').subscribe('*', function (e) {
+        console.log("__________________")
+        console.log(e.record.ib_pressure)
         // Update the PbbPressure data store whenever a change is detected
         if (e.record.ib_pressure < -100000) {
             ib_pressure.set('DC');
@@ -160,6 +162,8 @@ export async function start_subscriptions() {
         else {
             lower_pv_pressure.set(Math.round(e.record.lower_pv_pressure/1000));
         }
+        console.log(Math.round(e.record.lower_pv_pressure/1000));
+        console.log(lower_pv_pressure)
     });
 
     // Subscribe to changes in the 'PbbTemperature' collection

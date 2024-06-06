@@ -117,8 +117,8 @@ def pad_box_write():
 def pbb_pressure_write():
     pb.collection("PbbPressure").create(
         {
-            "ib_pressure": random_int(),
-            "lower_pv_pressure": random_int(),
+            "ib_pressure": random_int()*10000,
+            "lower_pv_pressure": random_int()*10000,
         }
     )
 

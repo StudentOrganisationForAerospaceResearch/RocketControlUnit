@@ -12,7 +12,7 @@
 
 	const modalStore = getModalStore();
 
-	const PB = new PocketBase('http://127.0.0.1:8090');
+	const PB = new PocketBase('http://192.168.0.69:8090');
 	
 	PB.authStore.clear();
 
@@ -108,7 +108,8 @@
 		pbb_temperature: Date.now(),
 		rcu_pressure: Date.now(),
 		sob_temperature: Date.now(),
-		sys_state: Date.now()
+		sys_state: Date.now(),
+		heartbeat: Date.now(),
 	};
 
 	onMount(() => {
@@ -227,6 +228,10 @@
 
 	const system_state: Writable<string | undefined> = writable(undefined);
 
+	const timer_state: Writable<string | undefined> = writable(undefined);
+	const timer_period: Writable<number | undefined> = writable(undefined);
+	const timer_remaining: Writable<number | undefined> = writable(undefined);
+
 	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
 	$: ac2_display = $ac2_open === undefined ? 'N/A' : $ac2_open ? 'ON' : 'OFF';
 
@@ -279,6 +284,16 @@
     ? 'N/A' 
     : $system_state.replace('SYS_', '');
 
+	$: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
+
+	$: timer_period_display = $timer_period === undefined 
+    ? 'N/A' 
+    : ($timer_period / 1000); // Convert to seconds
+
+	$: timer_remaining_display = $timer_remaining === undefined 
+	? 'N/A' 
+	: ($timer_remaining / 1000); // Convert to seconds
+
 	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
 	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
 	$: rcuTempOutdated = Date.now() - timestamps.rcu_temp > 5000;
@@ -291,6 +306,7 @@
 	$: rcuPressureOutdated = Date.now() - timestamps.rcu_pressure > 5000;
 	$: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
 	$: sysStateOutdated = Date.now() - timestamps.system_state > 5000;
+	$: heartbeatOutdated = Date.now() - timestamps.heartbeat > 5000;
 
 	onMount(async () => {
 		// Subscribe to changes in the 'RelayStatus' collection
@@ -469,6 +485,15 @@
 			currentState.set(e.record.rocket_state);
 			system_state.set(e.record.sys_state);
 			timestamps.sys_state = Date.now();
+		});
+
+		// Subscribe to changes in the 'HeartbeatTelemetry' collection
+		PB.collection('HeartbeatTelemetry').subscribe('*', function (e) {
+			// Update the Heartbeat data store whenever a change is detected
+			timer_state.set(e.record.timer_state);
+			timer_period.set(e.record.timer_period);
+			timer_remaining.set(e.record.timer_remaining);
+			timestamps.heartbeat = Date.now();
 		});
 	});
 
@@ -966,6 +991,18 @@
 		<p>{system_state_display}</p>
 	</div>
 
+	<div class="timer_state heartbeat {heartbeatOutdated ? 'outdated' : ''}">
+		<p>{timer_state_display}</p>
+	</div>
+
+	<div class="timer_period heartbeat {heartbeatOutdated ? 'outdated' : ''}">
+		<p>{timer_period_display}</p>
+	</div>
+
+	<div class="timer_remaining heartbeat {heartbeatOutdated ? 'outdated' : ''}">
+		<p>{timer_remaining_display}</p>
+	</div>
+
 	<!-- Render different buttons based on the current state -->
 	{#if $currentState == "RS_PRELAUNCH"}
 		<button
@@ -1428,9 +1465,33 @@
 
 	.system_state {
 		position: absolute;
-		top: calc(var(--container-width) * 0.3729);
-		left: 42.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		top: calc(var(--container-width) * 0.3645);
+		left: 37.8%;
+		transform: scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}
+
+	.timer_state {
+		position: absolute;
+		top: calc(var(--container-width) * 0.378);
+		left: 38.7%;
+		transform: scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}
+
+	.timer_period {
+		position: absolute;
+		top: calc(var(--container-width) * 0.391);
+		left: 41.6%;
+		transform: scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}
+
+	.timer_remaining {
+		position: absolute;
+		top: calc(var(--container-width) * 0.405);
+		left: 43%;
+		transform: scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 12px;
 	}
 

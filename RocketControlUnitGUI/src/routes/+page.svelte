@@ -12,7 +12,7 @@
 
 	const modalStore = getModalStore();
 
-	const PB = new PocketBase('http://192.168.0.69:8090');
+	const PB = new PocketBase('http://127.0.0.1:8090');
 	
 	PB.authStore.clear();
 
@@ -225,6 +225,8 @@
 	const sob_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
 	const sob_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
 
+	const system_state: Writable<string | undefined> = writable(undefined);
+
 	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
 	$: ac2_display = $ac2_open === undefined ? 'N/A' : $ac2_open ? 'ON' : 'OFF';
 
@@ -273,10 +275,13 @@
 	$: sob_tc1_display = $sob_tc1_temperature === undefined ? 'N/A' : $sob_tc1_temperature;
 	$: sob_tc2_display = $sob_tc2_temperature === undefined ? 'N/A' : $sob_tc2_temperature;
 
+	$: system_state_display = $system_state === undefined 
+    ? 'N/A' 
+    : $system_state.replace('SYS_', '');
+
 	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
 	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
 	$: rcuTempOutdated = Date.now() - timestamps.rcu_temp > 5000;
-	$: padBoxStatusOutdated = Date.now() - timestamps.pad_box_status > 5000;
 	$: batteryOutdated = Date.now() - timestamps.battery > 5000;
 	$: dmbPressureOutdated = Date.now() - timestamps.dmb_pressure > 5000;
 	$: launchRailLoadCellOutdated = Date.now() - timestamps.launch_rail_load_cell > 5000;
@@ -285,7 +290,7 @@
 	$: pbbTemperatureOutdated = Date.now() - timestamps.pbb_temperature > 5000;
 	$: rcuPressureOutdated = Date.now() - timestamps.rcu_pressure > 5000;
 	$: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
-	$: sysStateOutdated = Date.now() - timestamps.sys_state > 5000;
+	$: sysStateOutdated = Date.now() - timestamps.system_state > 5000;
 
 	onMount(async () => {
 		// Subscribe to changes in the 'RelayStatus' collection
@@ -462,6 +467,7 @@
 		PB.collection('sys_state').subscribe('*', function (e) {
 			// Update the SystemState data store whenever a change is detected
 			currentState.set(e.record.rocket_state);
+			system_state.set(e.record.sys_state);
 			timestamps.sys_state = Date.now();
 		});
 	});
@@ -956,6 +962,10 @@
 		<p>{sob_tc2_display}</p>
 	</div>
 
+	<div class="system_state sys_state {sysStateOutdated ? 'outdated' : ''}">
+		<p>{system_state_display}</p>
+	</div>
+
 	<!-- Render different buttons based on the current state -->
 	{#if $currentState == "RS_PRELAUNCH"}
 		<button
@@ -1414,6 +1424,14 @@
 		left: 69%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
+	}
+
+	.system_state {
+		position: absolute;
+		top: calc(var(--container-width) * 0.3729);
+		left: 42.3%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
 	}
 
 	.outdated {

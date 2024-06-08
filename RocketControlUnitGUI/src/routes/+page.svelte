@@ -1465,33 +1465,33 @@
 
 	.system_state {
 		position: absolute;
-		top: calc(var(--container-width) * 0.3645);
-		left: 37.8%;
-		transform: scale(calc(var(--container-width-unitless) / 1500));
+		top: calc(var(--container-width) * 0.373);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 12px;
 	}
 
 	.timer_state {
 		position: absolute;
-		top: calc(var(--container-width) * 0.378);
-		left: 38.7%;
-		transform: scale(calc(var(--container-width-unitless) / 1500));
+		top: calc(var(--container-width) * 0.386);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 12px;
 	}
 
 	.timer_period {
 		position: absolute;
-		top: calc(var(--container-width) * 0.391);
-		left: 41.6%;
-		transform: scale(calc(var(--container-width-unitless) / 1500));
+		top: calc(var(--container-width) * 0.399);
+		left: 44%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 12px;
 	}
 
 	.timer_remaining {
 		position: absolute;
-		top: calc(var(--container-width) * 0.405);
-		left: 43%;
-		transform: scale(calc(var(--container-width-unitless) / 1500));
+		top: calc(var(--container-width) * 0.413);
+		left: 45%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 12px;
 	}
 

@@ -32,8 +32,8 @@ class DatabaseHandler():
         db_password = os.getenv('DB_PASSWORD')
 
         DatabaseHandler.client = Client('http://192.168.0.69:8090')
-        DatabaseHandler.client.authStore.clear()
-        DatabaseHandler.client.admins.authWithPassword(db_user, db_password)
+        DatabaseHandler.client.auth_store.clear()
+        DatabaseHandler.client.admins.auth_with_password(db_user, db_password)
 
         DatabaseHandler.client.collection('Heartbeat').subscribe(DatabaseHandler._handle_heartbeat_callback)
         DatabaseHandler.client.collection('CommandMessage').subscribe(DatabaseHandler._handle_command_callback)

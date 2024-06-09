@@ -33,7 +33,10 @@ message TelemetryMessage {
         PadBoxStatus padBoxStatus = 16;
         LaunchRailLoadCell launchRailLoadCell = 17;
         SobTemperature sobTemperature = 18;
-    }
+
+	// Log-type messages
+        PressureLog pressureLog = 19;
+    }		
 }
 
 /* DMB -> RCU Messages ---------------------------------------------------------------- */
@@ -169,3 +172,12 @@ message SobTemperature {
     int32 tc1_temperature = 1;
     int32 tc2_temperature = 2;
 }
+
+/* Log Messages ---------------------------------------------------------------- */
+
+message PressureLog {
+    uint32 time = 1;
+    int32 pv_pressure = 2;
+    int32 ib_pressure = 3;
+}
+

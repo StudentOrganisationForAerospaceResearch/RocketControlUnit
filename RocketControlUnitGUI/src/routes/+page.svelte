@@ -288,11 +288,11 @@
 
 	$: timer_period_display = $timer_period === undefined 
     ? 'N/A' 
-    : ($timer_period / 1000); // Convert to seconds
+    : ($timer_period / 1000).toFixed(0); // Convert to seconds
 
 	$: timer_remaining_display = $timer_remaining === undefined 
 	? 'N/A' 
-	: ($timer_remaining / 1000); // Convert to seconds
+	: ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
 	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
 	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
@@ -488,7 +488,7 @@
 		});
 
 		// Subscribe to changes in the 'HeartbeatTelemetry' collection
-		PB.collection('HeartbeatTelemetry').subscribe('*', function (e) {
+		PB.collection('hb_state').subscribe('*', function (e) {
 			// Update the Heartbeat data store whenever a change is detected
 			timer_state.set(e.record.timer_state);
 			timer_period.set(e.record.timer_period);

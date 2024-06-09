@@ -131,8 +131,6 @@ message HeartbeatState {
     uint32 timer_remaining = 3; // The remaining time on the timer in milliseconds
 }
 
-}
-
 /* FastLog Command ---------------------------------------------------------------------*/
 message FastLog {
     enum FastLogCommand {

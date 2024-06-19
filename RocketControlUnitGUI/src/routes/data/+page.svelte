@@ -4,7 +4,7 @@
 	import { modeCurrent } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 
-	let ib_pressure_data_points: (string | number)[] = [];
+	let ib_pressure_data_points: any[] = [];
 	var ib_pressure_options: any = {
         series: [{
           data: ib_pressure_data_points.slice()
@@ -35,7 +35,7 @@
             enabled: true,
             easing: 'linear',
             dynamicAnimation: {
-              speed: 300
+              speed: 1
             }
           },
           toolbar: {
@@ -302,14 +302,10 @@
 		mounted = true;
 	});
 
-
 	$: {
 		if(mounted){
 			if(typeof $ib_pressure !== "undefined" && ib_pressure_chart != null){
 				ib_pressure_data_points.push($ib_pressure);
-				// if (ib_pressure_data_points.length == 12){
-				// 	ib_pressure_data_points.shift();
-				// }
 				ib_pressure_chart.updateSeries([{data: ib_pressure_data_points}])
 			}
 			if(typeof $lower_pv_pressure !== "undefined" && pv_pressure_chart != null){

@@ -1,17 +1,15 @@
 <script lang="ts">
-	import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import { currentState } from '../store';
-	import { onDestroy, onMount } from 'svelte';
-	import { writable } from 'svelte/store';
-	import type { Writable } from 'svelte/store';
+	import Diagram from '$lib/components/Diagram.svelte';
 	import PocketBase from 'pocketbase';
-	import BackgroundDark from './background-dark.svelte';
-	import BackgroundLight from './background-light.svelte';
+	import { onDestroy, onMount } from 'svelte';
+	import { getModalStore, SlideToggle } from '@skeletonlabs/skeleton';
+	import type { ModalSettings } from '@skeletonlabs/skeleton';
+	import type { Writable } from 'svelte/store';
+	import { writable } from 'svelte/store';
+	import { currentState } from '../store';
 	import { auth } from '../store';
 
 	const modalStore = getModalStore();
-
 	const PB = new PocketBase('http://192.168.0.69:8090');
 	
 	PB.authStore.clear();
@@ -86,16 +84,6 @@
 	const commandToState = Object.fromEntries(
     	Object.entries(stateToCommand).map(([key, value]) => [value, key])
   	);
-
-    let BackgroundComponent: any;
-
-    $: {
-        if ($modeCurrent) {
-            BackgroundComponent = BackgroundLight;
-        } else {
-            BackgroundComponent = BackgroundDark;
-        }
-    }
 
 	let containerElement: any;
 
@@ -635,7 +623,7 @@
 </script>
 
 <div class="container">
-	<svelte:component this={BackgroundComponent} />
+	<Diagram />
 
 	<div class="ac1_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle

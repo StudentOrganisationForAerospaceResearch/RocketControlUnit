@@ -3,6 +3,40 @@
 @tailwind utilities;
 @tailwind variants;
 
+:root {
+	--loading-color: rgba(0, 0, 0, 0);
+
+	--icon-filter-light: invert(0%);
+	--icon-filter-dark: invert(100%);
+
+	--icon-filter: var(--icon-filter-light);
+
+	--diagram-outline-color-dark: #DFE0E2;
+	--diagram-outline-color-light: #15171F;
+
+	--diagram-nos-color-dark: #FFB5A1;
+	--diagram-nos-color-light: #CF462D;
+
+	--diagram-fill-color-dark: #92BCF7;
+	--diagram-fill-color-light: #2277F0;
+
+	--diagram-insul-color-dark: #C4A0FF;
+	--diagram-insul-color-light: #6A2DFF;
+
+	--diagram-pv-color-dark: #4BB1BF;
+	--diagram-pv-color-light: #0A7A8A;
+
+	--diagram-ignitor-color-dark: #008000;
+	--diagram-ignitor-color-light: #004000;
+
+	--diagram-outline-color: var(--loading-color);
+	--diagram-nos-color: var(--loading-color);
+	--diagram-fill-color: var(--loading-color);
+	--diagram-insul-color: var(--loading-color);
+	--diagram-pv-color: var(--loading-color);
+	--diagram-ignitor-color: var(--loading-color);
+}
+
 html,
 body {
 	@apply h-full overflow-hidden;

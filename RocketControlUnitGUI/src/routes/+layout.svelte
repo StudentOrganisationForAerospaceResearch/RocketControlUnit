@@ -1,5 +1,11 @@
 <script lang="ts">
 	import '../app.postcss';
+	import ReadOnlySvg from '$lib/components/ReadOnlySvg.svelte';
+	import { ThemeData, ThemeType } from '$lib/theme';
+	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
+	import { page } from '$app/stores';
+	import { currentState } from '../store';
+	import { auth } from '../store';
 	import {
 		AppShell,
 		AppRail,
@@ -11,21 +17,11 @@
 		storePopup,
 		modeCurrent
 	} from '@skeletonlabs/skeleton';
-	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
-	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
-	import { currentState } from '../store';
-	import { page } from '$app/stores';
-	import { auth } from '../store';
 
+	storePopup.set({ computePosition, autoUpdate, flip, shift, offset, arrow });
 	initializeStores();
 
-	$: logoSrc = $modeCurrent ? '/soar_logo_light.svg' : '/soar_logo_dark.svg';
-	$: homeIcon = $modeCurrent ? '/rocket-light.png' : '/rocket-dark.png';
-	$: aboutIcon = $modeCurrent ? '/info-light.png' : '/info-dark.png';
-	$: cameraIcon = $modeCurrent ? '/camera-light.png' : '/camera-dark.png';
-	$: statsIcon = $modeCurrent ? '/stats-light.png' : '/stats-dark.png';
-	let readOnlyIcon = '/read-only.svg';
-
+	$: themeData = new ThemeData($modeCurrent ? ThemeType.LIGHT : ThemeType.DARK);
 </script>
 
 <Modal />
@@ -39,7 +35,7 @@
 				<div class="flex items-center">
 					<div class="flex items-center">
 						<img
-							src={logoSrc}
+							src={themeData.logoSrc}
 							alt="SOAR Logo"
 							class="mr-2"
 							style="width: 70px; height: 35px;"
@@ -55,12 +51,7 @@
 			<svelte:fragment slot="trail">
 				<LightSwitch class="ml-auto" />
 				{#if $auth === false}
-					<img
-						src={readOnlyIcon}
-						alt="Read Only"
-						class="mr-2"
-						style="width: 20px; height: 20px;"
-					/>
+					<ReadOnlySvg />
 				{/if}
 			</svelte:fragment>
 		</AppBar>
@@ -68,31 +59,35 @@
 	
 	<svelte:fragment slot="sidebarLeft">
 		<AppRail>
-			<AppRailAnchor hover="bg-primary-hover-token" href="/" selected={$page.url.pathname === '/'}><img src={homeIcon} class="sideBar-center" 
-			alt="Icon" /></AppRailAnchor>
+			<AppRailAnchor hover="bg-primary-hover-token" href="/" selected={$page.url.pathname === '/'}>
+				<img src="/icons/rocket.png" class="sideBar-center" alt="Icon" />
+			</AppRailAnchor>
 			
-			<AppRailAnchor href="/data" selected={$page.url.pathname === "/data"}><img src={statsIcon} class="sideBar-center" 
-			alt="Icon" /></AppRailAnchor>
+			<AppRailAnchor href="/data" selected={$page.url.pathname === "/data"}>
+				<img src="/icons/stats.png" class="sideBar-center" alt="Icon" />
+			</AppRailAnchor>
 			
-			<AppRailAnchor href="/live-feed" selected={$page.url.pathname === "/live-feed"}><img src={cameraIcon} class="sideBar-center" 
-			alt="Icon" /></AppRailAnchor>
+			<AppRailAnchor href="/live-feed" selected={$page.url.pathname === "/live-feed"}>
+				<img src="/icons/camera.png" class="sideBar-center" alt="Icon" />
+			</AppRailAnchor>
 			
-			<AppRailAnchor href="/about" selected={$page.url.pathname === "/about"}><img src={aboutIcon} class="sideBar-center" 
-			alt="Icon" /></AppRailAnchor>
+			<AppRailAnchor href="/about" selected={$page.url.pathname === "/about"}>
+				<img src="/icons/info.png" class="sideBar-center" alt="Icon" />
+			</AppRailAnchor>
 		</AppRail>
 	</svelte:fragment>
 	
-	<slot />
-
+	<slot>Some Slot</slot>
 </AppShell>
 
 <style>
 	.sideBar-center {
+		filter: var(--icon-filter);
+		transition: filter 0.15s ease;
 		display: block;
 		margin-left: auto;
 		margin-right: auto;
 		width: 30%;
 		height: width;
 	}
-	
 </style>

@@ -1,17 +1,34 @@
 <script lang="ts">
+	import "../styles/display.postcss";
 	import Diagram from '$lib/components/Diagram.svelte';
 	import { initTimestamps, type Timestamps } from '$lib/timestamps';
-	import { authenticate, sendHeartbeat, subscribeToCollections, writeArbitraryCommand, writeLoadCellCommand, writeStateChange } from '$lib/pocketbase';
+	import { usePocketbase } from '$lib/hooks/usePocketbase';
+	import { initStores } from '$lib/stores';
+	import { useModals } from '$lib/hooks/useModals';
 	import { onMount } from 'svelte';
-	import { getModalStore, SlideToggle } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
+	import { SlideToggle } from '@skeletonlabs/skeleton';
 	import { currentState } from '../store';
 	import { auth } from '../store';
-	import { initStores } from '$lib/stores';
 
-	const modalStore = getModalStore();
 	const timestamps = initTimestamps();
 	const stores = initStores();
+	const usePocketbaseHook = usePocketbase(timestamps, stores);
+	const useModalsHook = useModals(usePocketbaseHook);
+
+	const {
+		authenticate,
+		sendHeartbeat,
+		subscribeToCollections,
+		writeStateChange,
+		writeArbitraryCommand,
+		writeLoadCellCommand
+	} = usePocketbaseHook;
+
+	const {
+		confirmStateChange,
+		instantStateChange,
+		confirmRemoveWeight
+	} = useModalsHook;
 
 	// Destructure stores for later use
 	const {
@@ -70,7 +87,7 @@
 		handleAuth();
 
 		// Subscribe to pocket base events
-		subscribeToCollections(timestamps, stores);
+		subscribeToCollections();
 
 		// Handle displaying outdated data
 		let containerElement = document.querySelector('.container') as HTMLElement;
@@ -123,51 +140,6 @@
 			window.removeEventListener('resize', handleResize);
 		};
 	});
-
-	let nextStatePending: string = '';
-
-	const confirmStateChange = (state: string) => {
-		nextStatePending = state;
-
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: 'Please Confirm',
-			body: `Are you sure you wish to proceed to ${commandToState[state]}?`,
-			response: (r: boolean) => {
-				if (r) {
-					writeStateChange(nextStatePending);
-				}
-
-				nextStatePending = '';
-			}
-		};
-
-		modalStore.trigger(modal);
-	}
-	
-	const instantStateChange = (state: string) => {
-		nextStatePending = state;
-		writeStateChange(nextStatePending);
-		nextStatePending = '';
-	}
-
-	const stateToCommand: { [key: string]: string } = {
-		RS_ABORT: 'RSC_ANY_TO_ABORT',
-		RS_PRELAUNCH: 'RSC_GOTO_PRELAUNCH',
-		RS_FILL: "RSC_GOTO_FILL",
-		RS_ARM: "RSC_GOTO_ARM",
-		RS_IGNITION: "RSC_GOTO_IGNITION",
-		RS_LAUNCH: "RSC_IGNITION_TO_LAUNCH",
-		RS_BURN: "RSC_GOTO_BURN",
-		RS_COAST: "RSC_GOTO_COAST",
-		RS_DESCENT: "RSC_GOTO_DESCENT",
-		RS_RECOVERY: "RSC_GOTO_RECOVERY",
-		RS_TEST: "RSC_GOTO_TEST"
-	};
-
-	const commandToState = Object.fromEntries(
-    	Object.entries(stateToCommand).map(([key, value]) => [value, key])
-  	);
 
 	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
 
@@ -286,74 +258,6 @@
 		wasLiveAtAnyPoint = false;
 	}
 
-	const confirmRemoveWeight = (loadcell: string) => {
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: 'Remove All Weight',
-			response: (r: boolean) => {
-				if (r) {
-					writeLoadCellCommand(loadcell, "CALIBRATE", 0);
-					promptEnterNumberOfWeights(loadcell);
-				} else {
-					writeLoadCellCommand(loadcell, "CANCEL", 0);
-				}
-			}
-		};
-
-		modalStore.trigger(modal);
-	}
-
-	let numberOfWeights = 0;
-
-	const promptEnterNumberOfWeights = (loadcell: string) => {
-		const modal: ModalSettings = {
-			type: 'prompt',
-			title: 'Enter number of weights',
-			valueAttr: { type: 'number', required: true },
-			response: async (r: any) => {
-				if (r) {
-					// The modal was confirmed, set the number of weights
-					numberOfWeights = parseInt(r);
-					if (numberOfWeights > 0) {
-						promptEnterWeight(loadcell);
-					}
-				}
-			}
-		};
-
-		modalStore.trigger(modal);
-	}
-
-	const promptEnterWeight = (loadcell: string) => {
-		const modal: ModalSettings = {
-			type: 'prompt',
-			title: `Enter Weight (kg) (${numberOfWeights} remaining)`,
-			valueAttr: { type: 'text', required: true },
-			response: async (r: any) => {
-				if (r) {
-					// If this is the last weight, send the finish command
-					if (numberOfWeights === 1) {
-						writeLoadCellCommand(loadcell, "FINISH", parseFloat(r));
-					} else {
-						// The modal was confirmed, send the calibrate command
-						writeLoadCellCommand(loadcell, "CALIBRATE", parseFloat(r));
-					}
-
-					// Decrease the number of weights and open the modal again if there are more weights to enter
-					numberOfWeights--;
-					if (numberOfWeights > 0) {
-						promptEnterWeight(loadcell);
-					}
-				} else {
-					// The modal was cancelled, send a cancel command
-					writeLoadCellCommand(loadcell, "CANCEL", 0);
-				}
-			}
-		};
-
-		modalStore.trigger(modal);
-	}
-
 	const performTare = (loadcell: string) => {
 		writeLoadCellCommand(loadcell, "TARE", 0);
 	}
@@ -377,8 +281,8 @@
 			bind:checked={$ac1_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_AC1', 'RCU_CLOSE_AC1')}
 		>
-			{ac1_display}</SlideToggle
-		>
+			{ac1_display}
+		</SlideToggle>
 	</div>
 
 	<div class="pbv1_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
@@ -389,8 +293,8 @@
 			bind:checked={$pbv1_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV1', 'RCU_CLOSE_PBV1')}
 		>
-			{pbv1_display}</SlideToggle
-		>
+			{pbv1_display}
+		</SlideToggle>
 	</div>
 
 	<div class="pbv2_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">

@@ -188,19 +188,11 @@
 	$: sob_tc1_display = $sob_tc1_temperature === undefined ? 'N/A' : $sob_tc1_temperature;
 	$: sob_tc2_display = $sob_tc2_temperature === undefined ? 'N/A' : $sob_tc2_temperature;
 
-	$: system_state_display = $system_state === undefined 
-    ? 'N/A' 
-    : $system_state.replace('SYS_', '');
+	$: system_state_display = $system_state === undefined ? 'N/A' : $system_state.replace('SYS_', '');
 
 	$: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
-
-	$: timer_period_display = $timer_period === undefined 
-    ? 'N/A' 
-    : ($timer_period / 1000).toFixed(0); // Convert to seconds
-
-	$: timer_remaining_display = $timer_remaining === undefined 
-	? 'N/A' 
-	: ($timer_remaining / 1000).toFixed(0); // Convert to seconds
+	$: timer_period_display = $timer_period === undefined ? 'N/A' : ($timer_period / 1000).toFixed(0); // Convert to seconds
+	$: timer_remaining_display = $timer_remaining === undefined ? 'N/A' : ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
 	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
 	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
@@ -216,12 +208,7 @@
 	$: sysStateOutdated = Date.now() - timestamps.sys_state > 5000;
 	$: heartbeatOutdated = Date.now() - timestamps.heartbeat > 5000;
 
-	const handleSliderChange = async (
-		e: any,
-		target: string,
-		openCommand: string,
-		closeCommand: string
-	) => {
+	const handleSliderChange = async (e: any, target: string, openCommand: string, closeCommand: string) => {
 		e.preventDefault();
 
 		// Determine the command based on the current value of the slider
@@ -305,8 +292,8 @@
 			bind:checked={$pbv2_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV2', 'RCU_CLOSE_PBV2')}
 		>
-			{pbv2_display}</SlideToggle
-		>
+			{pbv2_display}
+		</SlideToggle>
 	</div>
 
 	<div class="pbv3_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
@@ -317,8 +304,8 @@
 			bind:checked={$pbv3_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV3', 'RCU_CLOSE_PBV3')}
 		>
-			{pbv3_display}</SlideToggle
-		>
+			{pbv3_display}
+		</SlideToggle>
 	</div>
 
 	<div class="pbv4_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
@@ -329,8 +316,8 @@
 			bind:checked={$pbv4_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_PBV4', 'RCU_CLOSE_PBV4')}
 		>
-			{pbv4_display}</SlideToggle
-		>
+			{pbv4_display}
+		</SlideToggle>
 	</div>
 	
 	<div class="sol5_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
@@ -341,8 +328,8 @@
 			bind:checked={$sol5_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL5', 'RCU_CLOSE_SOL5')}
 		>
-			{sol5_display}</SlideToggle
-		>
+			{sol5_display}
+		</SlideToggle>
 	</div>
 
 	<div class="sol6_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
@@ -353,8 +340,8 @@
 			bind:checked={$sol6_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL6', 'RCU_CLOSE_SOL6')}
 		>
-			{sol6_display}</SlideToggle
-		>
+			{sol6_display}
+		</SlideToggle>
 	</div>
 
 	<div class="sol7_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
@@ -365,8 +352,8 @@
 			bind:checked={$sol7_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL7', 'RCU_CLOSE_SOL7')}
 		>
-			{sol7_display}</SlideToggle
-		>
+			{sol7_display}
+		</SlideToggle>
 	</div>
 
 	<div class="sol8a_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
@@ -377,8 +364,8 @@
 			bind:checked={$sol8a_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8A', 'RCU_CLOSE_SOL8A')}
 		>
-			{sol8a_display}</SlideToggle
-		>
+			{sol8a_display}
+		</SlideToggle>
 	</div>
 
 	<div class="sol8b_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
@@ -389,8 +376,8 @@
 			bind:checked={$sol8b_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8B', 'RCU_CLOSE_SOL8B')}
 		>
-			{sol8b_display}</SlideToggle
-		>
+			{sol8b_display}
+		</SlideToggle>
 	</div>
 
 	<div class="vent_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
@@ -401,8 +388,8 @@
 			bind:checked={$vent_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_VENT', 'RSC_CLOSE_VENT')}
 		>
-			{vent_display}</SlideToggle
-		>
+			{vent_display}
+		</SlideToggle>
 	</div>
 
 	<div class="drain_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
@@ -413,8 +400,8 @@
 			bind:checked={$drain_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_DRAIN', 'RSC_CLOSE_DRAIN')}
 		>
-			{drain_display}</SlideToggle
-		>
+			{drain_display}
+		</SlideToggle>
 	</div>
 
 	<div class="power_source_slider battery {batteryOutdated  ? 'outdated' : ''}">
@@ -624,99 +611,135 @@
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.5);"
-			on:click={() => confirmStateChange("RSC_GOTO_FILL")}>Go to Fill</button
+			on:click={() => confirmStateChange("RSC_GOTO_FILL")}
 		>
+			Go to Fill
+		</button>
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}
 		>
+			Go to Abort
+		</button>
 	{:else if $currentState == "RS_FILL"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.5);"
-			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
+			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}
 		>
+			Go to Pre-Launch
+		</button>
 		<button
-		class="btn variant-filled-warning arm_button"
-		style="top: calc(var(--container-width) * 0.47);"
-		on:click={() => instantStateChange("RSC_ARM_CONFIRM_1")}>ARM CONFIRM 1</button
+			class="btn variant-filled-warning arm_button"
+			style="top: calc(var(--container-width) * 0.47);"
+			on:click={() => instantStateChange("RSC_ARM_CONFIRM_1")}
 		>
+			ARM CONFIRM 1
+		</button>
 		<button
-		class="btn variant-filled-warning arm_button"
-		style="top: calc(var(--container-width) * 0.5);"
-		on:click={() => instantStateChange("RSC_ARM_CONFIRM_2")}>ARM CONFIRM 2</button
+			class="btn variant-filled-warning arm_button"
+			style="top: calc(var(--container-width) * 0.5);"
+			on:click={() => instantStateChange("RSC_ARM_CONFIRM_2")}
 		>
+			ARM CONFIRM 2
+		</button>
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.47);"
-			on:click={() => confirmStateChange("RSC_GOTO_ARM")}>Go to Arm</button
+			on:click={() => confirmStateChange("RSC_GOTO_ARM")}
 		>
+			Go to Arm
+		</button>
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}
 		>
+			Go to Abort
+		</button>
 	{:else if $currentState == "RS_ARM"}
 		<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="top: calc(var(--container-width) * 0.5);"
-		on:click={() => confirmStateChange("RSC_GOTO_FILL")}>Go to Fill</button
+			class="btn variant-filled-secondary next-state-btn"
+			style="top: calc(var(--container-width) * 0.5);"
+			on:click={() => confirmStateChange("RSC_GOTO_FILL")}
 		>
+			Go to Fill
+		</button>
 		<button
 			class="btn variant-filled-warning next-state-btn"
 			style="top: calc(var(--container-width) * 0.47);"
-			on:click={() => confirmStateChange("RSC_GOTO_IGNITION")}>Go to Ignition</button
+			on:click={() => confirmStateChange("RSC_GOTO_IGNITION")}
 		>
+			Go to Ignition
+		</button>
 		<button
 			class="btn variant-ghost-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}
 		>
+			Go to Abort
+		</button>
 	{:else if $currentState == "RS_IGNITION"}
 		<button
 			class="btn variant-filled-error next-state-btn"
 			style="top: calc(var(--container-width) * 0.47);"
-			on:click={() => handleLaunchSequence()}>LAUNCH</button
+			on:click={() => handleLaunchSequence()}
 		>
+			LAUNCH
+		</button>
 		<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="top: calc(var(--container-width) * 0.5);"
-		on:click={() => confirmStateChange("RSC_GOTO_ARM")}>Go to Arm</button
+			class="btn variant-filled-secondary next-state-btn"
+			style="top: calc(var(--container-width) * 0.5);"
+			on:click={() => confirmStateChange("RSC_GOTO_ARM")}
 		>
+			Go to Arm
+		</button>
 	{:else if $currentState == "RS_ABORT"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}>Go to Pre-Launch</button
+			on:click={() => confirmStateChange("RSC_GOTO_PRELAUNCH")}
 		>
+			Go to Pre-Launch
+		</button>
 		<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="top: calc(var(--container-width) * 0.5);"
-		on:click={() => confirmStateChange("RSC_GOTO_TEST")}>Go to Test</button
+			class="btn variant-filled-secondary next-state-btn"
+			style="top: calc(var(--container-width) * 0.5);"
+			on:click={() => confirmStateChange("RSC_GOTO_TEST")}
 		>
+			Go to Test
+		</button>
 	{:else if $currentState == "RS_RECOVERY"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}
 		>
+			Go to Abort
+		</button>
 	{:else if $currentState == "RS_TEST"}
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.53);"
-			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}>Go to Abort</button
+			on:click={() => instantStateChange("RSC_ANY_TO_ABORT")}
 		>
+			Go to Abort
+		</button>
 		<button
 			class="btn variant-filled-secondary next-state-btn"
 			style="top: calc(var(--container-width) * 0.5);"
-			on:click={() => instantStateChange("RSC_TEST_MEV_OPEN")}>Open MEV</button
+			on:click={() => instantStateChange("RSC_TEST_MEV_OPEN")}
 		>
+			Open MEV
+		</button>
 		<button
-		class="btn variant-filled-secondary next-state-btn"
-		style="top: calc(var(--container-width) * 0.47);"
-		on:click={() => instantStateChange("RSC_MEV_CLOSE")}>Close MEV</button
+			class="btn variant-filled-secondary next-state-btn"
+			style="top: calc(var(--container-width) * 0.47);"
+			on:click={() => instantStateChange("RSC_MEV_CLOSE")}
 		>
+			Close MEV
+		</button>
 	{/if}
 </div>
 

@@ -2,31 +2,32 @@ import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
 import type { PocketbaseHook } from './usePocketbase';
 
 const stateToCommand: { [key: string]: string } = {
-    RS_ABORT: 'RSC_ANY_TO_ABORT',
-    RS_PRELAUNCH: 'RSC_GOTO_PRELAUNCH',
-    RS_FILL: "RSC_GOTO_FILL",
-    RS_ARM: "RSC_GOTO_ARM",
-    RS_IGNITION: "RSC_GOTO_IGNITION",
-    RS_LAUNCH: "RSC_IGNITION_TO_LAUNCH",
-    RS_BURN: "RSC_GOTO_BURN",
-    RS_COAST: "RSC_GOTO_COAST",
-    RS_DESCENT: "RSC_GOTO_DESCENT",
-    RS_RECOVERY: "RSC_GOTO_RECOVERY",
-    RS_TEST: "RSC_GOTO_TEST"
+	RS_ABORT: 'RSC_ANY_TO_ABORT',
+	RS_PRELAUNCH: 'RSC_GOTO_PRELAUNCH',
+	RS_FILL: 'RSC_GOTO_FILL',
+	RS_ARM: 'RSC_GOTO_ARM',
+	RS_IGNITION: 'RSC_GOTO_IGNITION',
+	RS_LAUNCH: 'RSC_IGNITION_TO_LAUNCH',
+	RS_BURN: 'RSC_GOTO_BURN',
+	RS_COAST: 'RSC_GOTO_COAST',
+	RS_DESCENT: 'RSC_GOTO_DESCENT',
+	RS_RECOVERY: 'RSC_GOTO_RECOVERY',
+	RS_TEST: 'RSC_GOTO_TEST'
 };
 
 const commandToState = Object.fromEntries(
-    Object
-        .entries(stateToCommand)
-        .map(([key, value]) => [value, key])
+	Object.entries(stateToCommand).map(([key, value]) => [value, key])
 );
 
+Object.freeze(stateToCommand);
+Object.freeze(commandToState);
+
 export const useModals = (pocketbaseHook: PocketbaseHook) => {
-    const modalStore = getModalStore();
+	const modalStore = getModalStore();
 
-    let nextStatePending: string = '';
+	let nextStatePending: string = '';
 
-    const confirmStateChange = (state: string) => {
+	const confirmStateChange = (state: string) => {
 		nextStatePending = state;
 
 		const modal: ModalSettings = {
@@ -43,32 +44,32 @@ export const useModals = (pocketbaseHook: PocketbaseHook) => {
 		};
 
 		modalStore.trigger(modal);
-	}
+	};
 
-    const instantStateChange = (state: string) => {
+	const instantStateChange = (state: string) => {
 		nextStatePending = state;
 		pocketbaseHook.writeStateChange(nextStatePending);
 		nextStatePending = '';
-	}
+	};
 
-    const confirmRemoveWeight = (loadcell: string) => {
+	const confirmRemoveWeight = (loadcell: string) => {
 		const modal: ModalSettings = {
 			type: 'confirm',
 			title: 'Remove All Weight',
 			response: (r: boolean) => {
 				if (r) {
-					pocketbaseHook.writeLoadCellCommand(loadcell, "CALIBRATE", 0);
+					pocketbaseHook.writeLoadCellCommand(loadcell, 'CALIBRATE', 0);
 					promptEnterNumberOfWeights(loadcell);
 				} else {
-					pocketbaseHook.writeLoadCellCommand(loadcell, "CANCEL", 0);
+					pocketbaseHook.writeLoadCellCommand(loadcell, 'CANCEL', 0);
 				}
 			}
 		};
 
 		modalStore.trigger(modal);
-	}
+	};
 
-    let numberOfWeights = 0;
+	let numberOfWeights = 0;
 
 	const promptEnterNumberOfWeights = (loadcell: string) => {
 		const modal: ModalSettings = {
@@ -87,7 +88,7 @@ export const useModals = (pocketbaseHook: PocketbaseHook) => {
 		};
 
 		modalStore.trigger(modal);
-	}
+	};
 
 	const promptEnterWeight = (loadcell: string) => {
 		const modal: ModalSettings = {
@@ -98,10 +99,10 @@ export const useModals = (pocketbaseHook: PocketbaseHook) => {
 				if (r) {
 					// If this is the last weight, send the finish command
 					if (numberOfWeights === 1) {
-						pocketbaseHook.writeLoadCellCommand(loadcell, "FINISH", parseFloat(r));
+						pocketbaseHook.writeLoadCellCommand(loadcell, 'FINISH', parseFloat(r));
 					} else {
 						// The modal was confirmed, send the calibrate command
-						pocketbaseHook.writeLoadCellCommand(loadcell, "CALIBRATE", parseFloat(r));
+						pocketbaseHook.writeLoadCellCommand(loadcell, 'CALIBRATE', parseFloat(r));
 					}
 
 					// Decrease the number of weights and open the modal again if there are more weights to enter
@@ -111,17 +112,17 @@ export const useModals = (pocketbaseHook: PocketbaseHook) => {
 					}
 				} else {
 					// The modal was cancelled, send a cancel command
-					pocketbaseHook.writeLoadCellCommand(loadcell, "CANCEL", 0);
+					pocketbaseHook.writeLoadCellCommand(loadcell, 'CANCEL', 0);
 				}
 			}
 		};
 
 		modalStore.trigger(modal);
-	}
+	};
 
-    return {
-        confirmStateChange,
-        instantStateChange,
-        confirmRemoveWeight
-    };
-}
+	return {
+		confirmStateChange,
+		instantStateChange,
+		confirmRemoveWeight
+	};
+};

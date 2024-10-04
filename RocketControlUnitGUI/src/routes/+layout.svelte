@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '../app.postcss';
+	import '../styles/app.postcss';
 	import ReadOnlySvg from '$lib/components/ReadOnlySvg.svelte';
 	import { ThemeData, ThemeType } from '$lib/theme';
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';

@@ -5,7 +5,7 @@ import type { Stores } from '../stores';
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
 export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
-	const pocketbase = new PocketBase('http://192.168.0.69:8090');
+	const pocketbase = new PocketBase('http://localhost:8090');
 
 	const authenticate = async () => {
 		const email = import.meta.env.VITE_EMAIL;

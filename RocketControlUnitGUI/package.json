@@ -1,19 +1,17 @@
 {
-  "name": "Rocket-Control-Unit",
+  "name": "rocket-control-unit-gui",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "playwright test",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
     "lint": "prettier --check . && eslint .",
     "format": "prettier --write ."
   },
   "devDependencies": {
-    "@playwright/test": "^1.28.1",
     "@skeletonlabs/skeleton": "2.5.1",
     "@skeletonlabs/tw-plugin": "0.2.4",
     "@sveltejs/adapter-node": "^4.0.1",

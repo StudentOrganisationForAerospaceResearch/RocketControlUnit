@@ -23,20 +23,28 @@
   let currentRotationY = 0;
   let currentRotationZ = 0;
 
-  // Target rotation values based on fetched data
-  let targetRotationX = 0;
-  let targetRotationY = 0;
-  let targetRotationZ = 0;
+  // Smoothed target rotation values
+  let smoothedRotationX = 0;
+  let smoothedRotationY = 0;
+  let smoothedRotationZ = 0;
 
   // Rotation speed for smooth animation
-  const rotationSpeed = 1;
+  const rotationSpeed = 0.002;
+
+  // Smoothing factor for EMA (between 0 and 1)
+  const smoothingFactor = 0.1; // Adjust this value as needed
 
   // Handle data updates from real-time subscription
   function handleDataUpdate(data: RecordData) {
     // Parse the gyro values safely
-    targetRotationX = parseFloat(data.gyro_x) || 0;
-    targetRotationY = parseFloat(data.gyro_y) || 0;
-    targetRotationZ = parseFloat(data.gyro_z) || 0;
+    const rawRotationX = parseFloat(data.gyro_x) || 0;
+    const rawRotationY = parseFloat(data.gyro_y) || 0;
+    const rawRotationZ = parseFloat(data.gyro_z) || 0;
+
+    // Apply Exponential Moving Average for smoothing
+    smoothedRotationX = smoothingFactor * rawRotationX + (1 - smoothingFactor) * smoothedRotationX;
+    smoothedRotationY = smoothingFactor * rawRotationY + (1 - smoothingFactor) * smoothedRotationY;
+    smoothedRotationZ = smoothingFactor * rawRotationZ + (1 - smoothingFactor) * smoothedRotationZ;
   }
 
   // Handle the first batch of fetched paginated data
@@ -52,7 +60,7 @@
 
   onMount(() => {
     // Fetch existing paginated data from PocketBase
-    fetchPaginatedData('Imu', handleFirstBatch, 10); // Adjust batch size if needed
+    fetchPaginatedData('Imu', handleFirstBatch, 1); // Adjust batch size if needed
 
     // Subscribe to real-time updates after initial data fetch
     subscribeToCollection('Imu', handleDataUpdate);
@@ -65,12 +73,10 @@
 
   // Use frame to update rotation smoothly
   useFrame((ctx, delta) => {
-    // 'delta' is the time since last frame in seconds
-
-    // Interpolate towards the target rotations for smooth animation
-    currentRotationX += (targetRotationX - currentRotationX) * rotationSpeed * delta;
-    currentRotationY += (targetRotationY - currentRotationY) * rotationSpeed * delta;
-    currentRotationZ += (targetRotationZ - currentRotationZ) * rotationSpeed * delta;
+    // Interpolate towards the smoothed rotations for smooth animation
+    currentRotationX += (smoothedRotationX - currentRotationX) * rotationSpeed * delta;
+    currentRotationY += (smoothedRotationY - currentRotationY) * rotationSpeed * delta;
+    currentRotationZ += (smoothedRotationZ - currentRotationZ) * rotationSpeed * delta;
   });
 </script>
 

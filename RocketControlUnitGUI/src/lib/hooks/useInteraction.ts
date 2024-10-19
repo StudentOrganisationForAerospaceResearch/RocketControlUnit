@@ -22,7 +22,7 @@ const commandToState = Object.fromEntries(
 Object.freeze(stateToCommand);
 Object.freeze(commandToState);
 
-export const useModals = (pocketbaseHook: PocketbaseHook) => {
+export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 	const modalStore = getModalStore();
 
 	let nextStatePending: string = '';

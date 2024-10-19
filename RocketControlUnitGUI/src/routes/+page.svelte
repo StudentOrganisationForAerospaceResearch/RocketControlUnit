@@ -3,17 +3,15 @@
 	import Diagram from '$lib/components/Diagram.svelte';
 	import { initTimestamps, type Timestamps } from '$lib/timestamps';
 	import { usePocketbase } from '$lib/hooks/usePocketbase';
-	import { initStores } from '$lib/stores';
-	import { useModals } from '$lib/hooks/useModals';
+	import { initStores, auth, currentState } from '$lib/stores';
+	import { useInteraction } from '$lib/hooks/useInteraction';
 	import { onMount } from 'svelte';
 	import { SlideToggle } from '@skeletonlabs/skeleton';
-	import { currentState } from '../store';
-	import { auth } from '../store';
 
 	const timestamps = initTimestamps();
 	const stores = initStores();
 	const usePocketbaseHook = usePocketbase(timestamps, stores);
-	const useModalsHook = useModals(usePocketbaseHook);
+	const useInteractionHook = useInteraction(usePocketbaseHook);
 
 	const {
 		authenticate,
@@ -28,7 +26,7 @@
 		confirmStateChange,
 		instantStateChange,
 		confirmRemoveWeight
-	} = useModalsHook;
+	} = useInteractionHook;
 
 	// Destructure stores for later use
 	const {

@@ -1,5 +1,8 @@
 import { writable, type Writable } from 'svelte/store';
 
+export const currentState = writable('N/A');
+export const auth = writable(false);
+
 export interface Stores {
 	ac1_open: Writable<any>;
 	pbv1_open: Writable<any>;

@@ -2,10 +2,9 @@
 	import '../styles/app.postcss';
 	import ReadOnlySvg from '$lib/components/ReadOnlySvg.svelte';
 	import { ThemeData, ThemeType } from '$lib/theme';
+	import { auth, currentState } from "$lib/stores";
 	import { computePosition, autoUpdate, flip, shift, offset, arrow } from '@floating-ui/dom';
 	import { page } from '$app/stores';
-	import { currentState } from '../store';
-	import { auth } from '../store';
 	import {
 		AppShell,
 		AppRail,

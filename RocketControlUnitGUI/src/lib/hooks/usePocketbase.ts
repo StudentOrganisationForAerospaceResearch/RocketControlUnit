@@ -34,7 +34,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		});
 	};
 
-	const writeArbitraryCommand = async (target: string, command: string) => {
+	const writeCommandMessage = async (target: string, command: string) => {
 		await pocketbase.collection('CommandMessage').create({
 			target,
 			command
@@ -191,7 +191,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		authenticate,
 		sendHeartbeat,
 		writeStateChange,
-		writeArbitraryCommand,
+		writeArbitraryCommand: writeCommandMessage,
 		writeLoadCellCommand,
 		subscribeToCollections
 	};

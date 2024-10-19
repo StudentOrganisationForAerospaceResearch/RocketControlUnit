@@ -198,7 +198,6 @@
 	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
 	$: rcuTempOutdated = Date.now() - timestamps.rcu_temp > 5000;
 	$: batteryOutdated = Date.now() - timestamps.battery > 5000;
-	// $: dmbPressureOutdated = Date.now() - timestamps.dmb_pressure > 5000; // This does not seem to be used
 	$: launchRailLoadCellOutdated = Date.now() - timestamps.launch_rail_load_cell > 5000;
 	$: nosLoadCellOutdated = Date.now() - timestamps.nos_load_cell > 5000;
 	$: pbbPressureOutdated = Date.now() - timestamps.pbb_pressure > 5000;

@@ -118,6 +118,7 @@
 		sob_temperature: Date.now(),
 		sys_state: Date.now(),
 		heartbeat: Date.now(),
+		board_status: Date.now(),
 	};
 
 	onMount(() => {
@@ -229,6 +230,14 @@
 	const timer_period: Writable<number | undefined> = writable(undefined);
 	const timer_remaining: Writable<number | undefined> = writable(undefined);
 
+	const dmb_status: Writable<string | undefined> = writable(undefined);
+	const pmb_status: Writable<string | undefined> = writable(undefined);
+	const daq_status: Writable<string | undefined> = writable(undefined);
+	const cam_status: Writable<string | undefined> = writable(undefined);
+	const bms_status: Writable<string | undefined> = writable(undefined);
+	const fab_status: Writable<string | undefined> = writable(undefined);
+	const lrb_status: Writable<string | undefined> = writable(undefined);			
+
 	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
 
 	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSE';
@@ -290,6 +299,16 @@
 	? 'N/A' 
 	: ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
+	$: dmb_status_display = $dmb_status === undefined ? 'N/A' : $dmb_status;
+	$: pmb_status_display = $pmb_status === undefined ? 'N/A' : $pmb_status;
+	$: daq_status_display = $daq_status === undefined ? 'N/A' : $daq_status;
+	$: cam_status_display = $cam_status === undefined ? 'N/A' : $cam_status;
+	$: bms_status_display = $bms_status === undefined ? 'N/A' : $bms_status;
+	$: fab_status_display = $fab_status === undefined ? 'N/A' : $fab_status;
+	$: lrb_status_display = $lrb_status === undefined ? 'N/A' : $lrb_status;
+
+	$: reloadIcon = $modeCurrent ? '/reload-icon.png' : '/reload-icon.png';
+
 	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
 	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
 	$: rcuTempOutdated = Date.now() - timestamps.rcu_temp > 5000;
@@ -303,6 +322,7 @@
 	$: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
 	$: sysStateOutdated = Date.now() - timestamps.system_state > 5000;
 	$: heartbeatOutdated = Date.now() - timestamps.heartbeat > 5000;
+	$: boardStatusOutdated = Date.now() - timestamps.board_status > 5000;
 
 	onMount(async () => {
 		// Subscribe to changes in the 'RelayStatus' collection
@@ -489,6 +509,19 @@
 			timer_period.set(e.record.timer_period);
 			timer_remaining.set(e.record.timer_remaining);
 			timestamps.heartbeat = Date.now();
+		});
+
+		// Subscribe to changes in the 'BoardStatus' collection
+		PB.collection('BoardStatus').subscribe('*', function (e) {
+			// Update the board status
+			dmb_status.set(e.record.dmb_status);
+			pmb_status.set(e.record.pmb_status);
+			daq_status.set(e.record.daq_status);
+			cam_status.set(e.record.cam_status);
+			bms_status.set(e.record.bms_status);
+			fab_status.set(e.record.fab_status);
+			lrb_status.set(e.record.lrb_status);
+			timestamps.board_status = Date.now();
 		});
 	});
 
@@ -893,6 +926,104 @@
 		</button>
 	</div>
 
+	<div class="dmb_ping_button">
+		<button 
+			type="button" 
+			class="btn btn-sm small-button" 
+			on:click={() => performTare("BOARDPING")}
+		>
+			<img src="reload-icon.png" alt="Reload" />
+		</button>
+	</div>
+
+	<div class="pmb_ping_button">
+		<button 
+			type="button" 
+			class="btn btn-sm small-button" 
+			on:click={() => performTare("BOARDPING")}
+		>
+			<img src="reload-icon.png" alt="Reload" />
+		</button>
+	</div>
+	
+	<div class="daq_ping_button">
+		<button 
+			type="button" 
+			class="btn btn-sm small-button" 
+			on:click={() => performTare("BOARDPING")}
+		>
+			<img src="reload-icon.png" alt="Reload" />
+		</button>
+	</div>
+
+	<div class="cam_ping_button">
+		<button 
+			type="button" 
+			class="btn btn-sm small-button" 
+			on:click={() => performTare("BOARDPING")}
+		>
+			<img src="reload-icon.png" alt="Reload" />
+		</button>
+	</div>
+
+	<div class="bms_ping_button">
+		<button 
+			type="button" 
+			class="btn btn-sm small-button" 
+			on:click={() => performTare("BOARDPING")}
+		>
+			<img src="reload-icon.png" alt="Reload" />
+		</button>
+	</div>
+
+	<div class="fab_ping_button">
+		<button 
+			type="button" 
+			class="btn btn-sm small-button" 
+			on:click={() => performTare("BOARDPING")}
+		>
+			<img src="reload-icon.png" alt="Reload" />
+		</button>
+	</div>
+
+	<div class="lrb_ping_button">
+		<button 
+			type="button" 
+			class="btn btn-sm small-button" 
+			on:click={() => performTare("BOARDPING")}
+		>
+			<img src="reload-icon.png" alt="Reload" />
+		</button>
+	</div>
+
+	<div class="dmb_status board_status {boardStatusOutdated ? 'outdated' : ''}"> 
+		<p>{dmb_status_display}</p> 
+	</div>
+
+	<div class="pmb_status board_status {boardStatusOutdated ? 'outdated' : ''}"> 
+		<p>{pmb_status_display}</p> 
+	</div>
+	
+	<div class="daq_status board_status {boardStatusOutdated ? 'outdated' : ''}"> 
+		<p>{pmb_status_display}</p> 
+	</div>
+
+	<div class="cam_status board_status {boardStatusOutdated ? 'outdated' : ''}"> 
+		<p>{pmb_status_display}</p> 
+	</div>
+
+	<div class="bms_status board_status {boardStatusOutdated ? 'outdated' : ''}"> 
+		<p>{pmb_status_display}</p> 
+	</div>
+
+	<div class="fab_status board_status {boardStatusOutdated ? 'outdated' : ''}"> 
+		<p>{pmb_status_display}</p> 
+	</div>
+
+	<div class="lrb_status board_status {boardStatusOutdated ? 'outdated' : ''}"> 
+		<p>{pmb_status_display}</p> 
+	</div>
+
 	<div class="rcu_tc1 rcu_temp {rcuTempOutdated ? 'outdated' : ''}">
 		<p>{rcu_tc1_display}</p>
 	</div>
@@ -1097,6 +1228,11 @@
 		}
 	}
 
+	.small-button img {
+	  width: 20px;  
+	  height: 20px; 
+	}
+
 	.next-state-btn {
 		position: absolute;
 		left: 8%;
@@ -1272,6 +1408,111 @@
 		top: calc(var(--container-width) * 0.097);
 		left: 69.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.dmb_ping_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.458);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.pmb_ping_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.472);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.daq_ping_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.485);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.cam_ping_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.498);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.bms_ping_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.511);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.fab_ping_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.524);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.lrb_ping_button {
+		position: absolute;
+		top: calc(var(--container-width) * 0.537);
+		left: 42%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+	}
+
+	.dmb_status {
+		position: absolute;
+		top: calc(var(--container-width) * 0.458);
+		left: 38%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}
+
+	.pmb_status {
+		position: absolute;
+		top: calc(var(--container-width) * 0.471);
+		left: 38%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}
+
+	.daq_status {
+		position: absolute;
+		top: calc(var(--container-width) * 0.485);
+		left: 38%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}
+
+	.cam_status {
+		position: absolute;
+		top: calc(var(--container-width) * 0.498);
+		left: 38%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}
+
+	.bms_status {
+		position: absolute;
+		top: calc(var(--container-width) * 0.511);
+		left: 38%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}
+
+	.fab_status {
+		position: absolute;
+		top: calc(var(--container-width) * 0.524);
+		left: 38%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}
+
+	.lrb_status {
+		position: absolute;
+		top: calc(var(--container-width) * 0.537);
+		left: 38%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
 	}
 
 	.rcu_tc1 {

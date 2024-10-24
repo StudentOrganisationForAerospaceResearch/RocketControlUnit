@@ -1,5 +1,6 @@
-import { getModalStore, type ModalSettings } from '@skeletonlabs/skeleton';
+import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 import type { PocketbaseHook } from './usePocketbase';
+import PausablePromptModal from '$lib/components/PausablePromptModal.svelte';
 
 const stateToCommand: { [key: string]: string } = {
 	RS_ABORT: 'RSC_ANY_TO_ABORT',
@@ -91,28 +92,52 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 	};
 
 	const promptEnterWeight = (loadcell: string) => {
-		const modal: ModalSettings = {
-			type: 'prompt',
-			title: `Enter Weight (kg) (${numberOfWeights} remaining)`,
-			valueAttr: { type: 'text', required: true },
-			response: async (r: any) => {
-				if (r) {
-					// If this is the last weight, send the finish command
-					if (numberOfWeights === 1) {
-						pocketbaseHook.writeLoadCellCommand(loadcell, 'FINISH', parseFloat(r));
-					} else {
-						// The modal was confirmed, send the calibrate command
-						pocketbaseHook.writeLoadCellCommand(loadcell, 'CALIBRATE', parseFloat(r));
-					}
+		// const modal: ModalSettings = {
+		// 	type: 'prompt',
+		// 	title: `Enter Weight (kg) (${numberOfWeights} remaining)`,
+		// 	valueAttr: { type: 'text', required: true },
+		// 	response: async (r: any) => {
+		// 		if (r) {
+		// 			// If this is the last weight, send the finish command
+		// 			if (numberOfWeights === 1) {
+		// 				pocketbaseHook.writeLoadCellCommand(loadcell, 'FINISH', parseFloat(r));
+		// 			} else {
+		// 				// The modal was confirmed, send the calibrate command
+		// 				pocketbaseHook.writeLoadCellCommand(loadcell, 'CALIBRATE', parseFloat(r));
+		// 			}
 
-					// Decrease the number of weights and open the modal again if there are more weights to enter
-					numberOfWeights--;
-					if (numberOfWeights > 0) {
-						promptEnterWeight(loadcell);
-					}
-				} else {
-					// The modal was cancelled, send a cancel command
-					pocketbaseHook.writeLoadCellCommand(loadcell, 'CANCEL', 0);
+		// 			// Decrease the number of weights and open the modal again if there are more weights to enter
+		// 			numberOfWeights--;
+		// 			if (numberOfWeights > 0) {
+		// 				promptEnterWeight(loadcell);
+		// 			}
+		// 		} else {
+		// 			// The modal was cancelled, send a cancel command
+		// 			pocketbaseHook.writeLoadCellCommand(loadcell, 'CANCEL', 0);
+		// 		}
+		// 	}
+		// };
+
+		const modalComponent: ModalComponent = {
+			ref: PausablePromptModal,
+			props: {
+				heading: `Enter Weight (kg) (${numberOfWeights} remaining)`,
+				inputMethod: 'text'
+			}
+		};
+
+		const modal: ModalSettings = {
+			type: 'component',
+			component: modalComponent,
+			response: (res: 'submit' | 'cancel' | 'pause' | undefined) => {
+				switch (res) {
+					case 'submit':
+						break;
+					case 'pause':
+						break;
+					default:	// 'cancel' | undefined
+						pocketbaseHook.writeLoadCellCommand(loadcell, 'CANCEL', 0);
+						break;
 				}
 			}
 		};

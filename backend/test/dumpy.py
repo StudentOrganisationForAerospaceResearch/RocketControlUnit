@@ -1,25 +1,36 @@
 import time
-from pocketbase import Client
+from pocketbase import PocketBase
 import random
 import concurrent.futures
 
+endpoint = "http://localhost:8090"
+admin_email = "test@test.test"
+admin_password = "123456789a"
+
 # Initialize PocketBase
-pb = Client("http://127.0.0.1:8090")
+pb = PocketBase(endpoint)
+
+# Authenticate
+admin_data = pb.admins.auth_with_password(admin_email, admin_password)
+
+if not admin_data.is_valid:
+    print("Authentication failed")
+    exit()
 
 battery_data = ["INVALID", "GROUND", "ROCKET"]
+
 random_bool = lambda: random.choice([True, False])
 random_int = lambda: random.randint(0, 100)
 
-coord_json = {
+random_coord = lambda: {
     "degrees": random_int(),
     "minutes": random_int(),
 }
 
-gps_json = {
+random_gps = lambda: {
     "altitude": random_int(),
     "unit": random_int(),
 }
-
 
 # Define a function for each table
 def baro_write():
@@ -61,11 +72,11 @@ def dmb_pressure_write():
 def gps_write():
     pb.collection("Gps").create(
         {
-            "latitude": coord_json,
-            "longitude": coord_json,
-            "antenna_altitude": gps_json,
-            "geo_id_altitude": gps_json,
-            "total_altitude": gps_json,
+            "latitude": random_coord(),
+            "longitude": random_coord,
+            "antenna_altitude": random_gps(),
+            "geo_id_altitude": random_gps(),
+            "total_altitude": random_gps(),
             "time": random_int(),
         }
     )
@@ -181,7 +192,6 @@ def sob_temperature_write():
         }
     )
 
-
 # List of functions
 functions = [
     baro_write,
@@ -206,8 +216,11 @@ executor = concurrent.futures.ThreadPoolExecutor(max_workers=20)
 
 # Run all functions every 3 seconds
 while True:
+    print("Executing functions...")
+
     # Start a thread for each function
     for function in functions:
         executor.submit(function)
+
     # Pause for 3 seconds
     time.sleep(3)

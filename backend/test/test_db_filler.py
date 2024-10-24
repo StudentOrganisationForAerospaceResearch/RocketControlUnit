@@ -2,7 +2,6 @@ import random
 import time
 from pocketbase import Client
 
-
 client = Client("http://127.0.0.1:8090")
 i = 0
 

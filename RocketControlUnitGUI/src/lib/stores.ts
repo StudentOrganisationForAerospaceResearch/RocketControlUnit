@@ -42,6 +42,13 @@ export interface Stores {
 	timer_state: Writable<string | undefined>;
 	timer_period: Writable<number | undefined>;
 	timer_remaining: Writable<number | undefined>;
+	dmb_status: Writable<string | undefined>;
+	pmb_status: Writable<string | undefined>;
+	daq_status: Writable<string | undefined>;
+	cam_status: Writable<string | undefined>;
+	bms_status: Writable<string | undefined>;
+	fab_status: Writable<string | undefined>;
+	lrb_status: Writable<string | undefined>;
 }
 
 export const initStores = () => {
@@ -83,6 +90,13 @@ export const initStores = () => {
 		system_state: writable<string | undefined>(undefined),
 		timer_state: writable<string | undefined>(undefined),
 		timer_period: writable<number | undefined>(undefined),
-		timer_remaining: writable<number | undefined>(undefined)
+		timer_remaining: writable<number | undefined>(undefined),
+		dmb_status: writable<string | undefined>(undefined),
+		pmb_status: writable<string | undefined>(undefined),
+		daq_status: writable<string | undefined>(undefined),
+		cam_status: writable<string | undefined>(undefined),
+		bms_status: writable<string | undefined>(undefined),
+		fab_status: writable<string | undefined>(undefined),
+		lrb_status: writable<string | undefined>(undefined),
 	};
 };

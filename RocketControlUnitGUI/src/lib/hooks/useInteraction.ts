@@ -1,6 +1,6 @@
 import { getModalStore, type ModalComponent, type ModalSettings } from '@skeletonlabs/skeleton';
 import type { PocketbaseHook } from './usePocketbase';
-import PausablePromptModal from '$lib/components/PausablePromptModal.svelte';
+import PausablePromptModal, { type PausablePromptResponse } from '$lib/components/PausablePromptModal.svelte';
 
 const stateToCommand: { [key: string]: string } = {
 	RS_ABORT: 'RSC_ANY_TO_ABORT',
@@ -22,6 +22,13 @@ const commandToState = Object.fromEntries(
 
 Object.freeze(stateToCommand);
 Object.freeze(commandToState);
+
+interface LoadCellPromptStates {
+	[loadcell: string]: {
+		numberOfWeights: number,
+		onResume?: (loadcell: string) => void
+	}
+}
 
 export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 	const modalStore = getModalStore();
@@ -53,6 +60,8 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 		nextStatePending = '';
 	};
 
+	let promptStates: LoadCellPromptStates = {}
+
 	const confirmRemoveWeight = (loadcell: string) => {
 		const modal: ModalSettings = {
 			type: 'confirm',
@@ -70,8 +79,6 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 		modalStore.trigger(modal);
 	};
 
-	let numberOfWeights = 0;
-
 	const promptEnterNumberOfWeights = (loadcell: string) => {
 		const modal: ModalSettings = {
 			type: 'prompt',
@@ -80,10 +87,16 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 			response: async (r: any) => {
 				if (r) {
 					// The modal was confirmed, set the number of weights
-					numberOfWeights = parseInt(r);
-					if (numberOfWeights > 0) {
+					promptStates[loadcell] = {
+						numberOfWeights: parseInt(r)
+					};
+
+					if (promptStates[loadcell].numberOfWeights > 0) {
 						promptEnterWeight(loadcell);
 					}
+				}
+				else {
+					delete promptStates[loadcell];
 				}
 			}
 		};
@@ -92,51 +105,41 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 	};
 
 	const promptEnterWeight = (loadcell: string) => {
-		// const modal: ModalSettings = {
-		// 	type: 'prompt',
-		// 	title: `Enter Weight (kg) (${numberOfWeights} remaining)`,
-		// 	valueAttr: { type: 'text', required: true },
-		// 	response: async (r: any) => {
-		// 		if (r) {
-		// 			// If this is the last weight, send the finish command
-		// 			if (numberOfWeights === 1) {
-		// 				pocketbaseHook.writeLoadCellCommand(loadcell, 'FINISH', parseFloat(r));
-		// 			} else {
-		// 				// The modal was confirmed, send the calibrate command
-		// 				pocketbaseHook.writeLoadCellCommand(loadcell, 'CALIBRATE', parseFloat(r));
-		// 			}
-
-		// 			// Decrease the number of weights and open the modal again if there are more weights to enter
-		// 			numberOfWeights--;
-		// 			if (numberOfWeights > 0) {
-		// 				promptEnterWeight(loadcell);
-		// 			}
-		// 		} else {
-		// 			// The modal was cancelled, send a cancel command
-		// 			pocketbaseHook.writeLoadCellCommand(loadcell, 'CANCEL', 0);
-		// 		}
-		// 	}
-		// };
-
 		const modalComponent: ModalComponent = {
 			ref: PausablePromptModal,
 			props: {
-				heading: `Enter Weight (kg) (${numberOfWeights} remaining)`,
-				inputMethod: 'text'
+				heading: `Enter Weight (kg) (${promptStates[loadcell].numberOfWeights} remaining)`,
 			}
 		};
 
 		const modal: ModalSettings = {
 			type: 'component',
 			component: modalComponent,
-			response: (res: 'submit' | 'cancel' | 'pause' | undefined) => {
-				switch (res) {
+			response: (res: PausablePromptResponse) => {
+				switch (res[0]) {
 					case 'submit':
+						// If this is the last weight, send the finish command
+						if (promptStates[loadcell].numberOfWeights === 1) {
+							pocketbaseHook.writeLoadCellCommand(loadcell, 'FINISH', parseFloat(res[1]));
+							delete promptStates[loadcell];
+						} else {
+							// The modal was confirmed, send the calibrate command
+							pocketbaseHook.writeLoadCellCommand(loadcell, 'CALIBRATE', parseFloat(res[1]));
+						}
+
+						// Decrease the number of weights and open the modal again if there are more weights to enter
+						promptStates[loadcell].numberOfWeights--;
+						if (promptStates[loadcell].numberOfWeights > 0) {
+							promptEnterWeight(loadcell);
+						}
+
 						break;
 					case 'pause':
+						promptStates[loadcell].onResume = promptEnterWeight;
 						break;
 					default:	// 'cancel' | undefined
 						pocketbaseHook.writeLoadCellCommand(loadcell, 'CANCEL', 0);
+						delete promptStates[loadcell];
 						break;
 				}
 			}
@@ -145,9 +148,23 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 		modalStore.trigger(modal);
 	};
 
+	const resumeConfirmRemoveWeight = (loadcell: string) => {
+		if (!promptStates[loadcell] || !promptStates[loadcell].onResume) {
+			confirmRemoveWeight(loadcell);
+			return;
+		}
+
+		if (!promptStates[loadcell].onResume) {
+			confirmRemoveWeight(loadcell);
+			return;
+		}
+
+		promptStates[loadcell].onResume!(loadcell);
+	}
+
 	return {
 		confirmStateChange,
 		instantStateChange,
-		confirmRemoveWeight
+		resumeConfirmRemoveWeight,
 	};
 };

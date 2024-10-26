@@ -25,7 +25,7 @@
 	const {
 		confirmStateChange,
 		instantStateChange,
-		confirmRemoveWeight
+		resumeConfirmRemoveWeight
 	} = useInteractionHook;
 
 	// Destructure stores for later use
@@ -463,7 +463,7 @@
 			class="btn btn-sm variant-filled-error" 
 			on:click={() => {
 				writeLoadCellCommand("NOS1", "CANCEL", 0);
-				confirmRemoveWeight("NOS1");}}
+				resumeConfirmRemoveWeight("NOS1");}}
 		>
 			CAL
 		</button>
@@ -485,7 +485,7 @@
 			class="btn btn-sm variant-filled-error" 
 			on:click={() => {
 				writeLoadCellCommand("NOS2", "CANCEL", 0);	
-				confirmRemoveWeight("NOS2");}}
+				resumeConfirmRemoveWeight("NOS2");}}
 		>
 			CAL
 		</button>
@@ -507,7 +507,7 @@
 			class="btn btn-sm variant-filled-error" 
 			on:click={() => { 
 				writeLoadCellCommand("LAUNCHRAIL", "CANCEL", 0);
-				confirmRemoveWeight("LAUNCHRAIL");}}
+				resumeConfirmRemoveWeight("LAUNCHRAIL");}}
 		>
 			CAL
 		</button>

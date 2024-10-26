@@ -2,10 +2,11 @@ import time
 from pocketbase import PocketBase
 import random
 import concurrent.futures
+import string
 
-endpoint = "http://localhost:8090"
-admin_email = "test@test.test"
-admin_password = "123456789a"
+endpoint = "http://127.0.0.1:8090"
+admin_email = "danikasvetelj@gmail.com"
+admin_password = "Ilmnh&h!Ilmnh&h!"
 
 # Initialize PocketBase
 pb = PocketBase(endpoint)
@@ -21,6 +22,7 @@ battery_data = ["INVALID", "GROUND", "ROCKET"]
 
 random_bool = lambda: random.choice([True, False])
 random_int = lambda: random.randint(0, 100)
+random_string = lambda length: ''.join(random.choice(string.ascii_letters) for _ in range(length))
 
 random_coord = lambda: {
     "degrees": random_int(),
@@ -192,6 +194,19 @@ def sob_temperature_write():
         }
     )
 
+def board_status_write():
+    pb.collection("BoardStatus").create(
+        {
+            "dmb_status": random_string(5),
+            "pmb_status": random_string(5),
+            "daq_status": random_string(5),
+            "cam_status": random_string(5),
+            "bms_status": random_string(5),
+            "fab_status": random_string(5),
+            "lrb_status": random_string(5),
+        }
+    )
+
 # List of functions
 functions = [
     baro_write,
@@ -209,6 +224,7 @@ functions = [
     rcu_temperature_write,
     relay_status_write,
     sob_temperature_write,
+    board_status_write,
 ]
 
 # Create a ThreadPool

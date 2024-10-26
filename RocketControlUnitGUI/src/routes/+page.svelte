@@ -63,12 +63,12 @@
 		timer_period,
 		timer_remaining,
 		bms_status,
-		cam_status,
+		fsb_status,
 		daq_status,
-		dmb_status,
-		fab_status,
+		fcb_status,
+		cib_status,
 		lrb_status,
-		pmb_status
+		pbb_status
 	} = stores;
 
 	onMount(() => {
@@ -196,12 +196,12 @@
 	$: timer_remaining_display =
 		$timer_remaining === undefined ? 'N/A' : ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
-	$: dmb_status_display = $dmb_status === undefined ? 'N/A' : $dmb_status;
-	$: pmb_status_display = $pmb_status === undefined ? 'N/A' : $pmb_status;
+	$: fcb_status_display = $fcb_status === undefined ? 'N/A' : $fcb_status;
+	$: pbb_status_display = $pbb_status === undefined ? 'N/A' : $pbb_status;
 	$: daq_status_display = $daq_status === undefined ? 'N/A' : $daq_status;
-	$: cam_status_display = $cam_status === undefined ? 'N/A' : $cam_status;
+	$: fsb_status_display = $fsb_status === undefined ? 'N/A' : $fsb_status;
 	$: bms_status_display = $bms_status === undefined ? 'N/A' : $bms_status;
-	$: fab_status_display = $fab_status === undefined ? 'N/A' : $fab_status;
+	$: cib_status_display = $cib_status === undefined ? 'N/A' : $cib_status;
 	$: lrb_status_display = $lrb_status === undefined ? 'N/A' : $lrb_status;
 
 	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
@@ -552,74 +552,81 @@
 		</button>
 	</div>
 
-	<div class="dmb_ping_button">
-		<button type="button" class="btn btn-sm small-button" on:click={() => performTare('BOARDPING')}>
-			<img src="reload-icon.png" alt="Reload" />
+	<div class="fcb_ping_button">
+		<button type="button" class="btn btn-sm small-button" 
+				on:click={() => writeArbitraryCommand('FCB_BOARD','PINGCOMMAND')}>
+			<img src="/icons/reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
-	<div class="pmb_ping_button">
-		<button type="button" class="btn btn-sm small-button" on:click={() => performTare('BOARDPING')}>
-			<img src="reload-icon.png" alt="Reload" />
+	<div class="pbb_ping_button">
+		<button type="button" class="btn btn-sm small-button" 
+				on:click={() => writeArbitraryCommand('PBB_BOARD','PINGCOMMAND')}>
+			<img src="/icons/reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
 	<div class="daq_ping_button">
-		<button type="button" class="btn btn-sm small-button" on:click={() => performTare('BOARDPING')}>
-			<img src="reload-icon.png" alt="Reload" />
+		<button type="button" class="btn btn-sm small-button" 
+				on:click={() => writeArbitraryCommand('DAQ_BOARD','PINGCOMMAND')}>
+			<img src="/icons/reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
-	<div class="cam_ping_button">
-		<button type="button" class="btn btn-sm small-button" on:click={() => performTare('BOARDPING')}>
-			<img src="reload-icon.png" alt="Reload" />
+	<div class="fsb_ping_button">
+		<button type="button" class="btn btn-sm small-button" 
+				on:click={() => writeArbitraryCommand('FSB_BOARD','PINGCOMMAND')}>
+			<img src="/icons/reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
 	<div class="bms_ping_button">
-		<button type="button" class="btn btn-sm small-button" on:click={() => performTare('BOARDPING')}>
-			<img src="reload-icon.png" alt="Reload" />
+		<button type="button" class="btn btn-sm small-button" 
+				on:click={() => writeArbitraryCommand('BMS_BOARD','PINGCOMMAND')}>
+			<img src="/icons/reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
-	<div class="fab_ping_button">
-		<button type="button" class="btn btn-sm small-button" on:click={() => performTare('BOARDPING')}>
-			<img src="reload-icon.png" alt="Reload" />
+	<div class="cib_ping_button">
+		<button type="button" class="btn btn-sm small-button" 
+				on:click={() => writeArbitraryCommand('CIB_BOARD','PINGCOMMAND')}>
+			<img src="/icons/reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
 	<div class="lrb_ping_button">
-		<button type="button" class="btn btn-sm small-button" on:click={() => performTare('BOARDPING')}>
-			<img src="reload-icon.png" alt="Reload" />
+		<button type="button" class="btn btn-sm small-button" 
+				on:click={() => writeArbitraryCommand('LRB_BOARD','PINGCOMMAND')}>
+			<img src="/icons/reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
-	<div class="dmb_status board_status {boardStatusOutdated ? 'outdated' : ''}">
-		<p>{dmb_status_display}</p>
+	<div class="fcb_status board_status {boardStatusOutdated ? 'outdated' : ''}">
+		<p>{fcb_status_display}</p>
 	</div>
 
-	<div class="pmb_status board_status {boardStatusOutdated ? 'outdated' : ''}">
-		<p>{pmb_status_display}</p>
+	<div class="pbb_status board_status {boardStatusOutdated ? 'outdated' : ''}">
+		<p>{pbb_status_display}</p>
 	</div>
 
 	<div class="daq_status board_status {boardStatusOutdated ? 'outdated' : ''}">
-		<p>{pmb_status_display}</p>
+		<p>{pbb_status_display}</p>
 	</div>
 
-	<div class="cam_status board_status {boardStatusOutdated ? 'outdated' : ''}">
-		<p>{pmb_status_display}</p>
+	<div class="fsb_status board_status {boardStatusOutdated ? 'outdated' : ''}">
+		<p>{pbb_status_display}</p>
 	</div>
 
 	<div class="bms_status board_status {boardStatusOutdated ? 'outdated' : ''}">
-		<p>{pmb_status_display}</p>
+		<p>{pbb_status_display}</p>
 	</div>
 
-	<div class="fab_status board_status {boardStatusOutdated ? 'outdated' : ''}">
-		<p>{pmb_status_display}</p>
+	<div class="cib_status board_status {boardStatusOutdated ? 'outdated' : ''}">
+		<p>{pbb_status_display}</p>
 	</div>
 
 	<div class="lrb_status board_status {boardStatusOutdated ? 'outdated' : ''}">
-		<p>{pmb_status_display}</p>
+		<p>{pbb_status_display}</p>
 	</div>
 
 	<div class="rcu_tc1 rcu_temp {rcuTempOutdated ? 'outdated' : ''}">

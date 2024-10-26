@@ -7,6 +7,7 @@
 	import { useInteraction } from '$lib/hooks/useInteraction';
 	import { onMount } from 'svelte';
 	import { SlideToggle } from '@skeletonlabs/skeleton';
+	import Diagram2 from '$lib/components/Diagram2.svelte';
 
 	const timestamps = initTimestamps();
 	const stores = initStores();
@@ -274,6 +275,7 @@
 
 <div class="container">
 	<Diagram />
+	<!-- <Diagram2 /> -->
 
 	<div class="ac1_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle

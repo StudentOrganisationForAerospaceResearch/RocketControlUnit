@@ -24,6 +24,7 @@
 	$: aboutIcon = $modeCurrent ? '/info-light.png' : '/info-dark.png';
 	$: cameraIcon = $modeCurrent ? '/camera-light.png' : '/camera-dark.png';
 	$: statsIcon = $modeCurrent ? '/stats-light.png' : '/stats-dark.png';
+	$: fireIcon =  '/flame-light.png';
 	let readOnlyIcon = '/read-only.svg';
 
 </script>
@@ -79,6 +80,9 @@
 			
 			<AppRailAnchor href="/about" selected={$page.url.pathname === "/about"}><img src={aboutIcon} class="sideBar-center" 
 			alt="Icon" /></AppRailAnchor>
+			<AppRailAnchor href="/Static fire" selected={$page.url.pathname === "/Static fire"}><img src={fireIcon} class="sideBar-center" 
+				alt="Icon" /></AppRailAnchor>
+		
 		</AppRail>
 	</svelte:fragment>
 	

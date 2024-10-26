@@ -18,7 +18,7 @@ from src.support.Codec import Codec
 from src.support.ProtobufParser import ProtobufParser
 from src.support.CommonLogger import logger
 
-from backend.src.StateMachine.StateMachine import State, Event, StateMachineManager
+from backend.src.StateMachine.StateMachineManager import State, Event, StateMachineManager
 from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_HEARTBEAT_SERIAL, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_VOLTAGE, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
 from src.Utils import Utils as utl
 

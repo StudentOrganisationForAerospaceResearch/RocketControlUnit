@@ -16,23 +16,37 @@ from abc import ABC, abstractmethod
 class BaseStateMachine(ABC):
 
     @abstractmethod
-    def enter_state(self):
+    def start(self):
         pass
+
     @abstractmethod
-    def exit_state(self):
+    def exit(self):
         pass
-    @abstractmethod
-    def update_state(self):
-        pass
-    @abstractmethod
-    def get_next_state(self):
-        pass
-    @abstractmethod
-    def on_trigger_enter_state(self):
-        pass
-    @abstractmethod
-    def on_trigger_stay_state(self):
-        pass
-    @abstractmethod
-    def on_trigger_exit_state(self):
-        pass
+
+    # @abstractmethod
+    # def enter_state(self):
+    #     pass
+
+    # @abstractmethod
+    # def exit_state(self):
+    #     pass
+
+    # @abstractmethod
+    # def update_state(self):
+    #     pass
+
+    # @abstractmethod
+    # def get_next_state(self):
+    #     pass
+
+    # @abstractmethod
+    # def on_trigger_enter_state(self):
+    #     pass
+
+    # @abstractmethod
+    # def on_trigger_stay_state(self):
+    #     pass
+
+    # @abstractmethod
+    # def on_trigger_exit_state(self):
+    #     pass

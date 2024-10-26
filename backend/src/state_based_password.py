@@ -1,6 +1,11 @@
+from flask import Flask, jsonify
+from flask_cors import CORS, cross_origin
+
+
+app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 import os
 import platform
-from cryptography.fernet import Fernet
 system = platform.uname()
 
 #this acquires the name of the usb we are looking for
@@ -99,7 +104,12 @@ def read_files_from_usb(usb_path):
                        
     except Exception as e:
         print(f"Error reading files: {e}")
-    
+
+
+
+
+@app.route('/message', methods=['GET']) 
+@cross_origin()
 def send():
     #This checks which os is being used by the user and calls the appropriate function
     if system[0] == "Darwin":
@@ -115,9 +125,10 @@ def send():
                 usb_file_path = '/Volumes/'+ usb_name +'/' +  list_files_in_usb_macos(usb_drive_path) # Linux/macOS example
                 password = read_file_from_usb(usb_file_path)
                 key = encrypt(password, 3)
-                print(key)
+                return jsonify({'message': key})
+                
         except TypeError:
-            print("usb drive not found")
+            return jsonify({'message' : "usb drive not found"})
 
     elif system[0] == "WINDOWS":  
         if __name__ == "__main__":
@@ -128,6 +139,7 @@ def send():
                 print(f"USB Drive with label '{volume_label}' found at: {usb_drive}")
                 password = read_files_from_usb(usb_drive)
                 key = encrypt(password, 3)
+                return jsonify({'message': key})
             else:
                 print(f"No USB drive with label '{volume_label}' detected.")
-send()
+app.run()

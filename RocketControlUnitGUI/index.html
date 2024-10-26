@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Message from Python</title>
+</head>
+<body>
+    <h1>Message from Python</h1>
+    <div id="message"></div>
+    <script>
+
+    function getDecryption(messageString){
+        let decryptedText = "";
+        let shift =3;
+        if(messageString == "usb drive not found"){
+            return messageString;
+        }
+        for (let char of messageString) {
+            if (/[a-zA-Z]/.test(char)) {
+                const shiftBase = char === char.toUpperCase() ? 'A'.charCodeAt(0) : 'a'.charCodeAt(0);
+                const decryptedChar = String.fromCharCode(((char.charCodeAt(0) - shiftBase - shift + 26) % 26) + shiftBase);
+                decryptedText += decryptedChar;
+            } else {
+                decryptedText += char;
+            }
+        }
+        return decryptedText;
+    }
+    async function fetchMessage() {
+        try {
+            const response = await fetch('http://127.0.0.1:5000/message');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            const serverResponse = data.message; // Store the message
+            return serverResponse; // Return the message
+        } catch (error) {
+            console.error('Error:', error);
+        }
+     }
+    async function handleFetch() {
+        const message = await fetchMessage(); // Await the fetchMessage function
+        if (message) {
+            console.log(message); // Print the message to the console
+            console.log(getDecryption(message)); // Process the message
+        }
+    }
+    handleFetch();
+        
+       
+    </script>
+</body>
+</html>

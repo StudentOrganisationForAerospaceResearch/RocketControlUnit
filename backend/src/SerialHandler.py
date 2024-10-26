@@ -18,6 +18,7 @@ from src.support.Codec import Codec
 from src.support.ProtobufParser import ProtobufParser
 from src.support.CommonLogger import logger
 
+from backend.src.StateMachine.StateMachine import State, Event, StateMachineManager
 from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_HEARTBEAT_SERIAL, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_VOLTAGE, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
 from src.Utils import Utils as utl
 
@@ -257,6 +258,14 @@ def serial_rx_thread(ser_han: SerialHandler):
     while not (ser_han.kill_rx):
         ser_han.handle_serial_message()
         pass
+
+def serial_command_control_message_state_machine (self, command: str, target: str, command_param: int, source_sequence_number: int):
+    #Send command/control message
+
+    #Wait for response from DMB
+
+    #Handle response
+    return
 
 def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler) -> bool:
         """

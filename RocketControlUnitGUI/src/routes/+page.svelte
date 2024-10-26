@@ -557,49 +557,49 @@
 	<div class="fcb_ping_button">
 		<button type="button" class="btn btn-sm small-button" 
 				on:click={() => writeArbitraryCommand('FCB_BOARD','PINGCOMMAND')}>
-			<img src="/icons/reload-icon.png" alt="Reload" />
+			<img src="/icons/grey-reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
 	<div class="pbb_ping_button">
 		<button type="button" class="btn btn-sm small-button" 
 				on:click={() => writeArbitraryCommand('PBB_BOARD','PINGCOMMAND')}>
-			<img src="/icons/reload-icon.png" alt="Reload" />
+			<img src="/icons/grey-reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
 	<div class="daq_ping_button">
 		<button type="button" class="btn btn-sm small-button" 
 				on:click={() => writeArbitraryCommand('DAQ_BOARD','PINGCOMMAND')}>
-			<img src="/icons/reload-icon.png" alt="Reload" />
+			<img src="/icons/grey-reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
 	<div class="fsb_ping_button">
 		<button type="button" class="btn btn-sm small-button" 
 				on:click={() => writeArbitraryCommand('FSB_BOARD','PINGCOMMAND')}>
-			<img src="/icons/reload-icon.png" alt="Reload" />
+			<img src="/icons/grey-reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
 	<div class="bms_ping_button">
 		<button type="button" class="btn btn-sm small-button" 
 				on:click={() => writeArbitraryCommand('BMS_BOARD','PINGCOMMAND')}>
-			<img src="/icons/reload-icon.png" alt="Reload" />
+			<img src="/icons/grey-reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
 	<div class="cib_ping_button">
 		<button type="button" class="btn btn-sm small-button" 
 				on:click={() => writeArbitraryCommand('CIB_BOARD','PINGCOMMAND')}>
-			<img src="/icons/reload-icon.png" alt="Reload" />
+			<img src="/icons/grey-reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 
 	<div class="lrb_ping_button">
 		<button type="button" class="btn btn-sm small-button" 
 				on:click={() => writeArbitraryCommand('LRB_BOARD','PINGCOMMAND')}>
-			<img src="/icons/reload-icon.png" alt="Reload" />
+			<img src="/icons/grey-reload-icon.png" alt="Reload" />
 		</button>
 	</div>
 

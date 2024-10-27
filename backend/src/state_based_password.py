@@ -1,9 +1,9 @@
 from flask import Flask, jsonify
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 
 
 app = Flask(__name__)
-cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
+cors = CORS(app, methods=['GET'])
 import os
 import platform
 system = platform.uname()
@@ -109,7 +109,6 @@ def read_files_from_usb(usb_path):
 
 
 @app.route('/message', methods=['GET']) 
-@cross_origin()
 def send():
     #This checks which os is being used by the user and calls the appropriate function
     if system[0] == "Darwin":

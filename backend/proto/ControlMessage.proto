@@ -87,6 +87,10 @@ message SystemState {
         // SoarProto v1.3.2
         SYS_HEARTBEAT_LOSS_HALF_WARNING = 5; // The system has lost heartbeat and 1/2 of the time to abort has passed
         SYS_HEARTBEAT_LOST_ABORTING = 6;     // The system has lost heartbeat and is aborting
+        SYS_WAIT = 7;                   // System has sent commands to DMB
+        SYS_RETRANSMIT = 8;             // System timeout or receive nak from DMB
+        SYS_TIMEOUT = 9;                // System does not receive ack in a fixed time window
+        SYS_SEND_NEXT_CMD = 10;         // System receives ack or retransmit twice
     }
 
     State sys_state = 1; // The current state of the system

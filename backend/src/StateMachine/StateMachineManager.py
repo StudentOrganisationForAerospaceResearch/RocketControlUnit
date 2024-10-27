@@ -27,25 +27,6 @@ from src.StateMachine.BaseStateMachine import BaseStateMachine
 
 # Class Definitions ===============================================================================
 @unique
-class State(Enum):
-    """
-    Represents the states of the rocket and the rcu. If there is a use case to make the state class more general,
-    and the RocketState and RCUState to be a subclass, we can consider that option at that time. Right now, we don't have
-    enough states to justify using inheritance and subclasses.
-
-    """
-    RCU_UNINITIALIZED = 0
-    RCU_INITIALIZED = 1
-    RCU_WAIT = 2
-    RCU_RETRANSMIT = 3
-    RCU_TIMEOUT = 4
-    RCU_SEND_NEXT_CMD = 5
-    ROCKET_UNINITIALIZED = 6
-    ROCKET_LISTENING = 7
-    ROCKET_INITIALIZED = 8
-    ROCKET_READY_FOR_CMD = 9
-
-@unique
 class Event(Enum):
     """
     Represents the event that triggers the transition from one state to another. The events that trigger state transition
@@ -67,11 +48,13 @@ class Event(Enum):
 class StateMachineManager(BaseStateMachine):
     """
     Manage state transitions for the communication between the RCU and the rocket. 
+
     """
     def start(self):
         """
         Start the state machine for RCU and Rocket serial communication by setting the RCU state to be 
         initialized and event to RCU Start.
+
         """
         self.rcu_state = State.RCU_INITIALIZED
         self.rocket_state = State.ROCKET_LISTENING
@@ -79,35 +62,49 @@ class StateMachineManager(BaseStateMachine):
 
     def exit(self):
         """
-        Exit the state machine for RCU and Rocket serial communication by by setting RCU state to be uninitialized 
+        Exit the state machine for RCU and Rocket serial communication by setting RCU state to be uninitialized 
         and event to RCU Exit.
+
         """
         self.rcu_state = State.RCU_UNINITIALIZED
         self.rocket_state = State.ROCKET_UNINITIALIZED
         self.event = Event.RCU_EXIT
 
     def get_rcu_state(self):
+        """
+        Return the current state of the RCU.
+
+        """
         print("\nThe current RCU state:")
         return self.rcu_state
 
     def get_rocket_state(self):
+        """"
+        Return the current state of the rocket.
+
+        """
         print("\nThe current rocket state:")
         return self.rocket_state
     
     def get_event(self):
+        """
+        Return the current event.
+
+        """
         print("\nThe current event:")
         return self.event
 
-    def transition(self, event, from_state, to_state):
+    def update_state(self, event, from_state, to_state):
+        """
+        Update from current state to another state.
+
+        """
+
         #Check to make sure inputs are part of the enum list
 
         #Check if event is a valid transition from from_state
 
         #Check if event is a valid transition to to_state
-
-        #if valid, then set the current event and current state
-
-        #Idk if I want to code the update step separately from the transition step yet - prob to break it up tbh
         return
 
 

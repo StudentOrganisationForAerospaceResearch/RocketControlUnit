@@ -67,6 +67,10 @@ class SystemState(_message.Message):
         SYS_NORMAL_OPERATION: _ClassVar[SystemState.State]
         SYS_HEARTBEAT_LOSS_HALF_WARNING: _ClassVar[SystemState.State]
         SYS_HEARTBEAT_LOST_ABORTING: _ClassVar[SystemState.State]
+        SYS_WAIT: _ClassVar[SystemState.State]
+        SYS_RETRANSMIT: _ClassVar[SystemState.State]
+        SYS_TIMEOUT: _ClassVar[SystemState.State]
+        SYS_SEND_NEXT_CMD: _ClassVar[SystemState.State]
     SYS_INVALID: SystemState.State
     SYS_BOOTUP_COMPLETE: SystemState.State
     SYS_ASSERT_FAILURE_RESET: SystemState.State
@@ -74,6 +78,10 @@ class SystemState(_message.Message):
     SYS_NORMAL_OPERATION: SystemState.State
     SYS_HEARTBEAT_LOSS_HALF_WARNING: SystemState.State
     SYS_HEARTBEAT_LOST_ABORTING: SystemState.State
+    SYS_WAIT: SystemState.State
+    SYS_RETRANSMIT: SystemState.State
+    SYS_TIMEOUT: SystemState.State
+    SYS_SEND_NEXT_CMD: SystemState.State
     SYS_STATE_FIELD_NUMBER: _ClassVar[int]
     ROCKET_STATE_FIELD_NUMBER: _ClassVar[int]
     sys_state: SystemState.State

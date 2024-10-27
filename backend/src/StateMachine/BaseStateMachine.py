@@ -31,9 +31,9 @@ class BaseStateMachine(ABC):
     # def exit_state(self):
     #     pass
 
-    # @abstractmethod
-    # def update_state(self):
-    #     pass
+    @abstractmethod
+    def update_state(self):
+        pass
 
     # @abstractmethod
     # def get_next_state(self):

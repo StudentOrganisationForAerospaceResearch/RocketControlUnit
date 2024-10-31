@@ -13,7 +13,7 @@ The FSM diagram is CommControlMSG.puml.
 
 # General imports =================================================================================
 from enum import Enum, unique
-import os, sys
+import os, sys, time, random
 
 # Project specific imports ========================================================================
 dirname, _ = os.path.split(os.path.abspath(__file__))
@@ -82,32 +82,34 @@ class StateMachineManager(BaseStateMachine):
         
         #Update the state and call next step in the state machine
         self.sys_state = SystemState.SYS_WAIT
-        self.send_message(Event.RCU_SEND_MSG)
+        self.handle_wait(message, ser_han)
 
-    def send_message(self, message: WorkQ_Message, ser_han: SerialHandler,):
+    def handle_wait(self, message: WorkQ_Message, ser_han: SerialHandler,):
 
         """
         Handle the logic of calling other functions depending on rocket responses. 
         """
-        response = "NAK"
-        response1 = "ACK"
-        response2 = "TIMEOUT"
+        #Ideally, should have another function to parse the response received from DMB
+        # response = parse_rocket_response(), change the if blocks below to if, elif,else, etc
+        response = self.simulate_rocket_response()
 
         if self.sys_state == SystemState.SYS_WAIT:
             #If received NAK from Rocket:
             if response == "NAK":
                 self.handle_retransmit(message, ser_han)
-            if response1 == "ACK":
+            elif response == "ACK":
                 self.handle_send_next_cmd()
-            if response2 == "TIMEOUT":
+            elif response == "TIMEOUT":
                 self.sys_state = SystemState.SYS_TIMEOUT
                 self.handle_timeout()
+            else:
+                print("Bro, you messed up\n\r")
 
     def handle_retransmit(self, message: WorkQ_Message, ser_han: SerialHandler):
         #If retransmit counter is within range, retransmit the same message
         if self.retransmit_counter < 2:
-            self.start_sending_msg(message, ser_han)
             self.retransmit_counter += 1
+            self.start_sending_msg(message, ser_han)
         else:
             self.sys_state = SystemState.SYS_SEND_NEXT_CMD
             self.handle_send_next_cmd()
@@ -122,6 +124,11 @@ class StateMachineManager(BaseStateMachine):
         #Call retransmit 
         self.sys_state = SystemState.SYS_RETRANSMIT
         self.handle_retransmit(message, ser_han)
+
+    def simulate_rocket_response(self):
+        # Simulate different responses from Rocket
+        responses = ["ACK", "NAK", "TIMEOUT"]
+        return random.choice(responses)
     
     def exit(self):
         """

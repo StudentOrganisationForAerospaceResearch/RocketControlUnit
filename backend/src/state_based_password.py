@@ -1,18 +1,19 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
-
-
-app = Flask(__name__)
-cors = CORS(app, methods=['GET'])
 import os
 import platform
 system = platform.uname()
+
+#local flask server
+app = Flask(__name__)
+
+#allowing 'GET'
+cors = CORS(app, methods=['GET'])
 
 #this acquires the name of the usb we are looking for
 def get_name_macos():
 
     os.chdir('/Volumes')
-    # then do some listing
     List = os.listdir()
     i = 0
     while i < len(List):
@@ -26,8 +27,7 @@ def get_name_macos():
                 i = i +1
         return None
 
-#using the name the first function returns we are able to locate the files in the usb by inputing our usb file path
-#this gives us our path to the file so we can now read it
+#lists usbs in the path provided in the parameter
 def list_files_in_usb_macos(usb_path):
     try:
         # Check if the provided path exists
@@ -58,7 +58,7 @@ def read_file_from_usb(usb_file_path):
         print(f"File not found: {usb_file_path}")
     except Exception as e:
         print(f"An error occurred: {e}")
-
+#This function encrypts the text in the usb
 def encrypt(text, shift):
     encrypted_text = ""
     for char in text:
@@ -69,7 +69,7 @@ def encrypt(text, shift):
         else:
             encrypted_text += char
     return encrypted_text
-
+#finds usb for WINDOWS operating systems
 def find_specific_usb(volume_label):
     os_type = platform.system()
     
@@ -91,6 +91,7 @@ def find_specific_usb(volume_label):
             print(f'{volume_label} is not found')
 
     return None
+#reads file for WINDOWS operating system
 def read_files_from_usb(usb_path):
     try:
         for root, dirs, files in os.walk(usb_path):
@@ -105,9 +106,7 @@ def read_files_from_usb(usb_path):
     except Exception as e:
         print(f"Error reading files: {e}")
 
-
-
-
+#sends encrypted message to local host
 @app.route('/message', methods=['GET']) 
 def send():
     #This checks which os is being used by the user and calls the appropriate function
@@ -125,20 +124,21 @@ def send():
                 password = read_file_from_usb(usb_file_path)
                 key = encrypt(password, 3)
                 return jsonify({'message': key})
-                
+        #checks for type error,usb we searched for was not found       
         except TypeError:
             return jsonify({'message' : "usb drive not found"})
-
+    #Checks which us WINDOWS is the os
     elif system[0] == "WINDOWS":  
         if __name__ == "__main__":
             volume_label = "MASTER"
             usb_drive = find_specific_usb(volume_label)
-    
+            
             if usb_drive:
-                print(f"USB Drive with label '{volume_label}' found at: {usb_drive}")
                 password = read_files_from_usb(usb_drive)
                 key = encrypt(password, 3)
                 return jsonify({'message': key})
             else:
-                print(f"No USB drive with label '{volume_label}' detected.")
-app.run()
+                return jsonify({'message' : "usb drive not found"})
+#runs flask server
+if __name__ == '__main__':
+    app.run()

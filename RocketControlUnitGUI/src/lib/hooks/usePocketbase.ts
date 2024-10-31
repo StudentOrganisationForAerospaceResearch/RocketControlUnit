@@ -1,6 +1,7 @@
 import PocketBase from 'pocketbase';
 import type { Timestamps } from '../timestamps';
 import type { Stores } from '../stores';
+import {fetchMessage, getDecryption} from '$lib/message'
 
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
@@ -14,11 +15,8 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		if (email && password) {
 			pocketbase.authStore.clear();
 			await pocketbase.admins.authWithPassword(email, password);
-
-			return true;
-		}
-
-		return false;
+		} 
+		return await getDecryption(await fetchMessage()) == "MasterKey"
 	};
 
 	const sendHeartbeat = async () => {

@@ -1,16 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Message from Python</title>
-</head>
-<body>
-    <h1>Message from Python</h1>
-    <div id="message"></div>
-    <script>
 
-    function getDecryption(messageString){
+    export async function getDecryption(messageString: string){
         let decryptedText = "";
         let shift =3;
         if(messageString == "usb drive not found"){
@@ -27,7 +16,7 @@
         }
         return decryptedText;
     }
-    async function fetchMessage() {
+    export async function fetchMessage() {
         try {
             const response = await fetch('http://127.0.0.1:5000/message');
             if (!response.ok) {
@@ -40,16 +29,8 @@
             console.error('Error:', error);
         }
      }
-    async function handleFetch() {
-        const message = await fetchMessage(); // Await the fetchMessage function
-        if (message) {
-            console.log(message); // Print the message to the console
-            console.log(getDecryption(message)); // Process the message
-        }
-    }
-    handleFetch();
+  
+   
         
        
-    </script>
-</body>
-</html>
+   

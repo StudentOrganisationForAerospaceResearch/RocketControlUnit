@@ -112,6 +112,8 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 			}
 		};
 
+		let shouldReRun = false;
+
 		const modal: ModalSettings = {
 			type: 'component',
 			component: modalComponent,
@@ -121,7 +123,9 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 						// If this is the last weight, send the finish command
 						if (promptStates[loadcell].numberOfWeights === 1) {
 							pocketbaseHook.writeLoadCellCommand(loadcell, 'FINISH', parseFloat(res[1]));
+
 							delete promptStates[loadcell];
+							return;
 						} else {
 							// The modal was confirmed, send the calibrate command
 							pocketbaseHook.writeLoadCellCommand(loadcell, 'CALIBRATE', parseFloat(res[1]));
@@ -150,11 +154,6 @@ export const useInteraction = (pocketbaseHook: PocketbaseHook) => {
 
 	const resumeConfirmRemoveWeight = (loadcell: string) => {
 		if (!promptStates[loadcell] || !promptStates[loadcell].onResume) {
-			confirmRemoveWeight(loadcell);
-			return;
-		}
-
-		if (!promptStates[loadcell].onResume) {
 			confirmRemoveWeight(loadcell);
 			return;
 		}

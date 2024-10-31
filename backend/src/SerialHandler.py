@@ -267,6 +267,30 @@ def serial_command_control_message_state_machine (self, command: str, target: st
     #Handle response
     return
 
+def start_state_machine(message: WorkQ_Message, ser_han: SerialHandler):
+    """
+    Start the state machine for RCU <-> Rocket command/control message
+
+    Args: 
+        message (str):
+                The message from the workq
+        ser_han 
+          
+                      The serial thread handler
+    """
+    logger.debug(f"Processing serial workq message: {message.message_type}")
+    messageID = message.message_type
+
+    if messageID == THREAD_MESSAGE_SERIAL_WRITE:
+        command = message.message[0]
+        target = message.message[1]
+        command_param = message.message[2]
+        source_sequence_number = message.message[3]
+        ser_han.send_serial_command_message(command, target, command_param, source_sequence_number)
+    elif messageID == THREAD_MESSAGE_HEARTBEAT_SERIAL:
+        ser_han.send_serial_control_message(message.message[0])
+
+
 def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler) -> bool:
         """
         Process the message from the workq.
@@ -323,7 +347,13 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     rx_thread.start()
     while (1):
         # then once the queue is empty read the serial port
-        if not process_serial_workq_message(serial_workq.get(), ser_han):
+        message = serial_workq.get()
+        print("Message", message.message_type)
+        if message.message_type == THREAD_MESSAGE_KILL:
+            logger.debug(f"Killing {ser_han.thread_name} thread")
             ser_han.kill_rx = True
             rx_thread.join(10)
             return
+        #If valid messages received, start the state machine 
+        StateMachineManager.start_sending_msg(message, ser_han)
+

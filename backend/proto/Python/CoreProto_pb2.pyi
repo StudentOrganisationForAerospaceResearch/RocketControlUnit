@@ -38,8 +38,7 @@ class RocketState(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
     RS_ABORT: _ClassVar[RocketState]
     RS_TEST: _ClassVar[RocketState]
     RS_NONE: _ClassVar[RocketState]
-    
-    : _ClassVar[RocketState]
+    RS_LISTENING: _ClassVar[RocketState]
     RS_READY_FOR_CMD: _ClassVar[RocketState]
 NODE_INVALID: Node
 NODE_UNKNOWN: Node

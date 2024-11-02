@@ -1,25 +1,38 @@
 import time
-from pocketbase import Client
+from pocketbase import PocketBase
 import random
 import concurrent.futures
+import string
+
+endpoint = "http://127.0.0.1:8090"
+admin_email = "danikasvetelj@gmail.com"
+admin_password = "Ilmnh&h!Ilmnh&h!"
 
 # Initialize PocketBase
-pb = Client("http://127.0.0.1:8090")
+pb = PocketBase(endpoint)
+
+# Authenticate
+admin_data = pb.admins.auth_with_password(admin_email, admin_password)
+
+if not admin_data.is_valid:
+    print("Authentication failed")
+    exit()
 
 battery_data = ["INVALID", "GROUND", "ROCKET"]
+
 random_bool = lambda: random.choice([True, False])
 random_int = lambda: random.randint(0, 100)
+random_string = lambda length: ''.join(random.choice(string.ascii_letters) for _ in range(length))
 
-coord_json = {
+random_coord = lambda: {
     "degrees": random_int(),
     "minutes": random_int(),
 }
 
-gps_json = {
+random_gps = lambda: {
     "altitude": random_int(),
     "unit": random_int(),
 }
-
 
 # Define a function for each table
 def baro_write():
@@ -61,11 +74,11 @@ def dmb_pressure_write():
 def gps_write():
     pb.collection("Gps").create(
         {
-            "latitude": coord_json,
-            "longitude": coord_json,
-            "antenna_altitude": gps_json,
-            "geo_id_altitude": gps_json,
-            "total_altitude": gps_json,
+            "latitude": random_coord(),
+            "longitude": random_coord,
+            "antenna_altitude": random_gps(),
+            "geo_id_altitude": random_gps(),
+            "total_altitude": random_gps(),
             "time": random_int(),
         }
     )
@@ -181,6 +194,18 @@ def sob_temperature_write():
         }
     )
 
+def board_status_write():
+    pb.collection("BoardStatus").create(
+        {
+            "dmb_status": random_string(5),
+            "pmb_status": random_string(5),
+            "daq_status": random_string(5),
+            "cam_status": random_string(5),
+            "bms_status": random_string(5),
+            "fab_status": random_string(5),
+            "lrb_status": random_string(5),
+        }
+    )
 
 # List of functions
 functions = [
@@ -199,6 +224,7 @@ functions = [
     rcu_temperature_write,
     relay_status_write,
     sob_temperature_write,
+    board_status_write,
 ]
 
 # Create a ThreadPool
@@ -206,8 +232,11 @@ executor = concurrent.futures.ThreadPoolExecutor(max_workers=20)
 
 # Run all functions every 3 seconds
 while True:
+    print("Executing functions...")
+
     # Start a thread for each function
     for function in functions:
         executor.submit(function)
+
     # Pause for 3 seconds
     time.sleep(3)

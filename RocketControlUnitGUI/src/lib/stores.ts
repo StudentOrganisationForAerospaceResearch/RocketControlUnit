@@ -39,9 +39,17 @@ export interface Stores {
 	sob_tc1_temperature: Writable<string | number | undefined>;
 	sob_tc2_temperature: Writable<string | number | undefined>;
 	system_state: Writable<string | undefined>;
+	currentState: Writable<string | undefined>;
 	timer_state: Writable<string | undefined>;
 	timer_period: Writable<number | undefined>;
 	timer_remaining: Writable<number | undefined>;
+	fcb_status: Writable<string | undefined>;
+	pbb_status: Writable<string | undefined>;
+	daq_status: Writable<string | undefined>;
+	fsb_status: Writable<string | undefined>;
+	bms_status: Writable<string | undefined>;
+	cib_status: Writable<string | undefined>;
+	lrb_status: Writable<string | undefined>;
 }
 
 export const initStores = () => {
@@ -81,8 +89,16 @@ export const initStores = () => {
 		sob_tc1_temperature: writable<string | number | undefined>(undefined),
 		sob_tc2_temperature: writable<string | number | undefined>(undefined),
 		system_state: writable<string | undefined>(undefined),
+		currentState: writable<string | undefined>(undefined),
 		timer_state: writable<string | undefined>(undefined),
 		timer_period: writable<number | undefined>(undefined),
-		timer_remaining: writable<number | undefined>(undefined)
+		timer_remaining: writable<number | undefined>(undefined),
+		fcb_status: writable<string | undefined>(undefined),
+		pbb_status: writable<string | undefined>(undefined),
+		daq_status: writable<string | undefined>(undefined),
+		fsb_status: writable<string | undefined>(undefined),
+		bms_status: writable<string | undefined>(undefined),
+		cib_status: writable<string | undefined>(undefined),
+		lrb_status: writable<string | undefined>(undefined),
 	};
 };

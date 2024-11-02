@@ -5,7 +5,7 @@ import type { Stores } from '../stores';
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
 export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
-	const pocketbase = new PocketBase('http://localhost:8090');
+	const pocketbase = new PocketBase('http://127.0.0.1:8090');
 
 	const authenticate = async () => {
 		const email = import.meta.env.VITE_EMAIL;
@@ -18,7 +18,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			return true;
 		}
 
-		return false;
+		return true;
 	};
 
 	const sendHeartbeat = async () => {
@@ -173,8 +173,10 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 
 		// Subscribe to changes in the 'sys_state' collection
 		pocketbase.collection('sys_state').subscribe('*', (e) => {
+			stores.currentState.set(e.record.rocket_state);
 			stores.system_state.set(e.record.sys_state);
 			timestamps.sys_state = Date.now();
+			console.log("hi");
 		});
 
 		// Subscribe to changes in the 'HeartbeatTelemetry' collection
@@ -184,6 +186,19 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			stores.timer_remaining.set(e.record.timer_remaining);
 
 			timestamps.heartbeat = Date.now();
+		});
+
+		// Subscribe to changes in the 'BoardStatus' collection
+		pocketbase.collection('BoardStatus').subscribe('*', function (e) {
+			stores.fcb_status.set(e.record.fcb_status);
+			stores.pbb_status.set(e.record.pbb_status);
+			stores.daq_status.set(e.record.daq_status);
+			stores.fsb_status.set(e.record.fsb_status);
+			stores.bms_status.set(e.record.bms_status);
+			stores.cib_status.set(e.record.cib_status);
+			stores.lrb_status.set(e.record.lrb_status);
+			
+			timestamps.board_status = Date.now();
 		});
 	};
 

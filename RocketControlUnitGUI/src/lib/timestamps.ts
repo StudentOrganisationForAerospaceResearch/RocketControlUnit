@@ -13,9 +13,10 @@ export interface Timestamps {
 	sob_temperature: number;
 	sys_state: number;
 	heartbeat: number;
+	board_status: number;
 }
 
-export const initTimestamps = () => {
+export const initTimestamps = (): Timestamps => {
 	const now = Date.now();
 
 	return {
@@ -32,6 +33,7 @@ export const initTimestamps = () => {
 		rcu_pressure: now,
 		sob_temperature: now,
 		sys_state: now,
-		heartbeat: now
+		heartbeat: now,
+		board_status: now,
 	};
 };

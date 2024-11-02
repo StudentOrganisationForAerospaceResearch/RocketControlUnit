@@ -39,6 +39,7 @@ export interface Stores {
 	sob_tc1_temperature: Writable<string | number | undefined>;
 	sob_tc2_temperature: Writable<string | number | undefined>;
 	system_state: Writable<string | undefined>;
+	currentState: Writable<string | undefined>;
 	timer_state: Writable<string | undefined>;
 	timer_period: Writable<number | undefined>;
 	timer_remaining: Writable<number | undefined>;
@@ -88,6 +89,7 @@ export const initStores = () => {
 		sob_tc1_temperature: writable<string | number | undefined>(undefined),
 		sob_tc2_temperature: writable<string | number | undefined>(undefined),
 		system_state: writable<string | undefined>(undefined),
+		currentState: writable<string | undefined>(undefined),
 		timer_state: writable<string | undefined>(undefined),
 		timer_period: writable<number | undefined>(undefined),
 		timer_remaining: writable<number | undefined>(undefined),

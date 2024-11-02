@@ -5,7 +5,7 @@ import type { Stores } from '../stores';
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
 export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
-	const pocketbase = new PocketBase('http://localhost:8090');
+	const pocketbase = new PocketBase('http://127.0.0.1:8090');
 
 	const authenticate = async () => {
 		const email = import.meta.env.VITE_EMAIL;
@@ -18,7 +18,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			return true;
 		}
 
-		return false;
+		return true;
 	};
 
 	const sendHeartbeat = async () => {
@@ -173,8 +173,10 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 
 		// Subscribe to changes in the 'sys_state' collection
 		pocketbase.collection('sys_state').subscribe('*', (e) => {
+			stores.currentState.set(e.record.rocket_state);
 			stores.system_state.set(e.record.sys_state);
 			timestamps.sys_state = Date.now();
+			console.log("hi");
 		});
 
 		// Subscribe to changes in the 'HeartbeatTelemetry' collection

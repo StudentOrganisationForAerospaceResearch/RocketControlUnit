@@ -40,8 +40,6 @@
   "type": "module",
   "dependencies": {
     "@floating-ui/dom": "1.5.3",
-    "@sveltejs/vite-plugin-svelte": "^3.1.2",
-    "pocketbase": "^0.20.3",
-    "vite-plugin-svelte": "^3.0.1"
+    "pocketbase": "^0.20.3"
   }
 }

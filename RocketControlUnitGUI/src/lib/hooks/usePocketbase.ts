@@ -1,11 +1,12 @@
 import PocketBase from 'pocketbase';
 import type { Timestamps } from '../timestamps';
 import type { Stores } from '../stores';
+import { currentState } from '../stores';
 
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
 export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
-	const pocketbase = new PocketBase('http://localhost:8090');
+	const pocketbase = new PocketBase('http://192.168.0.69:8090');
 
 	const authenticate = async () => {
 		const email = import.meta.env.VITE_EMAIL;
@@ -174,6 +175,7 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 		// Subscribe to changes in the 'sys_state' collection
 		pocketbase.collection('sys_state').subscribe('*', (e) => {
 			stores.system_state.set(e.record.sys_state);
+			currentState.set(e.record.rocket_state);
 			timestamps.sys_state = Date.now();
 		});
 

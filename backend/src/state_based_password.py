@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 import platform
 system = platform.uname()
-
+print(system)
 #local flask server
 app = Flask(__name__)
 
@@ -128,17 +128,20 @@ def send():
         except TypeError:
             return jsonify({'message' : "usb drive not found"})
     #Checks which us WINDOWS is the os
-    elif system[0] == "WINDOWS":  
+    elif system[0] == "Windows":  
         if __name__ == "__main__":
             volume_label = "MASTER"
             usb_drive = find_specific_usb(volume_label)
+            print(usb_drive)
             
             if usb_drive:
                 password = read_files_from_usb(usb_drive)
                 key = encrypt(password, 3)
+                print(key)
                 return jsonify({'message': key})
             else:
                 return jsonify({'message' : "usb drive not found"})
 #runs flask server
+
 if __name__ == '__main__':
     app.run()

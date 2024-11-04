@@ -52,23 +52,29 @@ def list_files_in_usb_macos(usb_path):
 def read_file_from_usb(usb_file_path):
     try:
         with open(usb_file_path, 'r') as file:
-            content = file.read()
-            return content
+            content = file.readlines()  # Read all lines into a list
+            return [line.strip() for line in content]  # Strip whitespace and return as a list
     except FileNotFoundError:
         print(f"File not found: {usb_file_path}")
+        return None  # Return None or an empty list if the file is not found
     except Exception as e:
         print(f"An error occurred: {e}")
+        return None  # Return None or an empty list on other exceptions
+    
 #This function encrypts the text in the usb
 def encrypt(text, shift):
-    encrypted_text = ""
-    for char in text:
-        if char.isalpha():
-            shift_base = ord('A') if char.isupper() else ord('a')
-            encrypted_char = chr((ord(char) - shift_base + shift) % 26 + shift_base)
-            encrypted_text += encrypted_char
-        else:
-            encrypted_text += char
-    return encrypted_text
+    encrypted_list = []   
+    for word in text:
+        encrypted_text = ""
+        for char in word:
+            if char.isalpha():
+                shift_base = ord('A') if char.isupper() else ord('a')
+                encrypted_char = chr((ord(char) - shift_base + shift) % 26 + shift_base)
+                encrypted_text += encrypted_char
+            else:
+                encrypted_text += char
+        encrypted_list.append(encrypted_text)
+    return encrypted_list
 #finds usb for WINDOWS operating systems
 def find_specific_usb(volume_label):
     os_type = platform.system()
@@ -123,10 +129,11 @@ def send():
                 usb_file_path = '/Volumes/'+ usb_name +'/' +  list_files_in_usb_macos(usb_drive_path) # Linux/macOS example
                 password = read_file_from_usb(usb_file_path)
                 key = encrypt(password, 3)
-                return jsonify({'message': key})
+                return jsonify({'permission': key[0], 'email': key[1], 'password': key[2]})
         #checks for type error,usb we searched for was not found       
         except TypeError:
             return jsonify({'message' : "usb drive not found"})
+            
     #Checks which us WINDOWS is the os
     elif system[0] == "Windows":  
         if __name__ == "__main__":
@@ -144,4 +151,4 @@ def send():
 #runs flask server
 
 if __name__ == '__main__':
-    app.run()
+   app.run()

@@ -8,7 +8,7 @@ print(system)
 app = Flask(__name__)
 
 #allowing 'GET'
-cors = CORS(app, methods=['GET'])
+cors = CORS(app, methods=['GET', 'POST'])
 
 #this acquires the name of the usb we are looking for
 def get_name_macos():
@@ -38,7 +38,7 @@ def list_files_in_usb_macos(usb_path):
         # List all files and directories in the specified USB path
         for root, dirs, files in os.walk(usb_path):
             for file in files:
-                if file == "test.txt":
+                if file == "auth.txt":
                     return file
                 else:
                     continue
@@ -106,8 +106,8 @@ def read_files_from_usb(usb_path):
                 if file_path.lower().endswith('.txt'):  # Check for text files
                     print(f"\nReading file: {file_path}")
                     with open(file_path, 'r', encoding='utf-8') as f:
-                        content = f.read()
-                        return content
+                        file_content = f.readlines() 
+                        return file_content
                        
     except Exception as e:
         print(f"Error reading files: {e}")
@@ -145,9 +145,9 @@ def send():
                 password = read_files_from_usb(usb_drive)
                 key = encrypt(password, 3)
                 print(key)
-                return jsonify({'message': key})
+                return jsonify({'permission': key[0], 'email': key[1], 'password': key[2]})
             else:
-                return jsonify({'message' : "usb drive not found"})
+                return jsonify({'permission' : "usb drive not found"})
 #runs flask server
 
 if __name__ == '__main__':

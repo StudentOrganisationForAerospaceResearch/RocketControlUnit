@@ -7,7 +7,7 @@
 	import { useInteraction } from '$lib/hooks/useInteraction';
 	import { onMount } from 'svelte';
 	import { SlideToggle } from '@skeletonlabs/skeleton';
-
+	
 	const timestamps = initTimestamps();
 	const stores = initStores();
 	const usePocketbaseHook = usePocketbase(timestamps, stores);

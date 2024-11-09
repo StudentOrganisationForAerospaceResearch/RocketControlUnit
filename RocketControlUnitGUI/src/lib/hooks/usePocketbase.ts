@@ -1,7 +1,7 @@
 import PocketBase from 'pocketbase';
 import type { Timestamps } from '../timestamps';
 import type { Stores } from '../stores';
-import {fetchMessage, getDecryption} from '$lib/message'
+import {fetchPermission, fetchEmail, fetchPassword, getDecryption} from '$lib/message';
 
 export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 
@@ -9,16 +9,17 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 	const pocketbase = new PocketBase('http://localhost:8090');
 
 	const authenticate = async () => {
-		const email = import.meta.env.VITE_EMAIL;
-		const password = import.meta.env.VITE_PASSWORD;
-
+		const email = await getDecryption(await fetchEmail());
+		const password = await getDecryption(await fetchPassword());
+		
 		if (email && password) {
 			pocketbase.authStore.clear();
 			await pocketbase.admins.authWithPassword(email, password);
+			return true;
 		} 
-		return await getDecryption(await fetchMessage()) == "MasterKey"
+		return false;
 	};
-
+                      
 	const sendHeartbeat = async () => {
 		await pocketbase.collection('Heartbeat').create({
 			message: 'heartbeat'

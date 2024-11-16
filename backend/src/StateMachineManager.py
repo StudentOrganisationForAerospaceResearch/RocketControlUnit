@@ -14,17 +14,13 @@ The FSM diagram is CommControlMSG.puml.
 # General imports =================================================================================
 from enum import Enum, unique
 import os, sys, time, random
+import google.protobuf.message as Message
 
 # Project specific imports ========================================================================
-dirname, _ = os.path.split(os.path.abspath(__file__))
-sys.path.insert(0, os.path.join(dirname.split("backend", 1)[0], 'backend'))
-sys.path.insert(0, os.path.join(dirname.split("backend", 1)[0], 'src/StateMachine'))
-from src.StateMachine.BaseStateMachine import BaseStateMachine
 from src.ThreadManager import *
 from src.SerialHandler import SerialHandler
 from proto.Python.CoreProto_pb2 import RocketState
 from proto.Python.ControlMessage_pb2 import SystemState
-
 
 # Class Definitions ===============================================================================
 @unique
@@ -46,7 +42,7 @@ class Event(Enum):
     ROCKET_RCVD_CMD = 7
     ROCKET_SEND_ACK = 8
 
-class StateMachineManager(BaseStateMachine):
+class StateMachineManager():
     """
     Manage state transitions for the communication between the RCU and the rocket. 
 
@@ -58,33 +54,13 @@ class StateMachineManager(BaseStateMachine):
         self.message = None
         self.retransmit_counter = 0
 
-    def start_sending_msg(self, message: WorkQ_Message, ser_han: SerialHandler):
-        """
-        Send control/command message from RCU (radio) to Rocket (DMB) by calling
-        the appropriate send functions that corresponds to the message type.
-        Set the RCU and rocket state to the appropriate state and call the next function
 
-        Args:
-            message: message from the workq to identify whether to send control 
-                or command message
-            ser_han: Serial Handler class to call the functions to send the messages
+    def start_sending_msg(self):
 
-        """
-        messageID = message.message_type
-        if messageID == THREAD_MESSAGE_SERIAL_WRITE:
-            command = message.message[0]
-            target = message.message[1]
-            command_param = message.message[2]
-            source_sequence_number = message.message[3]
-            ser_han.send_serial_command_message(command, target, command_param, source_sequence_number)
-        elif messageID == THREAD_MESSAGE_HEARTBEAT_SERIAL:
-            ser_han.send_serial_control_message(message.message[0])
-        
-        #Update the state and call next step in the state machine
         self.sys_state = SystemState.SYS_WAIT
-        self.handle_wait(message, ser_han)
+        self.handle_wait()
 
-    def handle_wait(self, message: WorkQ_Message, ser_han: SerialHandler,):
+    def handle_wait(self):
 
         """
         Handle the logic of calling other functions depending on rocket responses. 
@@ -96,7 +72,7 @@ class StateMachineManager(BaseStateMachine):
         if self.sys_state == SystemState.SYS_WAIT:
             #If received NAK from Rocket:
             if response == "NAK":
-                self.handle_retransmit(message, ser_han)
+                self.handle_retransmit()
             elif response == "ACK":
                 self.handle_send_next_cmd()
             elif response == "TIMEOUT":
@@ -105,11 +81,11 @@ class StateMachineManager(BaseStateMachine):
             else:
                 print("Bro, you messed up\n\r")
 
-    def handle_retransmit(self, message: WorkQ_Message, ser_han: SerialHandler):
+    def handle_retransmit(self):
         #If retransmit counter is within range, retransmit the same message
         if self.retransmit_counter < 2:
             self.retransmit_counter += 1
-            self.start_sending_msg(message, ser_han)
+            self.start_sending_msg()
         else:
             self.sys_state = SystemState.SYS_SEND_NEXT_CMD
             self.handle_send_next_cmd()
@@ -119,11 +95,11 @@ class StateMachineManager(BaseStateMachine):
         self.sys_state = SystemState.SYS_WAIT
         #reset retransmit counter
         self.retransmit_counter = 0 
-    def handle_timeout(self, message: WorkQ_Message, ser_han: SerialHandler):
+    def handle_timeout(self):
 
         #Call retransmit 
         self.sys_state = SystemState.SYS_RETRANSMIT
-        self.handle_retransmit(message, ser_han)
+        self.handle_retransmit()
 
     def simulate_rocket_response(self):
         # Simulate different responses from Rocket

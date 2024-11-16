@@ -6,18 +6,17 @@
   </script>
   
   <main>
-	<!-- <div style="display: flex; flex-direction: column; align-items: center;">
-	  <LineChart collection="Rcupressure" />
-	  <LineChart collection="RcuTemperature" />
-	 <LineChart collection="Imu" />
-	</div> -->
-<!-- 	
-	<MapChart />  -->
+	<div style="display: flex; flex-direction: column; align-items: center;">
+	  <LineChart collection="Test" />
+	</div>
+	
 	<div class="canvas-container">
 		<Canvas>
 			<RocketChart />
 		</Canvas>
 	</div>
+
+	<MapChart /> 
 	
 	
   </main>
@@ -30,10 +29,10 @@
 	  justify-content: center;
 	  padding: 20px;
 	}
-
+/* 
 	.canvas-container{
 		width:800px;
 		height:600px;
-	}
+	} */
   </style>
   

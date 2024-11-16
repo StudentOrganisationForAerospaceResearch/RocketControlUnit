@@ -1,98 +1,113 @@
 <script lang="ts">
-  import { T, useFrame } from '@threlte/core';
+  import { T } from '@threlte/core';
   import { interactivity, GLTF } from '@threlte/extras';
+  import { tweened } from 'svelte/motion';
   import { onMount, onDestroy } from 'svelte';
   import {
-    fetchPaginatedData,
+    getCollectionData,
     subscribeToCollection,
-    unsubscribeFromCollection
-  } from '../../data';
+    unsubscribeFromCollection,
+  } from '../../StoreService';
+  import { cubicOut } from 'svelte/easing';
 
   type RecordData = { [key: string]: any };
 
-  const path_to_rocket = "/Pegasus_XL.glb";
+  const path_to_rocket = "../../model/Pegasus_XL.glb";
   let gltf: any;
+
+  
 
   interactivity();
 
-  // Fields we're interested in
-  const fields = ['gyro_x', 'gyro_y', 'gyro_z'];
+  // Define tweened values for smoother transitions
+  const rotationX = tweened(0, { duration: 1000, easing: cubicOut });
+  const rotationY = tweened(0, { duration: 1000, easing: cubicOut });
+  const rotationZ = tweened(0, { duration: 1000, easing: cubicOut });
 
-  // Current rotation values
-  let currentRotationX = 0;
-  let currentRotationY = 0;
-  let currentRotationZ = 0;
-
-  // Smoothed target rotation values
-  let smoothedRotationX = 0;
-  let smoothedRotationY = 0;
-  let smoothedRotationZ = 0;
-
-  // Rotation speed for smooth animation
-  const rotationSpeed = 0.002;
-
-  // Smoothing factor for EMA (between 0 and 1)
-  const smoothingFactor = 0.1; // Adjust this value as needed
-
-  // Handle data updates from real-time subscription
+  // Handle data updates
   function handleDataUpdate(data: RecordData) {
-    // Parse the gyro values safely
     const rawRotationX = parseFloat(data.gyro_x) || 0;
     const rawRotationY = parseFloat(data.gyro_y) || 0;
     const rawRotationZ = parseFloat(data.gyro_z) || 0;
 
-    // Apply Exponential Moving Average for smoothing
-    smoothedRotationX = smoothingFactor * rawRotationX + (1 - smoothingFactor) * smoothedRotationX;
-    smoothedRotationY = smoothingFactor * rawRotationY + (1 - smoothingFactor) * smoothedRotationY;
-    smoothedRotationZ = smoothingFactor * rawRotationZ + (1 - smoothingFactor) * smoothedRotationZ;
+    // Update tweened values
+    rotationX.set(rawRotationX);
+    rotationY.set(rawRotationY);
+    rotationZ.set(rawRotationZ);
   }
 
-  // Handle the first batch of fetched paginated data
-  function handleFirstBatch(batchData: RecordData[]) {
-    if (batchData.length > 0) {
-      // Use the latest record from the initial fetch
-      const latestRecord = batchData[batchData.length - 1];
-      handleDataUpdate(latestRecord);
-    } else {
-      console.warn('No records fetched for initial data.');
-    }
+  async function fetchInitialData() {
+    await getCollectionData('Imu', 10, (pageData) => {
+      if (pageData.length > 0) {
+        handleDataUpdate(pageData[pageData.length - 1]);
+      }
+    });
   }
 
   onMount(() => {
-    // Fetch existing paginated data from PocketBase
-    fetchPaginatedData('Imu', handleFirstBatch, 1); // Adjust batch size if needed
-
-    // Subscribe to real-time updates after initial data fetch
+    fetchInitialData();
     subscribeToCollection('Imu', handleDataUpdate);
   });
 
   onDestroy(() => {
-    // Clean up the subscription when the component is destroyed
     unsubscribeFromCollection('Imu');
-  });
-
-  // Use frame to update rotation smoothly
-  useFrame((ctx, delta) => {
-    // Interpolate towards the smoothed rotations for smooth animation
-    currentRotationX += (smoothedRotationX - currentRotationX) * rotationSpeed * delta;
-    currentRotationY += (smoothedRotationY - currentRotationY) * rotationSpeed * delta;
-    currentRotationZ += (smoothedRotationZ - currentRotationZ) * rotationSpeed * delta;
   });
 </script>
 
-<T.PerspectiveCamera
-  makeDefault
-  position={[10, 20, 20]}
-  on:create={({ ref }) => {
-    ref.lookAt(0, 0, 0);
-  }}
-/>
+<!-- Model Container -->
+<div class="model-container">
+  <!-- Perspective Camera -->
+  <T.PerspectiveCamera
+    makeDefault
+    fov={70}
+    position={[0, 0, 5]}
+    on:create={({ ref }) => ref.lookAt(0, 0, 0)}
+  />
 
-<T.DirectionalLight position={[10, 5, 10]} castShadow />
+  <!-- Directional Light -->
+  <T.DirectionalLight position={[10, 10, 10]} intensity={1} castShadow />
 
-<GLTF
-  url={path_to_rocket}
-  bind:gltf
-  position={[0, 0, 0]}
-  rotation={[currentRotationX, currentRotationY, currentRotationZ]}
-/>
+  <!-- GLTF Model -->
+  <GLTF
+    url={path_to_rocket}
+    bind:gltf
+    position={[0, 0, 0]}
+    rotation={[$rotationX, $rotationY, $rotationZ]}
+    scale={[0.5, 0.5, 0.5]}
+  />
+</div>
+
+<style>
+  /* Model Container Styles */
+  .model-container {
+    width: 1000px;
+    height: 300px;
+    margin: 20px;
+    border-radius: 16px;
+    /* overflow: hidden; */
+    box-shadow: 0 15px 35px rgba(0, 255, 255, 0.1);
+    position: relative;
+    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Canvas Styling */
+  canvas {
+    border-radius: 12px;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 480px) {
+    .model-container {
+      width: 90%;
+      height: 250px;
+      padding: 15px;
+      margin: 10px auto;
+    }
+  }
+</style>

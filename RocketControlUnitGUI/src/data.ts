@@ -1,13 +1,10 @@
   // data.ts
   import PocketBase from 'pocketbase';
-  import dotenv from "dotenv";
-
   
 
   const ADMIN_EMAIL: string = import.meta.env.VITE_EMAIL;
   const ADMIN_PASSWORD: string = import.meta.env.VITE_PASSWORD;
 
- console.log(ADMIN_EMAIL);
 
   const pb = new PocketBase('http://127.0.0.1:8090');
   pb.autoCancellation(false);

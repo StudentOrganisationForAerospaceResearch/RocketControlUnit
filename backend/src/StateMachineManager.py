@@ -14,11 +14,12 @@ The FSM diagram is CommControlMSG.puml.
 # General imports =================================================================================
 from enum import Enum, unique
 import os, sys, time, random
+from queue import Queue
+import threading
 import google.protobuf.message as Message
 
 # Project specific imports ========================================================================
 from src.ThreadManager import *
-from src.SerialHandler import SerialHandler
 from proto.Python.CoreProto_pb2 import RocketState
 from proto.Python.ControlMessage_pb2 import SystemState
 
@@ -47,99 +48,102 @@ class StateMachineManager():
     Manage state transitions for the communication between the RCU and the rocket. 
 
     """
-    def __init__(self):
+    def __init__(self, uart_queue: Queue, radio_queue: Queue):
         self.sys_state = SystemState.SYS_NORMAL_OPERATION
         self.rocket_state = RocketState.RS_LISTENING
         self.event = Event.RCU_START
-        self.message = None
+        self.last_message = None
         self.retransmit_counter = 0
+        self.uart_queue = uart_queue
+        self.radio_queue = radio_queue
 
+        while not self.radio_queue.empty():
+            queue_item = self.radio_queue.get()
+            print("queue_item", queue_item)
 
-    def start_sending_msg(self):
+    # def start_sending_msg(self):
 
-        self.sys_state = SystemState.SYS_WAIT
-        self.handle_wait()
+    #     self.sys_state = SystemState.SYS_WAIT
+    #     self.handle_wait()
 
-    def handle_wait(self):
+    # def handle_wait(self):
 
-        """
-        Handle the logic of calling other functions depending on rocket responses. 
-        """
-        #Ideally, should have another function to parse the response received from DMB
-        # response = parse_rocket_response(), change the if blocks below to if, elif,else, etc
-        response = self.simulate_rocket_response()
+    #     """
+    #     Handle the logic of calling other functions depending on rocket responses. 
+    #     """
+    #     #Ideally, should have another function to parse the response received from DMB
+    #     # response = parse_rocket_response(), change the if blocks below to if, elif,else, etc
+    #     response = self.simulate_rocket_response()
 
-        if self.sys_state == SystemState.SYS_WAIT:
-            #If received NAK from Rocket:
-            if response == "NAK":
-                self.handle_retransmit()
-            elif response == "ACK":
-                self.handle_send_next_cmd()
-            elif response == "TIMEOUT":
-                self.sys_state = SystemState.SYS_TIMEOUT
-                self.handle_timeout()
-            else:
-                print("Bro, you messed up\n\r")
+    #     if self.sys_state == SystemState.SYS_WAIT:
+    #         #If received NAK from Rocket:
+    #         if response == "NAK":
+    #             self.handle_retransmit()
+    #         elif response == "ACK":
+    #             self.handle_send_next_cmd()
+    #         elif response == "TIMEOUT":
+    #             self.sys_state = SystemState.SYS_TIMEOUT
+    #             self.handle_timeout()
+    #         else:
+    #             print("Bro, you messed up\n\r")
 
-    def handle_retransmit(self):
-        #If retransmit counter is within range, retransmit the same message
-        if self.retransmit_counter < 2:
-            self.retransmit_counter += 1
-            self.start_sending_msg()
-        else:
-            self.sys_state = SystemState.SYS_SEND_NEXT_CMD
-            self.handle_send_next_cmd()
+    # def handle_retransmit(self):
+    #     #If retransmit counter is within range, retransmit the same message
+    #     if self.retransmit_counter < 2:
+    #         self.retransmit_counter += 1
+    #         self.start_sending_msg()
+    #     else:
+    #         self.sys_state = SystemState.SYS_SEND_NEXT_CMD
+    #         self.handle_send_next_cmd()
 
-    def handle_send_next_cmd(self):
-        #Send next cmd
-        self.sys_state = SystemState.SYS_WAIT
-        #reset retransmit counter
-        self.retransmit_counter = 0 
-    def handle_timeout(self):
+    # def handle_send_next_cmd(self):
+    #     #Send next cmd
+    #     self.sys_state = SystemState.SYS_WAIT
+    #     #reset retransmit counter
+    #     self.retransmit_counter = 0 
+    # def handle_timeout(self):
 
-        #Call retransmit 
-        self.sys_state = SystemState.SYS_RETRANSMIT
-        self.handle_retransmit()
+    #     #Call retransmit 
+    #     self.sys_state = SystemState.SYS_RETRANSMIT
+    #     self.handle_retransmit()
 
-    def simulate_rocket_response(self):
-        # Simulate different responses from Rocket
-        responses = ["ACK", "NAK", "TIMEOUT"]
-        return random.choice(responses)
+    # def simulate_rocket_response(self):
+    #     # Simulate different responses from Rocket
+    #     responses = ["ACK", "NAK", "TIMEOUT"]
+    #     return random.choice(responses)
     
-    def exit(self):
-        """
-        Exit the state machine for RCU and Rocket serial communication by setting RCU state to be uninitialized 
-        and event to RCU Exit.
+    # def exit(self):
+    #     """
+    #     Exit the state machine for RCU and Rocket serial communication by setting RCU state to be uninitialized 
+    #     and event to RCU Exit.
 
-        """
-        self.sys_state = SystemState.SYS_INVALID
-        self.rocket_state = RocketState.RS_NONE
-        self.event = Event.RCU_EXIT
+    #     """
+    #     self.sys_state = SystemState.SYS_INVALID
+    #     self.rocket_state = RocketState.RS_NONE
+    #     self.event = Event.RCU_EXIT
 
-    def get_rcu_state(self):
-        """
-        Return the current state of the RCU.
+    # def get_rcu_state(self):
+    #     """
+    #     Return the current state of the RCU.
 
-        """
-        print("\nThe current RCU state:")
-        return self.sys_state
+    #     """
+    #     print("\nThe current RCU state:")
+    #     return self.sys_state
 
-    def get_rocket_state(self):
-        """"
-        Return the current state of the rocket.
+    # def get_rocket_state(self):
+    #     """"
+    #     Return the current state of the rocket.
 
-        """
-        print("\nThe current rocket state:")
-        return self.rocket_state
+    #     """
+    #     print("\nThe current rocket state:")
+    #     return self.rocket_state
     
 
-
-#Test - Do NOT commit
-test = StateMachineManager()
-print(test.start())
-print(test.get_rcu_state())
-print(test.get_rocket_state())
-
+def state_machine_manager_thread (uart_queue: Queue, radio_queue: Queue):
+    """
+    State Machine manager function to start the state machine thread
+    """
+    StateMachineManager(uart_queue, radio_queue)
 
 
 

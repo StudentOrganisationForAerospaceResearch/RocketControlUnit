@@ -8,6 +8,7 @@ import time
 import serial           # You'll need to run `pip install pyserial`
 from cobs import cobs   # pip install cobs
 import google.protobuf.message as Message
+from queue import Queue
 
 # Project specific imports ========================================================================
 import proto.Python.CoreProto_pb2 as ProtoCore
@@ -21,6 +22,7 @@ from src.support.CommonLogger import logger
 from src.StateMachineManager import StateMachineManager
 from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_HEARTBEAT_SERIAL, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_VOLTAGE, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
 from src.Utils import Utils as utl
+
 
 # Constants ========================================================================================
 MIN_SERIAL_MESSAGE_LENGTH = 6
@@ -36,7 +38,7 @@ class SerialDevices(enum.Enum):
 
 # Class Definitions ===============================================================================
 class SerialHandler():
-    def __init__(self, thread_name: str, port: str, baudrate: int, message_handler_workq: mp.Queue):
+    def __init__(self, thread_name: str, port: str, baudrate: int, message_handler_workq: mp.Queue, event_queue : mp.Queue):
         """
         This thread class creates threads to handle 
         incoming and outgoing serial messages over 
@@ -58,7 +60,8 @@ class SerialHandler():
         self.thread_name = thread_name
         self.send_message_workq = message_handler_workq    
         self.kill_rx = False
-        
+        self.event_queue = event_queue
+        self.event_queue.put("Hello")        
         # Open serial serial port
         try:
             self.serial_port = serial.Serial(port=port, baudrate=baudrate, bytesize=8, parity=serial.PARITY_NONE, timeout=None, stopbits=serial.STOPBITS_ONE)
@@ -283,7 +286,7 @@ def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler)
             ser_han.send_serial_control_message(message.message[0])
         return True
 
-def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread_workq: mp.Queue, message_handler_workq: mp.Queue):
+def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread_workq: mp.Queue, message_handler_workq: mp.Queue, event_queue: mp.Queue):
     """
     Thread function for the incoming serial data listening.
 
@@ -307,7 +310,7 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     # This log line should be removed once the pi core issue is solved
     logger.info(f"{device.name} process: {os.getpid()}")
     serial_workq = thread_workq
-    ser_han = SerialHandler(thread_name, port, baudrate, message_handler_workq)
+    ser_han = SerialHandler(thread_name, port, baudrate, message_handler_workq, event_queue)
     if ser_han.serial_port == None:
         return
     
@@ -319,7 +322,6 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
             ser_han.kill_rx = True
             rx_thread.join(10)
             return
-        #If valid messages received, initialze the state machine and start sending messages
-        StateMachineManager()
-        StateMachineManager.start_sending_msg(ser_han)
-
+def radio_thread_test (radio_event_queue: mp.Queue):
+    radio_event_queue.put("ACKACKHELPME")
+    time.sleep(1)

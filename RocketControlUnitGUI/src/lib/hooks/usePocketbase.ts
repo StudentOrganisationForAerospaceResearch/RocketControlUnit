@@ -27,10 +27,17 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 	};
 
 	const writeStateChange = async (state: string) => {
-		await pocketbase.collection('CommandMessage').create({
-			target: 'NODE_DMB',
-			command: state
-		});
+		if(await getDecryption(await fetchPermission()) == "MasterKey"){
+			await pocketbase.collection('CommandMessage').create({
+				target: 'NODE_DMB',
+				command: state
+			});
+		}
+		if(await getDecryption(await fetchPermission()) == "TesterKey"){	
+			//pass
+			//permission to change states is denied,
+			//writeStateChange will not be reassigned, state will not be changed
+		}
 	};
 
 	const writeCommandMessage = async (target: string, command: string) => {

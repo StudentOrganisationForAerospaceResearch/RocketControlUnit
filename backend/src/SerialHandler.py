@@ -15,6 +15,7 @@ import proto.Python.CoreProto_pb2 as ProtoCore
 import proto.Python.TelemetryMessage_pb2 as TelemetryProto
 import proto.Python.ControlMessage_pb2 as ControlProto
 
+
 from src.support.Codec import Codec
 from src.support.ProtobufParser import ProtobufParser
 from src.support.CommonLogger import logger
@@ -322,6 +323,20 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
             ser_han.kill_rx = True
             rx_thread.join(10)
             return
-def radio_thread_test (radio_event_queue: mp.Queue):
-    radio_event_queue.put("ACKACKHELPME")
-    time.sleep(1)
+def uart_thread_test (uart_event_queue: mp.Queue, uart_event: mp.Event):
+
+    while True:
+        uart_event.wait()
+        while not uart_event_queue.empty():
+            sys_state = uart_event_queue.get()
+            print("Sys_state: ", sys_state)
+            if sys_state == ControlProto.SystemState.SYS_SEND_NEXT_CMD:
+                print("Sending next command")
+            elif sys_state == ControlProto.SystemState.SYS_RETRANSMIT or sys_state == ControlProto.SystemState.SYS_TIMEOUT:
+                print("Resending the same message")
+        uart_event.clear()
+        return
+    # time.sleep(1)
+def radio_thread_test (radio_event_queue: mp.Queue, radio_event: mp.Event):
+    pass
+

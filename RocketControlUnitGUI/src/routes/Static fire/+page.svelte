@@ -607,7 +607,7 @@
 
 <div class="container">
     <svelte:component this={HybridStaticFire2x} />
-</div>
+
 	<div class="ac1_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="ac1_slider"
@@ -938,14 +938,14 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.025);
 		left: 8.6%;
-		transform: translate(-10%, 200%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 	.pbv1_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.118);
 		left: 35.5%;
-		transform: translate(-70%, 55%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
@@ -953,7 +953,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.188);
 		left: 35.5%;
-		transform: translate(-70%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
@@ -961,7 +961,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.275);
 		left: 35.5%;
-		transform: translate(-70%, -310%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
@@ -969,7 +969,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.144);
 		left: 47.5%;
-		transform: translate(-275%, 620%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
@@ -977,7 +977,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.269);
 		left: 63.3%;
-		transform: translate(-40%, 1170%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 	
@@ -985,7 +985,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.313);
 		left: 63.3%;
-		transform: translate(-40%, 730%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
@@ -993,7 +993,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.356);
 		left: 63.3%;
-		transform: translate(30%, -200%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 	
@@ -1001,7 +1001,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.396);
 		left: 63.3%;
-		transform: translate(-20%, -950%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
@@ -1009,7 +1009,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.44);
 		left: 63.3%;
-		transform: translate(-260%, -890%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
@@ -1030,7 +1030,7 @@
 		font-size: 16px;
 	}
 
-	.box1_slider {
+	.box1_slider { 
 		position: absolute;
 		top: calc(var(--container-width) * 0.415);
 		left: 12.5%;
@@ -1050,14 +1050,14 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.176);
 		left: 22.0%;
-		transform: translate(-160%,-480%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%,-50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos1_cal_button {
 		position: absolute;
 		top: calc(var(--container-width) * 0.195);
 		left: 22.0%;
-		transform: translate(-175%, -480%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos2_tare_button {
@@ -1065,7 +1065,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.246);
 		left: 11.1%;
-		transform: translate(220%, 730%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos2_cal_button {
@@ -1073,28 +1073,28 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.265);
 		left: 11.0%;
-		transform: translate(260%, 730%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 	
 	.rail_tare_button {
 		position: absolute;
 		top: calc(var(--container-width) * 0.078);
 		left: 69.1%;
-		transform: translate(-330%, 800%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.rail_cal_button {
 		position: absolute;
 		top: calc(var(--container-width) * 0.097);
 		left: 69.1%;
-		transform: translate(-365%, 800%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.rcu_tc1 {
 		position: absolute;
 		top: calc(var(--container-width) * 0.065);
 		left: 5.6%;
-		transform: translate(830%, 750%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1102,7 +1102,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.065);
 		left: 9.2%;
-		transform: translate(570%, 1340%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1110,7 +1110,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.187);
 		left: 7.6%;
-		transform: translate(410%, -530%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1118,7 +1118,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.255);
 		left: 7.6%;
-		transform: translate(560%,1080%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%,-50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1126,7 +1126,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.117);
 		left: 14.7%;
-		transform: translate(220%, 110%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1134,7 +1134,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.1882);
 		left: 14.7%;
-		transform: translate(200%, 230%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1142,7 +1142,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.2743);
 		left: 14.9%;
-		transform: translate(200%, 150%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1150,7 +1150,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.188);
 		left: 42%;
-		transform: translate(-80%, 680%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1182,7 +1182,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.069);
 		left: 93.9%;
-		transform: translate(-940%, 1920%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1190,7 +1190,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.049);
 		left: 93.9%;
-		transform: translate(-260%, 2050%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1198,7 +1198,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.104);
 		left: 92.9%;
-		transform: translate(-3350%, 1440%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1214,7 +1214,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.391);
 		left: 93.1%;
-		transform: translate(-210%, -535%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1222,7 +1222,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.345);
 		left: 90.3%;
-		transform: translate(-1200%, 270%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1230,7 +1230,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.345);
 		left: 95.5%;
-		transform: translate(-5290%, -70%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1238,7 +1238,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.1405);
 		left: 69%;
-		transform: translate(250%, 1230%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1246,7 +1246,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.179);
 		left: 69%;
-		transform: translate(760%, 880%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1254,7 +1254,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.373);
 		left: 42%;
-		transform: translate(1400%, -350%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1287,3 +1287,4 @@
 
 	}
 </style>
+</div>

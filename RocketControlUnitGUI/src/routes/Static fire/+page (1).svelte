@@ -1,5 +1,5 @@
 <script lang="ts">
-    import HybridStaticFire2x from "./Hybrid Static Fire@2x.sve";
+    import HybridStaticFire2x from "./Hybrid Static Fire@2x.svelte";
 	import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
 	import type { ModalSettings } from '@skeletonlabs/skeleton';
 	import { onDestroy, onMount } from 'svelte';
@@ -172,7 +172,7 @@
 	const rcu_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
 	const rcu_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
 
-	const battery_voltage = writable(undefined);
+	const tc9 = writable(undefined);
 	const power_source = writable(undefined);
 
 	const upper_pv_pressure: Writable<string | number | undefined> = writable(undefined);
@@ -182,7 +182,7 @@
 	const nos1_mass = writable(undefined);
 	const nos2_mass = writable(undefined);
 
-	const ib_pressure: Writable<string | number | undefined> = writable(undefined);
+	const tc7: Writable<string | number | undefined> = writable(undefined);
 	const lower_pv_pressure: Writable<string | number | undefined> = writable(undefined);
 
 	const pv_temperature: Writable<string | number | undefined> = writable(undefined);
@@ -225,7 +225,7 @@
 
 	$: mev_display = $mev_open === undefined ? 'N/A' : $mev_open ? 'OPEN' : 'CLOSED';
 
-	$: battery_display = $battery_voltage === undefined ? 'N/A' : $battery_voltage;
+	$: battery_display = $tc9 === undefined ? 'N/A' : $tc9;
 	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'ROCKET' : 'GROUND';
 
 	$: upper_pv_display = $upper_pv_pressure === undefined ? 'DC' : $upper_pv_pressure;
@@ -235,7 +235,7 @@
 	$: nos1_mass_display = $nos1_mass === undefined ? 'N/A' : Number($nos1_mass).toFixed(2);
 	$: nos2_mass_display = $nos2_mass === undefined ? 'N/A' : Number($nos2_mass).toFixed(2);
 
-	$: ib_pressure_display = $ib_pressure === undefined ? 'N/A' : $ib_pressure;
+	$: tc7_display = $tc7 === undefined ? 'N/A' : $tc7;
 	$: lower_pv_display = $lower_pv_pressure === undefined ? 'N/A' : $lower_pv_pressure;
 
 	$: pv_temperature_display = $pv_temperature === undefined ? 'N/A' : $pv_temperature;
@@ -335,7 +335,7 @@
 		// Subscribe to changes in the 'Battery' collection
 		PB.collection('Battery').subscribe('*', function (e) {
 			// Update the Battery data store whenever a change is detected
-			battery_voltage.set(e.record.voltage);
+			tc9.set(e.record.voltage);
 			power_source.set(e.record.power_source);
 			timestamps.battery = Date.now();
 		});
@@ -370,11 +370,11 @@
 		// Subscribe to changes in the 'PbbPressure' collection
 		PB.collection('PbbPressure').subscribe('*', function (e) {
 			// Update the PbbPressure data store whenever a change is detected
-			if (e.record.ib_pressure < -100000) {
-				ib_pressure.set('DC');
+			if (e.record.tc7 < -100000) {
+				tc7.set('DC');
 			}
 			else {
-				ib_pressure.set(Math.round(e.record.ib_pressure/1000));
+				tc7.set(Math.round(e.record.tc7/1000));
 			}
 			if (e.record.lower_pv_pressure < -100000) {
 				lower_pv_pressure.set('DC');
@@ -668,9 +668,9 @@
 		>
 	</div>
 	
-	<div class="sol5_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="launch_stat relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
-			name="sol5_slider"
+			name="launch_stat"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol5_open}
@@ -680,9 +680,9 @@
 		>
 	</div>
 
-	<div class="sol6_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv5_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
-			name="sol6_slider"
+			name="pbv5_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol6_open}
@@ -692,9 +692,9 @@
 		>
 	</div>
 
-	<div class="sol7_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv6_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
-			name="sol7_slider"
+			name="pbv6_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol7_open}
@@ -704,9 +704,9 @@
 		>
 	</div>
 
-	<div class="sol8a_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv7_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
-			name="sol8a_slider"
+			name="pbv7_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol8a_open}
@@ -716,27 +716,15 @@
 		>
 	</div>
 
-	<div class="sol8b_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="t_port relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
-			name="sol8b_slider"
+			name="t_port"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol8b_open}
 			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8B', 'RCU_CLOSE_SOL8B')}
 		>
 			{sol8b_display}</SlideToggle
-		>
-	</div>
-
-	<div class="vent_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
-		<SlideToggle
-			name="vent_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$vent_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_VENT', 'RSC_CLOSE_VENT')}
-		>
-			{vent_display}</SlideToggle
 		>
 	</div>
 
@@ -865,19 +853,13 @@
 
 	<div class="pt4_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
 		<p>{pt4_pressure_display}</p>
-	</div>
+    </div>
 
-	<div class="box1_continuity">
-	</div>
-
-	<div class="box2_continuity">
-	</div>
-
-	<div class="mev_status combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
+	<div class="tc8 combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
 		<p>{mev_display}</p>
 	</div>
 
-	<div class="battery_voltage  battery {batteryOutdated ? 'outdated' : ''}">
+	<div class="tc9 battery {batteryOutdated ? 'outdated' : ''}">
 		<p>{battery_display}</p>
 	</div>
 
@@ -889,8 +871,8 @@
 		<p>{rocket_mass_display}</p>
 	</div>
 
-	<div class="ib_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
-		<p>{ib_pressure_display}</p>
+	<div class="tc7 pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
+		<p>{tc7_display}</p>
 	</div>
 
 	<div class="lower_pv_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
@@ -940,7 +922,7 @@
 
 	.next-state-btn {
 		position: absolute;
-		left: 8%;
+		left: 15%;
 		width: 200px;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
 	}
@@ -955,15 +937,15 @@
 	.ac1_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.025);
-		left: %;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		left: 8.6%;
+		transform: translate(-10%, 200%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 	.pbv1_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.118);
-		left: 15%;
-		transform: translate(-50%, -20%) scale(calc(var(--container-width-unitless) / 1900));
+		left: 35.5%;
+		transform: translate(-70%, 55%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
@@ -971,7 +953,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.188);
 		left: 35.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-70%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
@@ -979,7 +961,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.275);
 		left: 35.5%;
-		transform: translate(-50%, 75%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-70%, -310%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
@@ -987,57 +969,50 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.144);
 		left: 47.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-275%, 620%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.sol5_slider {
+	.launch_stat {
 		position: absolute;
 		top: calc(var(--container-width) * 0.269);
-		left: 62.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		left: 63.3%;
+		transform: translate(-40%, 1170%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
-
-	.sol6_slider {
+	
+	.pbv5_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.313);
 		left: 63.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-40%, 730%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.sol7_slider {
+	.pbv6_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.356);
 		left: 63.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(30%, -200%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
-
-	.sol8a_slider {
+	
+	.pbv7_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.396);
 		left: 63.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-20%, -950%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.sol8b_slider {
+	.t_port {
 		position: absolute;
 		top: calc(var(--container-width) * 0.44);
 		left: 63.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-260%, -890%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
-	.vent_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.152);
-		left: 85.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-		font-size: 16px;
-	}
 
 	.drain_slider {
 		position: absolute;
@@ -1072,17 +1047,17 @@
 	}
 
 	.nos1_tare_button {
-		position: relative;
+		position: absolute;
 		top: calc(var(--container-width) * 0.176);
-		left: 11.1%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		left: 22.0%;
+		transform: translate(-160%,-480%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos1_cal_button {
-		position: relative;
+		position: absolute;
 		top: calc(var(--container-width) * 0.195);
-		left: 11.0%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		left: 22.0%;
+		transform: translate(-175%, -480%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos2_tare_button {
@@ -1090,7 +1065,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.246);
 		left: 11.1%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(220%, 730%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos2_cal_button {
@@ -1098,28 +1073,28 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.265);
 		left: 11.0%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(260%, 730%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 	
 	.rail_tare_button {
 		position: absolute;
 		top: calc(var(--container-width) * 0.078);
 		left: 69.1%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-330%, 800%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.rail_cal_button {
 		position: absolute;
 		top: calc(var(--container-width) * 0.097);
 		left: 69.1%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		transform: translate(-365%, 800%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.rcu_tc1 {
 		position: absolute;
 		top: calc(var(--container-width) * 0.065);
 		left: 5.6%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(830%, 750%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1127,7 +1102,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.065);
 		left: 9.2%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(570%, 1340%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1135,7 +1110,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.187);
 		left: 7.6%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(410%, -530%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1143,7 +1118,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.255);
 		left: 7.6%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(560%,1080%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1151,7 +1126,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.117);
 		left: 14.7%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(220%, 110%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1159,7 +1134,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.1882);
 		left: 14.7%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(200%, 230%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1167,7 +1142,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.2743);
 		left: 14.9%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(200%, 150%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1175,7 +1150,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.188);
 		left: 42%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-80%, 680%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1203,19 +1178,19 @@
 		border-radius: 10%;
 	}
 
-	.mev_status {
+	.tc8 {
 		position: absolute;
 		top: calc(var(--container-width) * 0.069);
 		left: 93.9%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-940%, 1920%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
-	.battery_voltage {
+	.tc9 {
 		position: absolute;
 		top: calc(var(--container-width) * 0.049);
 		left: 93.9%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-260%, 2050%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1223,23 +1198,23 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.104);
 		left: 92.9%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-3350%, 1440%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
-	.rocket_mass {
+	/*.rocket_mass {
 		position: absolute;
 		top: calc(var(--container-width) * 0.09);
 		left: 74.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(1350%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
-	}
+	}*/
 
-	.ib_pressure {
+	.tc7 {
 		position: absolute;
 		top: calc(var(--container-width) * 0.391);
 		left: 93.1%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-210%, -535%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1247,7 +1222,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.345);
 		left: 90.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-1200%, 270%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1255,7 +1230,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.345);
 		left: 95.5%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(-5290%, -70%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1263,7 +1238,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.1405);
 		left: 69%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(250%, 1230%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1271,7 +1246,7 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.179);
 		left: 69%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		transform: translate(760%, 880%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
@@ -1279,8 +1254,8 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.373);
 		left: 42%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 12px;
+		transform: translate(1400%, -350%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
 	}
 
 	.timer_state {
@@ -1291,7 +1266,7 @@
 		font-size: 12px;
 	}
 
-	.timer_period {
+	/***.timer_period {
 		position: absolute;
 		top: calc(var(--container-width) * 0.399);
 		left: 44%;
@@ -1305,7 +1280,7 @@
 		left: 45%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 12px;
-	}
+	}*/
 
 	.outdated {
 		color: #d4163c

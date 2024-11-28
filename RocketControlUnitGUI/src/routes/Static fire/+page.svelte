@@ -1180,24 +1180,24 @@
 
 	.tc8 {
 		position: absolute;
-		top: calc(var(--container-width) * 0.069);
-		left: 93.9%;
+		top: calc(var(--container-width) * 0.367);
+		left: 80.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.tc9 {
 		position: absolute;
-		top: calc(var(--container-width) * 0.049);
-		left: 93.9%;
+		top: calc(var(--container-width) * 0.367);
+		left: 91.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.upper_pv_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.104);
-		left: 92.9%;
+		top: calc(var(--container-width) * 0.358);
+		left: 55.4%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
@@ -1212,16 +1212,16 @@
 
 	.tc7 {
 		position: absolute;
-		top: calc(var(--container-width) * 0.391);
-		left: 93.1%;
+		top: calc(var(--container-width) * 0.3225);
+		left: 91.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.lower_pv_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.345);
-		left: 90.3%;
+		top: calc(var(--container-width) * 0.425);
+		left: 72.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
@@ -1236,16 +1236,16 @@
 
 	.sob_tc1 {
 		position: absolute;
-		top: calc(var(--container-width) * 0.1405);
-		left: 69%;
+		top: calc(var(--container-width) * 0.3620);
+		left: 72.8%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.sob_tc2 {
 		position: absolute;
-		top: calc(var(--container-width) * 0.179);
-		left: 69%;
+		top: calc(var(--container-width) * 0.325);
+		left: 80.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}

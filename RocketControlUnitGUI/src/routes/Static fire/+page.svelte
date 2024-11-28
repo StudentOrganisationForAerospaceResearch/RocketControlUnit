@@ -943,32 +943,32 @@
 	}
 	.pbv1_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.118);
-		left: 35.5%;
+		top: calc(var(--container-width) * 0.145);
+		left: 32.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.pbv2_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 35.5%;
+		top: calc(var(--container-width) * 0.193);
+		left: 32.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.pbv3_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.275);
-		left: 35.5%;
+		top: calc(var(--container-width) * 0.235);
+		left: 32.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.pbv4_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.144);
-		left: 47.5%;
+		top: calc(var(--container-width) * 0.278);
+		left: 32.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
@@ -983,8 +983,8 @@
 	
 	.pbv5_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.313);
-		left: 63.3%;
+		top: calc(var(--container-width) * 0.323);
+		left: 32.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
@@ -1092,39 +1092,39 @@
 
 	.rcu_tc1 {
 		position: absolute;
-		top: calc(var(--container-width) * 0.065);
-		left: 5.6%;
+		top: calc(var(--container-width) * 0.190);
+		left: 14.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.rcu_tc2 {
 		position: absolute;
-		top: calc(var(--container-width) * 0.065);
-		left: 9.2%;
+		top: calc(var(--container-width) * 0.277);
+		left: 14.4%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.nos1 {
 		position: absolute;
-		top: calc(var(--container-width) * 0.187);
-		left: 7.6%;
+		top: calc(var(--container-width) * 0.120);
+		left: 10.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.nos2 {
 		position: absolute;
-		top: calc(var(--container-width) * 0.255);
-		left: 7.6%;
+		top: calc(var(--container-width) * 0.455);
+		left: 12.6%;
 		transform: translate(-50%,-50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt1_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.117);
+		top: calc(var(--container-width) * 0.145);
 		left: 14.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
@@ -1132,24 +1132,24 @@
 
 	.pt2_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.1882);
-		left: 14.7%;
+		top: calc(var(--container-width) * 0.235);
+		left: 14.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt3_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.2743);
-		left: 14.9%;
+		top: calc(var(--container-width) * 0.335);
+		left: 14.65%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
 
 	.pt4_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 42%;
+		top: calc(var(--container-width) * 0.329);
+		left: 39.0%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
@@ -1228,8 +1228,8 @@
 
 	.pv_temperature {
 		position: absolute;
-		top: calc(var(--container-width) * 0.345);
-		left: 95.5%;
+		top: calc(var(--container-width) * 0.373);
+		left: 14.65%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}

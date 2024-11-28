@@ -943,32 +943,32 @@
 	}
 	.pbv1_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.118);
-		left: 35.5%;
+		top: calc(var(--container-width) * 0.140);
+		left: 32.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.pbv2_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.188);
-		left: 35.5%;
+		top: calc(var(--container-width) * 0.190);
+		left: 32.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.pbv3_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.275);
-		left: 35.5%;
+		top: calc(var(--container-width) * 0.235);
+		left: 32.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
 	.pbv4_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.144);
-		left: 47.5%;
+		top: calc(var(--container-width) * 0.275);
+		left: 32.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}

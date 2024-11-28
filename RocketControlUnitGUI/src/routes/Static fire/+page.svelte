@@ -1196,8 +1196,8 @@
 
 	.upper_pv_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.104);
-		left: 92.9%;
+		top: calc(var(--container-width) * 0.358);
+		left: 55.4%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
@@ -1220,8 +1220,8 @@
 
 	.lower_pv_pressure {
 		position: absolute;
-		top: calc(var(--container-width) * 0.345);
-		left: 90.3%;
+		top: calc(var(--container-width) * 0.358);
+		left: 80.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}

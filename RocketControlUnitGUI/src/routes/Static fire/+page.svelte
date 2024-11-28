@@ -1048,31 +1048,31 @@
 
 	.nos1_tare_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.176);
-		left: 22.0%;
+		top: calc(var(--container-width) * 0.1);
+		left: 14.3%;
 		transform: translate(-50%,-50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos1_cal_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.195);
-		left: 22.0%;
+		top: calc(var(--container-width) * 0.117);
+		left: 14.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos2_tare_button {
 		color: #04AA6D;
 		position: absolute;
-		top: calc(var(--container-width) * 0.246);
-		left: 11.1%;
+		top: calc(var(--container-width) * 0.424);
+		left: 16.0%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos2_cal_button {
 		color: #04AA6D;
 		position: absolute;
-		top: calc(var(--container-width) * 0.265);
-		left: 11.0%;
+		top: calc(var(--container-width) * 0.442);
+		left: 16.0%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 	

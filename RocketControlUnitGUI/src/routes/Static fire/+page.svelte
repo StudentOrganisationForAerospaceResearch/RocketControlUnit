@@ -1077,8 +1077,8 @@
     .PT6 {
         position: absolute;
         top: calc(var(--container-width) * 0.412);
-        left: 63%;
-        transform: translate(1350%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+        left: 89%;
+        transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
@@ -1121,7 +1121,7 @@
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
-/*tc4**/
+
     .tc4 {
         position: absolute;
         top: calc(var(--container-width) * 0.334);
@@ -1137,7 +1137,3 @@
 </style>
 </div>
  
-has context menu
-
-
-has context menu

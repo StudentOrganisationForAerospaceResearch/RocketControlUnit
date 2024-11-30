@@ -173,7 +173,6 @@
 	const rcu_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
 
 	const tc9 = writable(undefined);
-	const power_source = writable(undefined);
 
 	const upper_pv_pressure: Writable<string | number | undefined> = writable(undefined);
 
@@ -183,7 +182,6 @@
 	const nos2_mass = writable(undefined);
 
 	const tc7: Writable<string | number | undefined> = writable(undefined);
-	const lower_pv_pressure: Writable<string | number | undefined> = writable(undefined);
 
 	const pv_temperature: Writable<string | number | undefined> = writable(undefined);
 
@@ -198,8 +196,6 @@
 	const system_state: Writable<string | undefined> = writable(undefined);
 
 	const timer_state: Writable<string | undefined> = writable(undefined);
-	const timer_period: Writable<number | undefined> = writable(undefined);
-	const timer_remaining: Writable<number | undefined> = writable(undefined);
 
 	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
 
@@ -226,7 +222,6 @@
 	$: mev_display = $mev_open === undefined ? 'N/A' : $mev_open ? 'OPEN' : 'CLOSED';
 
 	$: battery_display = $tc9 === undefined ? 'N/A' : $tc9;
-	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'ROCKET' : 'GROUND';
 
 	$: upper_pv_display = $upper_pv_pressure === undefined ? 'DC' : $upper_pv_pressure;
 
@@ -236,7 +231,7 @@
 	$: nos2_mass_display = $nos2_mass === undefined ? 'N/A' : Number($nos2_mass).toFixed(2);
 
 	$: tc7_display = $tc7 === undefined ? 'N/A' : $tc7;
-	$: lower_pv_display = $lower_pv_pressure === undefined ? 'N/A' : $lower_pv_pressure;
+
 
 	$: pv_temperature_display = $pv_temperature === undefined ? 'N/A' : $pv_temperature;
 
@@ -253,14 +248,6 @@
     : $system_state.replace('SYS_', '');
 
 	$: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
-
-	$: timer_period_display = $timer_period === undefined 
-    ? 'N/A' 
-    : ($timer_period / 1000).toFixed(0); // Convert to seconds
-
-	$: timer_remaining_display = $timer_remaining === undefined 
-	? 'N/A' 
-	: ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
 	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
 	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
@@ -332,14 +319,6 @@
 			timestamps.pad_box_status = Date.now();
 		});
 
-		// Subscribe to changes in the 'Battery' collection
-		PB.collection('Battery').subscribe('*', function (e) {
-			// Update the Battery data store whenever a change is detected
-			tc9.set(e.record.voltage);
-			power_source.set(e.record.power_source);
-			timestamps.battery = Date.now();
-		});
-
 		// Subscribe to changes in the 'DmbPressure' collection
 		PB.collection('DmbPressure').subscribe('*', function (e) {
 			// Update the DmbPressure data store whenever a change is detected
@@ -376,13 +355,6 @@
 			else {
 				tc7.set(Math.round(e.record.tc7/1000));
 			}
-			if (e.record.lower_pv_pressure < -100000) {
-				lower_pv_pressure.set('DC');
-			}
-			else {
-				lower_pv_pressure.set(Math.round(e.record.lower_pv_pressure/1000));
-			}
-			timestamps.pbb_pressure = Date.now();
 		});
 
 		// Subscribe to changes in the 'PbbTemperature' collection
@@ -451,15 +423,6 @@
 			// Update the SystemState data store whenever a change is detected
 			system_state.set(e.record.sys_state);
 			timestamps.sys_state = Date.now();
-		});
-
-		// Subscribe to changes in the 'HeartbeatTelemetry' collection
-		PB.collection('hb_state').subscribe('*', function (e) {
-			// Update the Heartbeat data store whenever a change is detected
-			timer_state.set(e.record.timer_state);
-			timer_period.set(e.record.timer_period);
-			timer_remaining.set(e.record.timer_remaining);
-			timestamps.heartbeat = Date.now();
 		});
 	});
 
@@ -692,9 +655,9 @@
 		>
 	</div>
 
-	<div class="pbv6_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="tport_toggle relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
-			name="pbv6_slider"
+			name="tport_toggle"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol7_open}
@@ -716,18 +679,6 @@
 		>
 	</div>
 
-	<div class="t_port relay_status {relayStatusOutdated ? 'outdated' : ''}">
-		<SlideToggle
-			name="t_port"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$sol8b_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8B', 'RCU_CLOSE_SOL8B')}
-		>
-			{sol8b_display}</SlideToggle
-		>
-	</div>
-
 	<div class="drain_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="drain_slider"
@@ -740,23 +691,6 @@
 		>
 	</div>
 
-	<div class="power_source_slider battery {batteryOutdated  ? 'outdated' : ''}">
-		<SlideToggle
-			name="power_source_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$power_source}
-			on:click={(e) =>
-				handleSliderChange(
-					e,
-					'NODE_DMB',
-					'RSC_POWER_TRANSITION_ONBOARD',
-					'RSC_POWER_TRANSITION_EXTERNAL'
-				)}
-		>
-			{power_display}</SlideToggle
-		>
-	</div>
 	<div class="nos1_tare_button">
 		<button 
 			type="button" 
@@ -875,10 +809,6 @@
 		<p>{tc7_display}</p>
 	</div>
 
-	<div class="lower_pv_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
-		<p>{lower_pv_display}</p>
-	</div>
-
 	<div class="pv_temperature pbb_temperature {pbbTemperatureOutdated ? 'outdated' : ''}">
 		<p>{pv_temperature_display}</p>
 	</div>
@@ -897,14 +827,6 @@
 
 	<div class="timer_state heartbeat {heartbeatOutdated ? 'outdated' : ''}">
 		<p>{timer_state_display}</p>
-	</div>
-
-	<div class="timer_period heartbeat {heartbeatOutdated ? 'outdated' : ''}">
-		<p>{timer_period_display}</p>
-	</div>
-
-	<div class="timer_remaining heartbeat {heartbeatOutdated ? 'outdated' : ''}">
-		<p>{timer_remaining_display}</p>
 	</div>
 
 <style>
@@ -975,8 +897,8 @@
 
 	.launch_stat {
 		position: absolute;
-		top: calc(var(--container-width) * 0.269);
-		left: 63.3%;
+		top: calc(var(--container-width) * 0.265);
+		left: 64.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
@@ -989,43 +911,26 @@
 		font-size: 16px;
 	}
 
-	.pbv6_slider {
+	.tport_toggle {
 		position: absolute;
-		top: calc(var(--container-width) * 0.356);
-		left: 63.3%;
+		top: calc(var(--container-width) * 0.317);
+		left: 51.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 	
 	.pbv7_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.396);
-		left: 63.3%;
+		top: calc(var(--container-width) * 0.363);
+		left: 68.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
-
-	.t_port {
-		position: absolute;
-		top: calc(var(--container-width) * 0.44);
-		left: 63.3%;
-		transform: translate(-50%, -50) scale(calc(var(--container-width-unitless) / 1900));
-		font-size: 16px;
-	}
-
 
 	.drain_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.265);
-		left: 85.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
-		font-size: 16px;
-	}
-
-	.power_source_slider {
-		position: absolute;
-		top: calc(var(--container-width) * 0.025);
-		left: 95.5%;
+		top: calc(var(--container-width) * 0.310);
+		left: 44.0%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
@@ -1048,14 +953,14 @@
 
 	.nos1_tare_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.1);
+		top: calc(var(--container-width) * 0.09);
 		left: 14.3%;
 		transform: translate(-50%,-50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos1_cal_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.117);
+		top: calc(var(--container-width) * 0.109);
 		left: 14.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
@@ -1078,15 +983,15 @@
 	
 	.rail_tare_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.078);
-		left: 69.1%;
+		top: calc(var(--container-width) * 0.278);
+		left: 58.9%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.rail_cal_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.097);
-		left: 69.1%;
+		top: calc(var(--container-width) * 0.297);
+		left: 58.9%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
@@ -1203,27 +1108,19 @@
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
-
-	/*.rocket_mass {
+/*pt6*/
+	.rocket_mass {
 		position: absolute;
-		top: calc(var(--container-width) * 0.09);
-		left: 74.3%;
+		top: calc(var(--container-width) * 0.424);
+		left: 51.0%;
 		transform: translate(1350%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
-	}*/
+	}
 
 	.tc7 {
 		position: absolute;
 		top: calc(var(--container-width) * 0.3225);
 		left: 91.3%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 14px;
-	}
-
-	.lower_pv_pressure {
-		position: absolute;
-		top: calc(var(--container-width) * 0.345);
-		left: 90.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
@@ -1251,38 +1148,22 @@
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
-
+/*nos2 right side*/
 	.system_state {
 		position: absolute;
-		top: calc(var(--container-width) * 0.373);
-		left: 42%;
+		top: calc(var(--container-width) * 0.363);
+		left: 58.6%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
-
+/*tc4**/
 	.timer_state {
 		position: absolute;
-		top: calc(var(--container-width) * 0.386);
-		left: 42%;
+		top: calc(var(--container-width) * 0.358);
+		left: 62%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 12px;
 	}
-
-	/***.timer_period {
-		position: absolute;
-		top: calc(var(--container-width) * 0.399);
-		left: 44%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 12px;
-	}
-
-	.timer_remaining {
-		position: absolute;
-		top: calc(var(--container-width) * 0.413);
-		left: 45%;
-		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-		font-size: 12px;
-	}*/
 
 	.outdated {
 		color: #d4163c

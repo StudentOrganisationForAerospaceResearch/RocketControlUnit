@@ -1,253 +1,261 @@
 <script lang="ts">
-    import HybridStaticFire2x from "./Hybrid Static Fire@2x.svelte";
-	import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
-	import type { ModalSettings } from '@skeletonlabs/skeleton';
-	import { onDestroy, onMount } from 'svelte';
-	import { writable } from 'svelte/store';
-	import type { Writable } from 'svelte/store';
-	import PocketBase from 'pocketbase';
-
-
-	const modalStore = getModalStore();
-
+    import HybridStaticFire2x from "./Hybrid Static Fire@2.svelte";
+    import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
+    import type { ModalSettings } from '@skeletonlabs/skeleton';
+    import { onDestroy, onMount } from 'svelte';
+    import { writable } from 'svelte/store';
+    import type { Writable } from 'svelte/store';
+    import PocketBase from 'pocketbase';
+ 
+ 
+    const modalStore = getModalStore();
+ 
     const PB = new PocketBase('http://192.168.0.69:8090');
-
+ 
     PB.authStore.clear();
-
-	let nextStatePending: string = '';
-	function confirmStateChange(state: string): void {
-		nextStatePending = state;
-		const modal: ModalSettings = {
-			type: 'confirm',
-			title: 'Please Confirm',
-			body: `Are you sure you wish to proceed to ${commandToState[state]}?`,
-			response: (r: boolean) => {
-				if (r) {
-					async function writeStateChange(state: string) {
-						await PB.collection('CommandMessage').create({
-							target: 'NODE_DMB',
-							command: state
-						});
-					}
-					writeStateChange(nextStatePending);
-				}
-				nextStatePending = '';
-			}
-		};
-		modalStore.trigger(modal);
-	}
-	
-	function instantStateChange(state: string): void {
-		nextStatePending = state;
-		async function writeStateChange(state: string) {
-			// state string : contains the state to transition to
-			await PB.collection('CommandMessage').create({
-				target: 'NODE_DMB',
-				command: state
-			});
-		}
-		writeStateChange(nextStatePending);
-		nextStatePending = '';
-	}
-
-	const stateToCommand: { [key: string]: string } = {
-		RS_ABORT: 'RSC_ANY_TO_ABORT',
-		RS_PRELAUNCH: 'RSC_GOTO_PRELAUNCH',
-		RS_FILL: "RSC_GOTO_FILL",
-		RS_ARM: "RSC_GOTO_ARM",
-		RS_IGNITION: "RSC_GOTO_IGNITION",
-		RS_LAUNCH: "RSC_IGNITION_TO_LAUNCH",
-		RS_BURN: "RSC_GOTO_BURN",
-		RS_COAST: "RSC_GOTO_COAST",
-		RS_DESCENT: "RSC_GOTO_DESCENT",
-		RS_RECOVERY: "RSC_GOTO_RECOVERY",
-		RS_TEST: "RSC_GOTO_TEST"
-	};
-
-	const commandToState = Object.fromEntries(
-    	Object.entries(stateToCommand).map(([key, value]) => [value, key])
-  	);
-
+ 
+    let nextStatePending: string = '';
+    function confirmStateChange(state: string): void {
+        nextStatePending = state;
+        const modal: ModalSettings = {
+            type: 'confirm',
+            title: 'Please Confirm',
+            body: `Are you sure you wish to proceed to ${commandToState[state]}?`,
+            response: (r: boolean) => {
+                if (r) {
+                    async function writeStateChange(state: string) {
+                        await PB.collection('CommandMessage').create({
+                            target: 'NODE_DMB',
+                            command: state
+                        });
+                    }
+                    writeStateChange(nextStatePending);
+                }
+                nextStatePending = '';
+            }
+        };
+        modalStore.trigger(modal);
+    }
+   
+    function instantStateChange(state: string): void {
+        nextStatePending = state;
+        async function writeStateChange(state: string) {
+            // state string : contains the state to transition to
+            await PB.collection('CommandMessage').create({
+                target: 'NODE_DMB',
+                command: state
+            });
+        }
+        writeStateChange(nextStatePending);
+        nextStatePending = '';
+    }
+ 
+    const stateToCommand: { [key: string]: string } = {
+        RS_ABORT: 'RSC_ANY_TO_ABORT',
+        RS_PRELAUNCH: 'RSC_GOTO_PRELAUNCH',
+        RS_FILL: "RSC_GOTO_FILL",
+        RS_ARM: "RSC_GOTO_ARM",
+        RS_IGNITION: "RSC_GOTO_IGNITION",
+        RS_LAUNCH: "RSC_IGNITION_TO_LAUNCH",
+        RS_BURN: "RSC_GOTO_BURN",
+        RS_COAST: "RSC_GOTO_COAST",
+        RS_DESCENT: "RSC_GOTO_DESCENT",
+        RS_RECOVERY: "RSC_GOTO_RECOVERY",
+        RS_TEST: "RSC_GOTO_TEST"
+    };
+ 
+    const commandToState = Object.fromEntries(
+        Object.entries(stateToCommand).map(([key, value]) => [value, key])
+    );
+ 
     let BackgroundComponent: any;
-	let containerElement: any;
-
-	interface Timestamps {
-		[key: string]: number;
-	}
-
-	let timestamps: Timestamps = {
-		relay_status: Date.now(),
-		combustion_control_status: Date.now(),
-		rcu_temp: Date.now(),
-		pad_box_status: Date.now(),
-		battery: Date.now(),
-		dmb_pressure: Date.now(),
-		launch_rail_load_cell: Date.now(),
-		nos_load_cell: Date.now(),
-		pbb_pressure: Date.now(),
-		pbb_temperature: Date.now(),
-		rcu_pressure: Date.now(),
-		sob_temperature: Date.now(),
-		sys_state: Date.now(),
-		heartbeat: Date.now(),
-	};
-
-	onMount(() => {
-		containerElement = document.querySelector('.container') as HTMLElement;
-
-		setInterval(() => {
-			for (let variable in timestamps) {
-				let elements = document.getElementsByClassName(variable);
-				if (!elements.length) continue;
-
-				for(let i = 0; i < elements.length; i++) {
-					let element = elements[i];
-
-					if (Date.now() - timestamps[variable] > 5000) {
-						element.classList.add('outdated');
-					} else {
-						element.classList.remove('outdated');
-					}
-				}
-			}
-		}, 1000);
-
-		// Define the resize handler
-		const handleResize = () => {
-			if (containerElement) {
-				let containerWidth = containerElement.offsetWidth;
-				let containerHeight = containerElement.offsetHeight;
-
-				document.documentElement.style.setProperty('--container-width', `${containerWidth}px`);
-				document.documentElement.style.setProperty('--container-height', `${containerHeight}px`);
-				document.documentElement.style.setProperty(
-					'--container-width-unitless',
-					`${containerWidth}`
-				);
-			} else {
-				console.error('No element with class "container" found');
-			}
-		};
-
-		// Call the resize handler once on mount
-		handleResize();
-
-		// Attach the resize handler to the resize event
-		window.addEventListener('resize', handleResize);
-
-		// Return a cleanup function to remove the event listener when the component is destroyed
-		return () => {
-			window.removeEventListener('resize', handleResize);
-		};
-	});
-
-	let intervalId: any;
-
+    let containerElement: any;
+ 
+    interface Timestamps {
+        [key: string]: number;
+    }
+ 
+    let timestamps: Timestamps = {
+        relay_status: Date.now(),
+        combustion_control_status: Date.now(),
+        rcu_temp: Date.now(),
+        pad_box_status: Date.now(),
+        battery: Date.now(),
+        dmb_pressure: Date.now(),
+        launch_rail_load_cell: Date.now(),
+        nos_load_cell: Date.now(),
+        pbb_pressure: Date.now(),
+        pbb_temperature: Date.now(),
+        rcu_pressure: Date.now(),
+        sob_temperature: Date.now(),
+        sys_state: Date.now(),
+        heartbeat: Date.now(),
+    };
+ 
+    onMount(() => {
+        containerElement = document.querySelector('.container') as HTMLElement;
+ 
+        setInterval(() => {
+            for (let variable in timestamps) {
+                let elements = document.getElementsByClassName(variable);
+                if (!elements.length) continue;
+ 
+                for(let i = 0; i < elements.length; i++) {
+                    let element = elements[i];
+ 
+                    if (Date.now() - timestamps[variable] > 5000) {
+                        element.classList.add('outdated');
+                    } else {
+                        element.classList.remove('outdated');
+                    }
+                }
+            }
+        }, 1000);
+ 
+        // Define the resize handler
+        const handleResize = () => {
+            if (containerElement) {
+                let containerWidth = containerElement.offsetWidth;
+                let containerHeight = containerElement.offsetHeight;
+ 
+                document.documentElement.style.setProperty('--container-width', `${containerWidth}px`);
+                document.documentElement.style.setProperty('--container-height', `${containerHeight}px`);
+                document.documentElement.style.setProperty(
+                    '--container-width-unitless',
+                    `${containerWidth}`
+                );
+            } else {
+                console.error('No element with class "container" found');
+            }
+        };
+ 
+        // Call the resize handler once on mount
+        handleResize();
+ 
+        // Attach the resize handler to the resize event
+        window.addEventListener('resize', handleResize);
+ 
+        // Return a cleanup function to remove the event listener when the component is destroyed
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    });
+ 
+    let intervalId: any;
+ 
     onDestroy(() => {
         clearInterval(intervalId); // Stop the interval when the component is destroyed
     });
-
-	const ac1_open = writable(undefined);
-
-	const pbv1_open = writable(undefined);
-	const pbv2_open = writable(undefined);
-	const pbv3_open = writable(undefined);
-	const pbv4_open = writable(undefined);
-
-	const sol5_open = writable(undefined);
-	const sol6_open = writable(undefined);
-	const sol7_open = writable(undefined);
-	const sol8a_open = writable(undefined);
-	const sol8b_open = writable(undefined);
-
-	const continuity1 = writable(undefined);
-	const continuity2 = writable(undefined);
-	const box1_on = writable(undefined);
-	const box2_on = writable(undefined);
-
-	const vent_open = writable(undefined);
-	const drain_open = writable(undefined);
-	const mev_open = writable(undefined);
-
-	const rcu_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
-	const rcu_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
-
-	const tc9 = writable(undefined);
-
-	const upper_pv_pressure: Writable<string | number | undefined> = writable(undefined);
-
-	const rocket_mass = writable(undefined);
-
-	const nos1_mass = writable(undefined);
-	const nos2_mass = writable(undefined);
-
-	const tc7: Writable<string | number | undefined> = writable(undefined);
-
-	const pv_temperature: Writable<string | number | undefined> = writable(undefined);
-
-	const pt1_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt2_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt3_pressure: Writable<string | number | undefined> = writable(undefined);
-	const pt4_pressure: Writable<string | number | undefined> = writable(undefined);
-
-	const sob_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
-	const sob_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
-
-	const system_state: Writable<string | undefined> = writable(undefined);
-
-	const timer_state: Writable<string | undefined> = writable(undefined);
-
-	$: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
-
-	$: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSE';
-	$: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'OPEN' : 'CLOSE';
-	$: pbv3_display = $pbv3_open === undefined ? 'N/A' : $pbv3_open ? 'OPEN' : 'CLOSE';
-	$: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'CLOSE' : 'OPEN';
-
-	$: sol5_display = $sol5_open === undefined ? 'N/A' : $sol5_open ? 'OPEN' : 'CLOSE';
-	$: sol6_display = $sol6_open === undefined ? 'N/A' : $sol6_open ? 'OPEN' : 'CLOSE';
-	$: sol7_display = $sol7_open === undefined ? 'N/A' : $sol7_open ? 'OPEN' : 'CLOSE';
-	$: sol8a_display = $sol8a_open === undefined ? 'N/A' : $sol8a_open ? 'OPEN' : 'CLOSE';
-	$: sol8b_display = $sol8b_open === undefined ? 'N/A' : $sol8b_open ? 'OPEN' : 'CLOSE';
-
-	$: box1_display = $box1_on === undefined ? 'N/A' : $box1_on ? 'LIVE' : 'DEAD';
-	$: box2_display = $box2_on === undefined ? 'N/A' : $box2_on ? 'LIVE' : 'DEAD';
-
-	$: vent_display = $vent_open === undefined ? 'N/A' : $vent_open ? 'OPEN' : 'CLOSED';
-	$: drain_display = $drain_open === undefined ? 'N/A' : $drain_open ? 'OPEN' : 'CLOSED';
-
-	$: rcu_tc1_display = $rcu_tc1_temperature === undefined ? 'N/A' : $rcu_tc1_temperature;
-	$: rcu_tc2_display = $rcu_tc2_temperature === undefined ? 'N/A' : $rcu_tc2_temperature;
-
-	$: mev_display = $mev_open === undefined ? 'N/A' : $mev_open ? 'OPEN' : 'CLOSED';
-
-	$: battery_display = $tc9 === undefined ? 'N/A' : $tc9;
-
-	$: upper_pv_display = $upper_pv_pressure === undefined ? 'DC' : $upper_pv_pressure;
-
-	$: rocket_mass_display = $rocket_mass === undefined ? 'N/A' : Number($rocket_mass).toFixed(2);
-
-	$: nos1_mass_display = $nos1_mass === undefined ? 'N/A' : Number($nos1_mass).toFixed(2);
-	$: nos2_mass_display = $nos2_mass === undefined ? 'N/A' : Number($nos2_mass).toFixed(2);
-
-	$: tc7_display = $tc7 === undefined ? 'N/A' : $tc7;
-
-
-	$: pv_temperature_display = $pv_temperature === undefined ? 'N/A' : $pv_temperature;
-
-	$: pt1_pressure_display = $pt1_pressure === undefined ? 'N/A' : $pt1_pressure;
-	$: pt2_pressure_display = $pt2_pressure === undefined ? 'N/A' : $pt2_pressure;
-	$: pt3_pressure_display = $pt3_pressure === undefined ? 'N/A' : $pt3_pressure;
-	$: pt4_pressure_display = $pt4_pressure === undefined ? 'N/A' : $pt4_pressure;
-
-	$: sob_tc1_display = $sob_tc1_temperature === undefined ? 'N/A' : $sob_tc1_temperature;
-	$: sob_tc2_display = $sob_tc2_temperature === undefined ? 'N/A' : $sob_tc2_temperature;
-
-	$: system_state_display = $system_state === undefined 
-    ? 'N/A' 
+ 
+    const ac1_open = writable(undefined);
+ 
+    const pbv1_open = writable(undefined);
+    const pbv2_open = writable(undefined);
+    const pbv3_open = writable(undefined);
+    const pbv4_open = writable(undefined);
+ 
+    const sol5_open = writable(undefined);
+    const sol6_open = writable(undefined);
+    const sol7_open = writable(undefined);
+    const sol8a_open = writable(undefined);
+    const sol8b_open = writable(undefined);
+ 
+    const continuity1 = writable(undefined);
+    const continuity2 = writable(undefined);
+    const box1_on = writable(undefined);
+    const box2_on = writable(undefined);
+ 
+    const vent_open = writable(undefined);
+    const drain_open = writable(undefined);
+    const mev_open = writable(undefined);
+ 
+    const rcu_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
+    const rcu_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
+ 
+    const tc9 = writable(undefined);
+ 
+    const upper_pv_pressure: Writable<string | number | undefined> = writable(undefined);
+ 
+    const rocket_mass = writable(undefined);
+ 
+    const nos1_mass = writable(undefined);
+    const nos2_mass = writable(undefined);
+ 
+    const tc7: Writable<string | number | undefined> = writable(undefined);
+ 
+    const pv_temperature: Writable<string | number | undefined> = writable(undefined);
+ 
+    const pt1_pressure: Writable<string | number | undefined> = writable(undefined);
+    const pt2_pressure: Writable<string | number | undefined> = writable(undefined);
+    const pt3_pressure: Writable<string | number | undefined> = writable(undefined);
+    const pt4_pressure: Writable<string | number | undefined> = writable(undefined);
+ 
+    const sob_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
+    const sob_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
+ 
+    const system_state: Writable<string | undefined> = writable(undefined);
+ 
+    const timer_state: Writable<string | undefined> = writable(undefined);
+ 
+    $: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
+ 
+    $: pbv1_display = $pbv1_open === undefined ? 'N/A' : $pbv1_open ? 'OPEN' : 'CLOSE';
+    $: pbv2_display = $pbv2_open === undefined ? 'N/A' : $pbv2_open ? 'OPEN' : 'CLOSE';
+    $: pbv3_display = $pbv3_open === undefined ? 'N/A' : $pbv3_open ? 'OPEN' : 'CLOSE';
+    $: pbv4_display = $pbv4_open === undefined ? 'N/A' : $pbv4_open ? 'CLOSE' : 'OPEN';
+ 
+    $: sol5_display = $sol5_open === undefined ? 'N/A' : $sol5_open ? 'OPEN' : 'CLOSE';
+    $: sol6_display = $sol6_open === undefined ? 'N/A' : $sol6_open ? 'OPEN' : 'CLOSE';
+    $: sol7_display = $sol7_open === undefined ? 'N/A' : $sol7_open ? 'OPEN' : 'CLOSE';
+    $: sol8a_display = $sol8a_open === undefined ? 'N/A' : $sol8a_open ? 'OPEN' : 'CLOSE';
+    $: sol8b_display = $sol8b_open === undefined ? 'N/A' : $sol8b_open ? 'OPEN' : 'CLOSE';
+ 
+    $: box1_display = $box1_on === undefined ? 'N/A' : $box1_on ? 'LIVE' : 'DEAD';
+    $: box2_display = $box2_on === undefined ? 'N/A' : $box2_on ? 'LIVE' : 'DEAD';
+ 
+    $: vent_display = $vent_open === undefined ? 'N/A' : $vent_open ? 'OPEN' : 'CLOSED';
+    $: drain_display = $drain_open === undefined ? 'N/A' : $drain_open ? 'OPEN' : 'CLOSED';
+ 
+    $: rcu_tc1_display = $rcu_tc1_temperature === undefined ? 'N/A' : $rcu_tc1_temperature;
+    $: rcu_tc2_display = $rcu_tc2_temperature === undefined ? 'N/A' : $rcu_tc2_temperature;
+ 
+    $: mev_display = $mev_open === undefined ? 'N/A' : $mev_open ? 'OPEN' : 'CLOSED';
+ 
+    $: battery_display = $tc9 === undefined ? 'N/A' : $tc9;
+ 
+    $: upper_pv_display = $upper_pv_pressure === undefined ? 'DC' : $upper_pv_pressure;
+ 
+    $: rocket_mass_display = $rocket_mass === undefined ? 'N/A' : Number($rocket_mass).toFixed(2);
+ 
+    $: nos1_mass_display = $nos1_mass === undefined ? 'N/A' : Number($nos1_mass).toFixed(2);
+    $: nos2_mass_display = $nos2_mass === undefined ? 'N/A' : Number($nos2_mass).toFixed(2);
+ 
+    $: tc7_display = $tc7 === undefined ? 'N/A' : $tc7;
+ 
+ 
+    $: pv_temperature_display = $pv_temperature === undefined ? 'N/A' : $pv_temperature;
+ 
+    $: pt1_pressure_display = $pt1_pressure === undefined ? 'N/A' : $pt1_pressure;
+    $: pt2_pressure_display = $pt2_pressure === undefined ? 'N/A' : $pt2_pressure;
+    $: pt3_pressure_display = $pt3_pressure === undefined ? 'N/A' : $pt3_pressure;
+    $: pt4_pressure_display = $pt4_pressure === undefined ? 'N/A' : $pt4_pressure;
+ 
+    $: sob_tc1_display = $sob_tc1_temperature === undefined ? 'N/A' : $sob_tc1_temperature;
+    $: sob_tc2_display = $sob_tc2_temperature === undefined ? 'N/A' : $sob_tc2_temperature;
+ 
+    $: system_state_display = $system_state === undefined
+    ? 'N/A'
     : $system_state.replace('SYS_', '');
 
 	$: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
+
+	$: timer_period_display = $timer_period === undefined 
+    ? 'N/A' 
+    : ($timer_period / 1000).toFixed(0); // Convert to seconds
+
+	$: timer_remaining_display = $timer_remaining === undefined 
+	? 'N/A' 
+	: ($timer_remaining / 1000).toFixed(0); // Convert to seconds
 
 	$: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
 	$: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
@@ -319,6 +327,14 @@
 			timestamps.pad_box_status = Date.now();
 		});
 
+		// Subscribe to changes in the 'Battery' collection
+		PB.collection('Battery').subscribe('*', function (e) {
+			// Update the Battery data store whenever a change is detected
+			tc9.set(e.record.voltage);
+			power_source.set(e.record.power_source);
+			timestamps.battery = Date.now();
+		});
+
 		// Subscribe to changes in the 'DmbPressure' collection
 		PB.collection('DmbPressure').subscribe('*', function (e) {
 			// Update the DmbPressure data store whenever a change is detected
@@ -355,6 +371,13 @@
 			else {
 				tc7.set(Math.round(e.record.tc7/1000));
 			}
+			if (e.record.lower_pv_pressure < -100000) {
+				lower_pv_pressure.set('DC');
+			}
+			else {
+				lower_pv_pressure.set(Math.round(e.record.lower_pv_pressure/1000));
+			}
+			timestamps.pbb_pressure = Date.now();
 		});
 
 		// Subscribe to changes in the 'PbbTemperature' collection
@@ -423,6 +446,15 @@
 			// Update the SystemState data store whenever a change is detected
 			system_state.set(e.record.sys_state);
 			timestamps.sys_state = Date.now();
+		});
+
+		// Subscribe to changes in the 'HeartbeatTelemetry' collection
+		PB.collection('hb_state').subscribe('*', function (e) {
+			// Update the Heartbeat data store whenever a change is detected
+			timer_state.set(e.record.timer_state);
+			timer_period.set(e.record.timer_period);
+			timer_remaining.set(e.record.timer_remaining);
+			timestamps.heartbeat = Date.now();
 		});
 	});
 
@@ -567,7 +599,7 @@
 	}
 
 </script>
-
+ 
 <div class="container">
     <svelte:component this={HybridStaticFire2x} />
 
@@ -655,9 +687,9 @@
 		>
 	</div>
 
-	<div class="tport_toggle relay_status {relayStatusOutdated ? 'outdated' : ''}">
+	<div class="pbv6_slider relay_status {relayStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
-			name="tport_toggle"
+			name="pbv6_slider"
 			active="bg-primary-500 dark:bg-primary-500"
 			size="sm"
 			bind:checked={$sol7_open}
@@ -679,6 +711,18 @@
 		>
 	</div>
 
+	<div class="t_port relay_status {relayStatusOutdated ? 'outdated' : ''}">
+		<SlideToggle
+			name="t_port"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$sol8b_open}
+			on:click={(e) => handleSliderChange(e, 'NODE_RCU', 'RCU_OPEN_SOL8B', 'RCU_CLOSE_SOL8B')}
+		>
+			{sol8b_display}</SlideToggle
+		>
+	</div>
+
 	<div class="drain_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
 		<SlideToggle
 			name="drain_slider"
@@ -691,6 +735,23 @@
 		>
 	</div>
 
+	<div class="power_source_slider battery {batteryOutdated  ? 'outdated' : ''}">
+		<SlideToggle
+			name="power_source_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$power_source}
+			on:click={(e) =>
+				handleSliderChange(
+					e,
+					'NODE_DMB',
+					'RSC_POWER_TRANSITION_ONBOARD',
+					'RSC_POWER_TRANSITION_EXTERNAL'
+				)}
+		>
+			{power_display}</SlideToggle
+		>
+	</div>
 	<div class="nos1_tare_button">
 		<button 
 			type="button" 
@@ -809,6 +870,10 @@
 		<p>{tc7_display}</p>
 	</div>
 
+	<div class="lower_pv_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
+		<p>{lower_pv_display}</p>
+	</div>
+
 	<div class="pv_temperature pbb_temperature {pbbTemperatureOutdated ? 'outdated' : ''}">
 		<p>{pv_temperature_display}</p>
 	</div>
@@ -827,6 +892,14 @@
 
 	<div class="timer_state heartbeat {heartbeatOutdated ? 'outdated' : ''}">
 		<p>{timer_state_display}</p>
+	</div>
+
+	<div class="timer_period heartbeat {heartbeatOutdated ? 'outdated' : ''}">
+		<p>{timer_period_display}</p>
+	</div>
+
+	<div class="timer_remaining heartbeat {heartbeatOutdated ? 'outdated' : ''}">
+		<p>{timer_remaining_display}</p>
 	</div>
 
 <style>
@@ -897,8 +970,8 @@
 
 	.launch_stat {
 		position: absolute;
-		top: calc(var(--container-width) * 0.265);
-		left: 64.3%;
+		top: calc(var(--container-width) * 0.269);
+		left: 63.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
@@ -911,26 +984,43 @@
 		font-size: 16px;
 	}
 
-	.tport_toggle {
+	.pbv6_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.317);
-		left: 51.5%;
+		top: calc(var(--container-width) * 0.356);
+		left: 63.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 	
 	.pbv7_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.363);
-		left: 68.3%;
+		top: calc(var(--container-width) * 0.396);
+		left: 63.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
 
+	.t_port {
+		position: absolute;
+		top: calc(var(--container-width) * 0.44);
+		left: 63.3%;
+		transform: translate(-50%, -50) scale(calc(var(--container-width-unitless) / 1900));
+		font-size: 16px;
+	}
+
+
 	.drain_slider {
 		position: absolute;
-		top: calc(var(--container-width) * 0.310);
-		left: 44.0%;
+		top: calc(var(--container-width) * 0.265);
+		left: 85.3%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
+		font-size: 16px;
+	}
+
+	.power_source_slider {
+		position: absolute;
+		top: calc(var(--container-width) * 0.025);
+		left: 95.5%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}
@@ -953,14 +1043,14 @@
 
 	.nos1_tare_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.09);
+		top: calc(var(--container-width) * 0.1);
 		left: 14.3%;
 		transform: translate(-50%,-50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.nos1_cal_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.109);
+		top: calc(var(--container-width) * 0.117);
 		left: 14.3%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
@@ -983,15 +1073,15 @@
 	
 	.rail_tare_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.278);
-		left: 58.9%;
+		top: calc(var(--container-width) * 0.078);
+		left: 69.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
 	.rail_cal_button {
 		position: absolute;
-		top: calc(var(--container-width) * 0.297);
-		left: 58.9%;
+		top: calc(var(--container-width) * 0.097);
+		left: 69.1%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	}
 
@@ -1103,24 +1193,30 @@
 		position: absolute;
 		top: calc(var(--container-width) * 0.358);
 		left: 55.4%;
-		top: calc(var(--container-width) * 0.358);
-		left: 55.4%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
-/*pt6*/
-	.rocket_mass {
+
+	/*.rocket_mass {
 		position: absolute;
-		top: calc(var(--container-width) * 0.424);
-		left: 51.0%;
+		top: calc(var(--container-width) * 0.09);
+		left: 74.3%;
 		transform: translate(1350%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
-	}
+	}*/
 
 	.tc7 {
 		position: absolute;
 		top: calc(var(--container-width) * 0.3225);
 		left: 91.3%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 14px;
+	}
+
+	.lower_pv_pressure {
+		position: absolute;
+		top: calc(var(--container-width) * 0.425);
+		left: 72.7%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
@@ -1148,22 +1244,38 @@
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
-/*nos2 right side*/
+
 	.system_state {
 		position: absolute;
-		top: calc(var(--container-width) * 0.363);
-		left: 58.6%;
+		top: calc(var(--container-width) * 0.373);
+		left: 42%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 14px;
 	}
-/*tc4**/
+
 	.timer_state {
 		position: absolute;
-		top: calc(var(--container-width) * 0.358);
-		left: 62%;
+		top: calc(var(--container-width) * 0.386);
+		left: 42%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 		font-size: 12px;
 	}
+
+	/***.timer_period {
+		position: absolute;
+		top: calc(var(--container-width) * 0.399);
+		left: 44%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}
+
+	.timer_remaining {
+		position: absolute;
+		top: calc(var(--container-width) * 0.413);
+		left: 45%;
+		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+		font-size: 12px;
+	}*/
 
 	.outdated {
 		color: #d4163c
@@ -1171,3 +1283,4 @@
 	}
 </style>
 </div>
+ 

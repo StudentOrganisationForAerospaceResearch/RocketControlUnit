@@ -1,5 +1,5 @@
 <script lang="ts">
-    import HybridStaticFire2x from "./Hybrid Static Fire@2.svelte";
+    import HybridStaticFire2x from "./Hybrid Static Fire@2x.svelte";
     import { getModalStore, SlideToggle, modeCurrent } from '@skeletonlabs/skeleton';
     import type { ModalSettings } from '@skeletonlabs/skeleton';
     import { onDestroy, onMount } from 'svelte';
@@ -176,7 +176,7 @@
  
     const upper_pv_pressure: Writable<string | number | undefined> = writable(undefined);
  
-    const rocket_mass = writable(undefined);
+    const PT6 = writable(undefined);
  
     const nos1_mass = writable(undefined);
     const nos2_mass = writable(undefined);
@@ -193,7 +193,7 @@
     const sob_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
     const sob_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
  
-    const system_state: Writable<string | undefined> = writable(undefined);
+    const tc5: Writable<string | undefined> = writable(undefined);
  
     const timer_state: Writable<string | undefined> = writable(undefined);
  
@@ -225,7 +225,7 @@
  
     $: upper_pv_display = $upper_pv_pressure === undefined ? 'DC' : $upper_pv_pressure;
  
-    $: rocket_mass_display = $rocket_mass === undefined ? 'N/A' : Number($rocket_mass).toFixed(2);
+    $: PT6_display = $PT6 === undefined ? 'N/A' : Number($PT6).toFixed(2);
  
     $: nos1_mass_display = $nos1_mass === undefined ? 'N/A' : Number($nos1_mass).toFixed(2);
     $: nos2_mass_display = $nos2_mass === undefined ? 'N/A' : Number($nos2_mass).toFixed(2);
@@ -243,9 +243,9 @@
     $: sob_tc1_display = $sob_tc1_temperature === undefined ? 'N/A' : $sob_tc1_temperature;
     $: sob_tc2_display = $sob_tc2_temperature === undefined ? 'N/A' : $sob_tc2_temperature;
  
-    $: system_state_display = $system_state === undefined
+    $: tc5_display = $tc5 === undefined
     ? 'N/A'
-    : $system_state.replace('SYS_', '');
+    : $tc5.replace('SYS_', '');
  
     $: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
  
@@ -260,7 +260,7 @@
     $: pbbTemperatureOutdated = Date.now() - timestamps.pbb_temperature > 5000;
     $: rcuPressureOutdated = Date.now() - timestamps.rcu_pressure > 5000;
     $: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
-    $: sysStateOutdated = Date.now() - timestamps.system_state > 5000;
+    $: sysStateOutdated = Date.now() - timestamps.tc5 > 5000;
     $: heartbeatOutdated = Date.now() - timestamps.heartbeat > 5000;
  
     onMount(async () => {
@@ -334,7 +334,7 @@
         // Subscribe to changes in the 'LaunchRailLoadCell' collection
         PB.collection('LaunchRailLoadCell').subscribe('*', function (e) {
             // Update the LaunchRailLoadCell data store whenever a change is detected
-            rocket_mass.set(e.record.rocket_mass);
+            PT6.set(e.record.PT6);
             timestamps.launch_rail_load_cell = Date.now();
         });
  
@@ -421,7 +421,7 @@
         // Subscribe to changes in the 'sys_state' collection
         PB.collection('sys_state').subscribe('*', function (e) {
             // Update the SystemState data store whenever a change is detected
-            system_state.set(e.record.sys_state);
+            tc5.set(e.record.sys_state);
             timestamps.sys_state = Date.now();
         });
     });
@@ -791,8 +791,8 @@
         <p>{upper_pv_display}</p>
     </div>
  
-    <div class="rocket_mass launch_rail_load_cell {launchRailLoadCellOutdated ? 'outdated' : ''}">
-        <p>{rocket_mass_display}</p>
+    <div class="PT6 {launchRailLoadCellOutdated ? 'outdated' : ''}">
+        <p>{PT6_display}</p>
     </div>
  
     <div class="tc7 pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
@@ -811,11 +811,11 @@
         <p>{sob_tc2_display}</p>
     </div>
  
-    <div class="system_state sys_state {sysStateOutdated ? 'outdated' : ''}">
-        <p>{system_state_display}</p>
+    <div class="tc5 sys_state {sysStateOutdated ? 'outdated' : ''}">
+        <p>{tc5_display}</p>
     </div>
  
-    <div class="timer_state heartbeat {heartbeatOutdated ? 'outdated' : ''}">
+    <div class="tc4 heartbeat {heartbeatOutdated ? 'outdated' : ''}">
         <p>{timer_state_display}</p>
     </div>
  
@@ -855,72 +855,72 @@
     }
     .pbv1_slider {
         position: absolute;
-        top: calc(var(--container-width) * 0.145);
-        left: 32.1%;
+        top: calc(var(--container-width) * 0.125);
+        left: 34.8%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
         font-size: 16px;
     }
  
     .pbv2_slider {
         position: absolute;
-        top: calc(var(--container-width) * 0.193);
-        left: 32.1%;
+        top: calc(var(--container-width) * 0.174);
+        left: 34.8%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
         font-size: 16px;
     }
  
     .pbv3_slider {
         position: absolute;
-        top: calc(var(--container-width) * 0.235);
-        left: 32.1%;
+        top: calc(var(--container-width) * 0.217);
+        left: 34.8%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
         font-size: 16px;
     }
  
     .pbv4_slider {
         position: absolute;
-        top: calc(var(--container-width) * 0.278);
-        left: 32.1%;
+        top: calc(var(--container-width) * 0.261);
+        left: 34.8%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
         font-size: 16px;
     }
  
     .launch_stat {
         position: absolute;
-        top: calc(var(--container-width) * 0.265);
-        left: 64.3%;
+        top: calc(var(--container-width) * 0.228);
+        left: 79.3%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
         font-size: 16px;
     }
    
     .pbv5_slider {
         position: absolute;
-        top: calc(var(--container-width) * 0.323);
-        left: 32.1%;
+        top: calc(var(--container-width) * 0.307);
+        left: 34.8%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
         font-size: 16px;
     }
  
     .tport_toggle {
         position: absolute;
-        top: calc(var(--container-width) * 0.317);
-        left: 51.5%;
+        top: calc(var(--container-width) * 0.298);
+        left: 64.5%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
         font-size: 16px;
     }
    
     .pbv7_slider {
         position: absolute;
-        top: calc(var(--container-width) * 0.363);
-        left: 68.3%;
+        top: calc(var(--container-width) * 0.346);
+        left: 84.3%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
         font-size: 16px;
     }
  
     .drain_slider {
         position: absolute;
-        top: calc(var(--container-width) * 0.310);
-        left: 44.0%;
+        top: calc(var(--container-width) * 0.297);
+        left: 52.0%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
         font-size: 16px;
     }
@@ -943,15 +943,15 @@
  
     .nos1_tare_button {
         position: absolute;
-        top: calc(var(--container-width) * 0.09);
-        left: 14.3%;
+        top: calc(var(--container-width) * 0.07);
+        left: 16%;
         transform: translate(-50%,-50%) scale(calc(var(--container-width-unitless) / 1900));
     }
  
     .nos1_cal_button {
         position: absolute;
-        top: calc(var(--container-width) * 0.109);
-        left: 14.3%;
+        top: calc(var(--container-width) * 0.09);
+        left: 16%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
     }
  
@@ -959,7 +959,7 @@
         color: #04AA6D;
         position: absolute;
         top: calc(var(--container-width) * 0.424);
-        left: 16.0%;
+        left: 18.6%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
     }
  
@@ -967,190 +967,165 @@
         color: #04AA6D;
         position: absolute;
         top: calc(var(--container-width) * 0.442);
-        left: 16.0%;
+        left: 18.6%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
     }
    
     .rail_tare_button {
         position: absolute;
-        top: calc(var(--container-width) * 0.278);
-        left: 58.9%;
+        top: calc(var(--container-width) * 0.245);
+        left: 74%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
     }
  
     .rail_cal_button {
         position: absolute;
-        top: calc(var(--container-width) * 0.297);
-        left: 58.9%;
+        top: calc(var(--container-width) * 0.265);
+        left: 74%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
     }
  
     .rcu_tc1 {
         position: absolute;
-        top: calc(var(--container-width) * 0.190);
-        left: 14.7%;
+        top: calc(var(--container-width) * 0.173);
+        left: 17.2%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .rcu_tc2 {
         position: absolute;
-        top: calc(var(--container-width) * 0.277);
-        left: 14.4%;
+        top: calc(var(--container-width) * 0.262);
+        left: 16.7%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .nos1 {
         position: absolute;
-        top: calc(var(--container-width) * 0.120);
-        left: 10.3%;
+        top: calc(var(--container-width) * 0.104);
+        left: 12.7%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .nos2 {
         position: absolute;
-        top: calc(var(--container-width) * 0.455);
-        left: 12.6%;
+        top: calc(var(--container-width) * 0.435);
+        left: 14.9%;
         transform: translate(-50%,-50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .pt1_pressure {
         position: absolute;
-        top: calc(var(--container-width) * 0.145);
-        left: 14.7%;
+        top: calc(var(--container-width) * 0.129);
+        left: 17%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .pt2_pressure {
         position: absolute;
-        top: calc(var(--container-width) * 0.235);
-        left: 14.5%;
+        top: calc(var(--container-width) * 0.217);
+        left: 16.85%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .pt3_pressure {
         position: absolute;
-        top: calc(var(--container-width) * 0.335);
-        left: 14.65%;
+        top: calc(var(--container-width) * 0.317);
+        left: 16.90%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .pt4_pressure {
         position: absolute;
-        top: calc(var(--container-width) * 0.329);
-        left: 39.0%;
+        top: calc(var(--container-width) * 0.312);
+        left: 45%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
-    .box1_continuity {
-        position: absolute;
-        top: calc(var(--container-width) * 0.372);
-        left: 14.7%;
-        transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-        font-size: 14px;
-        width: 1em;
-        height: 1em;
-        background-color: green;
-        border-radius: 10%;
-    }
- 
-    .box2_continuity {
-        position: absolute;
-        top: calc(var(--container-width) * 0.386);
-        left: 14.7%;
-        transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
-        font-size: 14px;
-        width: 1em;
-        height: 1em;
-        background-color: green;
-        border-radius: 10%;
-    }
  
     .tc8 {
         position: absolute;
-        top: calc(var(--container-width) * 0.367);
-        left: 80.7%;
+        top: calc(var(--container-width) * 0.098);
+        left: 79.41%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .tc9 {
         position: absolute;
-        top: calc(var(--container-width) * 0.367);
-        left: 91.3%;
+        top: calc(var(--container-width) * 0.098);
+        left: 89.9%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .upper_pv_pressure {
         position: absolute;
-        top: calc(var(--container-width) * 0.358);
-        left: 55.4%;
-        top: calc(var(--container-width) * 0.358);
-        left: 55.4%;
+        top: calc(var(--container-width) * 0.333);
+        left: 69.8%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
-/*pt6*/
-    .rocket_mass {
+
+    .PT6 {
         position: absolute;
-        top: calc(var(--container-width) * 0.424);
-        left: 51.0%;
+        top: calc(var(--container-width) * 0.412);
+        left: 63%;
         transform: translate(1350%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .tc7 {
         position: absolute;
-        top: calc(var(--container-width) * 0.3225);
-        left: 91.3%;
+        top: calc(var(--container-width) * 0.0566);
+        left: 89.9%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .pv_temperature {
         position: absolute;
-        top: calc(var(--container-width) * 0.373);
-        left: 14.65%;
+        top: calc(var(--container-width) * 0.355);
+        left: 16.9%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .sob_tc1 {
         position: absolute;
-        top: calc(var(--container-width) * 0.3620);
-        left: 72.8%;
+        top: calc(var(--container-width) * 0.3370);
+        left: 73.8%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
     .sob_tc2 {
         position: absolute;
-        top: calc(var(--container-width) * 0.325);
-        left: 80.7%;
+        top: calc(var(--container-width) * 0.057);
+        left: 79.4%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
-/*nos2 right side*/
-    .system_state {
+
+    .tc5 {
         position: absolute;
-        top: calc(var(--container-width) * 0.363);
-        left: 58.6%;
+        top: calc(var(--container-width) * 0.349);
+        left: 88.9%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
 /*tc4**/
-    .timer_state {
+    .tc4 {
         position: absolute;
-        top: calc(var(--container-width) * 0.358);
-        left: 62%;
+        top: calc(var(--container-width) * 0.334);
+        left: 78%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 12px;
     }

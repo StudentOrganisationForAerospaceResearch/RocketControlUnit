@@ -49,131 +49,91 @@ class StateMachineManager():
     Manage state transitions for the communication between the RCU and the rocket. 
 
     """
-    def __init__(self, uart_queue: Queue, radio_queue: Queue, uart_event: mp.Event, radio_event: mp.Event):
-        self.sys_state = SystemState.SYS_NORMAL_OPERATION
-        self.last_message = None
+    def __init__(self, serial_event_queue: Queue, system_state_queue: Queue, serial_event: mp.Event, state_change_event: mp.Event):
         self.retransmit_counter = 0
-        self.uart_queue = uart_queue
-        self.radio_queue = radio_queue
-        self.uart_event = uart_event
-        self.radio_event = radio_event 
+        self.serial_event_queue = serial_event_queue
+        self.system_state_queue = system_state_queue
+        self.serial_event = serial_event 
+        self.state_change_event = state_change_event
+
+        self.system_state_queue.put(SystemState.SYS_SEND_NEXT_CMD)
+        self.state_change_event.set()
 
     def start(self):
 
-        #Randomnize ACK/NAK/TIMEOUT
-        choice = self.mock_receive_msg()
-        print("Choice: ", choice)
-        if choice == "ACK": 
-            self.sys_state = SystemState.SYS_SEND_NEXT_CMD
-            self.uart_queue.put(self.sys_state)
-        elif choice == "NAK":
-            #If retransmit counter is less than 2, then resend
-            if self.retransmit_counter < 2:
-                self.sys_state = SystemState.SYS_RETRANSMIT
-                self.uart_queue.put(self.sys_state)
-                self.retransmit_counter += 1
-            #If retransmit twice already, then send the next message and reset the retransmit flag 
-            else:
-                self.sys_state = SystemState.SYS_SEND_NEXT_CMD
-                self.uart_queue.put(self.sys_state)
-                self.retransmit_counter  = 0
-        elif choice == "TIMEOUT":
-            if self.retransmit_counter < 2:
-                #Send time out event and let the uart thread call retransmit function
-                self.sys_state = SystemState.SYS_TIMEOUT
-                self.uart_queue.put(self.sys_state)
-                self.retransmit_counter += 1
-                #If retransmit twice already, then send the next message and reset the retransmit flag 
-            else:
-                self.sys_state = SystemState.SYS_SEND_NEXT_CMD
-                self.uart_queue.put(self.sys_state)
-                self.retransmit_counter  = 0
-        self.uart_event.set()
+        while True:
+            self.serial_event.wait()
+            while not self.serial_event_queue.empty():
+                queue_serial_event = self.serial_event_queue.get()
+                #Need this so we can start the timer to handle TIMEOUT event
+                if queue_serial_event == "WAIT":
+                    self.system_state_queue.put(SystemState.SYS_WAIT)
+                elif queue_serial_event == "ACK":
+                    self.system_state_queue.put(SystemState.SYS_SEND_NEXT_CMD)
+                elif queue_serial_event == "NAK":
+                    if self.retransmit_counter < 2:
+                        self.system_state_queue.put(SystemState.SYS_RETRANSMIT)
+                        self.retransmit_counter += 1
+                    else:
+                        self.system_state_queue.put(SystemState.SYS_SEND_NEXT_CMD)
+                        self.retransmit_counter = 0
+                elif queue_serial_event == "TIMEOUT":
+                    if self.retransmit_counter < 2:
+                        self.system_state_queue.put(SystemState.SYS_RETRANSMIT)
+                        self.retransmit_counter += 1
+                    else:
+                        self.system_state_queue.put(SystemState.SYS_SEND_NEXT_CMD)
+                        self.retransmit_counter = 0
+                self.state_change_event.set()
+            self.serial_event.clear()
 
-    def mock_receive_msg(self):
-        mock_msg = ["ACK"]
-        choice = random.choice(mock_msg)
-        print(choice)
-        return choice
+                          
+        # mock_msg = ["ACK", "NAK", "TIMEOUT", "TIMEOUT", "ACK", "NAK", "WAIT"]
+        # for choice in mock_msg: 
+        #     print("Choice: ", choice)
+        #     if choice == "ACK": 
+        #         self.sys_state = SystemState.SYS_SEND_NEXT_CMD
+        #         self.serial_event_queue.put(self.sys_state)
+        #     elif choice == "NAK":
+        #         #If retransmit counter is less than 2, then resend
+        #         if self.retransmit_counter < 2:
+        #             self.sys_state = SystemState.SYS_RETRANSMIT
+        #             self.serial_event_queue.put(self.sys_state)
+        #             self.retransmit_counter += 1
+        #         #If retransmit twice already, then send the next message and reset the retransmit flag 
+        #         else:
+        #             self.sys_state = SystemState.SYS_SEND_NEXT_CMD
+        #             self.serial_event_queue.put(self.sys_state)
+        #             self.retransmit_counter  = 0
+        #     elif choice == "TIMEOUT":
+        #         if self.retransmit_counter < 2:
+        #             #Send time out event and let the uart thread call retransmit function
+        #             self.sys_state = SystemState.SYS_TIMEOUT
+        #             self.serial_event_queue.put(self.sys_state)
+        #             self.retransmit_counter += 1
+        #             #If retransmit twice already, then send the next message and reset the retransmit flag 
+        #         else:
+        #             self.sys_state = SystemState.SYS_SEND_NEXT_CMD
+        #             # self.uart_queue.put(self.sys_state)
+        #             self.serial_event_queue.put(self.sys_state)
+        #             self.retransmit_counter  = 0
+        #     elif choice == "WAIT":
+        #         self.sys_state = SystemState.SYS_WAIT
+        #         self.serial_event_queue.put(self.sys_state)
+        #     self.serial_event.set()
 
-    # def handle_wait(self):
+    # def mock_receive_msg(self):
+    #     mock_msg = ["ACK"]
+    #     choice = random.choice(mock_msg)
+    #     print(choice)
+    #     return choice    
 
-    #     """
-    #     Handle the logic of calling other functions depending on rocket responses. 
-    #     """
-    #     #Ideally, should have another function to parse the response received from DMB
-    #     # response = parse_rocket_response(), change the if blocks below to if, elif,else, etc
-    #     response = self.simulate_rocket_response()
-
-    #     if self.sys_state == SystemState.SYS_WAIT:
-    #         #If received NAK from Rocket:
-    #         if response == "NAK":
-    #             self.handle_retransmit()
-    #         elif response == "ACK":
-    #             self.handle_send_next_cmd()
-    #         elif response == "TIMEOUT":
-    #             self.sys_state = SystemState.SYS_TIMEOUT
-    #             self.handle_timeout()
-    #         else:
-    #             print("Bro, you messed up\n\r")
-
-    # def handle_retransmit(self):
-    #     #If retransmit counter is within range, retransmit the same message
-    #     if self.retransmit_counter < 2:
-    #         self.retransmit_counter += 1
-    #         self.start_sending_msg()
-    #     else:
-    #         self.sys_state = SystemState.SYS_SEND_NEXT_CMD
-    #         self.handle_send_next_cmd()
-
-    # def handle_send_next_cmd(self):
-    #     #Send next cmd
-    #     self.sys_state = SystemState.SYS_WAIT
-    #     #reset retransmit counter
-    #     self.retransmit_counter = 0 
-    # def handle_timeout(self):
-
-    #     #Call retransmit 
-    #     self.sys_state = SystemState.SYS_RETRANSMIT
-    #     self.handle_retransmit()
-
-    # def simulate_rocket_response(self):
-    #     # Simulate different responses from Rocket
-    #     responses = ["ACK", "NAK", "TIMEOUT"]
-    #     return random.choice(responses)
-    
-    # def exit(self):
-    #     """
-    #     Exit the state machine for RCU and Rocket serial communication by setting RCU state to be uninitialized 
-    #     and event to RCU Exit.
-
-    #     """
-    #     self.sys_state = SystemState.SYS_INVALID
-    #     self.rocket_state = RocketState.RS_NONE
-    #     self.event = Event.RCU_EXIT
-
-    # def get_rcu_state(self):
-    #     """
-    #     Return the current state of the RCU.
-
-    #     """
-    #     print("\nThe current RCU state:")
-    #     return self.sys_state
-
-    # def get_rocket_state(self):
-    #     """"
-    #     Return the current state of the rocket.
-
-    #     """
-    #     print("\nThe current rocket state:")
-    #     return self.rocket_state
-    
-
-def state_machine_manager_thread (uart_queue: Queue, radio_queue: Queue, uart_event: mp.Event, radio_event: mp.Event):
+# def state_machine_manager_thread (uart_queue: Queue, radio_queue: Queue, uart_event: mp.Event, radio_event: mp.Event):
+def state_machine_manager_thread (serial_event_queue: Queue, system_state_queue: Queue, serial_event: mp.Event, system_state_event: mp.Event):
     """
     State Machine manager function to start the state machine thread
     """
-    new_state_machine = StateMachineManager(uart_queue, radio_queue, uart_event, radio_event)
+    new_state_machine = StateMachineManager(serial_event_queue, system_state_queue, serial_event, system_state_event)
     new_state_machine.start()
 
 

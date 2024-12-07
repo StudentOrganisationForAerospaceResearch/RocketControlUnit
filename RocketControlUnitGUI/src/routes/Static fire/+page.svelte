@@ -89,7 +89,7 @@
         rcu_pressure: Date.now(),
         sob_temperature: Date.now(),
         sys_state: Date.now(),
-        heartbeat: Date.now(),
+        tc4: Date.now(),
     };
  
     onMount(() => {
@@ -193,9 +193,9 @@
     const sob_tc1_temperature: Writable<string | number | undefined> = writable(undefined);
     const sob_tc2_temperature: Writable<string | number | undefined> = writable(undefined);
  
-    const tc5: Writable<string | undefined> = writable(undefined);
+    const static_fire_tc5: Writable<string | undefined> = writable(undefined);
  
-    const timer_state: Writable<string | undefined> = writable(undefined);
+    const static_fire_tc4: Writable<string | undefined> = writable(undefined);
  
     $: ac1_display = $ac1_open === undefined ? 'N/A' : $ac1_open ? 'ON' : 'OFF';
  
@@ -243,11 +243,11 @@
     $: sob_tc1_display = $sob_tc1_temperature === undefined ? 'N/A' : $sob_tc1_temperature;
     $: sob_tc2_display = $sob_tc2_temperature === undefined ? 'N/A' : $sob_tc2_temperature;
  
-    $: tc5_display = $tc5 === undefined
+    $: static_fire_tc5_display = $static_fire_tc5 === undefined
     ? 'N/A'
-    : $tc5.replace('SYS_', '');
+    : $static_fire_tc5.replace('SYS_', '');
  
-    $: timer_state_display = $timer_state === undefined ? 'N/A' : $timer_state;
+    $: static_fire_tc4__display = $static_fire_tc4_state === undefined ? 'N/A' : $static_fire_tc4_state;
  
     $: relayStatusOutdated = Date.now() - timestamps.relay_status > 5000;
     $: combustionControlStatusOutdated = Date.now() - timestamps.combustion_control_status > 5000;
@@ -260,7 +260,7 @@
     $: pbbTemperatureOutdated = Date.now() - timestamps.pbb_temperature > 5000;
     $: rcuPressureOutdated = Date.now() - timestamps.rcu_pressure > 5000;
     $: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
-    $: sysStateOutdated = Date.now() - timestamps.tc5 > 5000;
+    $: sysStateOutdated = Date.now() - timestamps.static_fire_tc5 > 5000;
     $: heartbeatOutdated = Date.now() - timestamps.heartbeat > 5000;
  
     onMount(async () => {
@@ -421,7 +421,7 @@
         // Subscribe to changes in the 'sys_state' collection
         PB.collection('sys_state').subscribe('*', function (e) {
             // Update the SystemState data store whenever a change is detected
-            tc5.set(e.record.sys_state);
+            static_fire_tc5.set(e.record.sys_state);
             timestamps.sys_state = Date.now();
         });
     });
@@ -803,7 +803,7 @@
         <p>{pv_temperature_display}</p>
     </div>
  
-    <div class="sob_tc1 sob_temperature {sobTemperatureOutdated ? 'outdated' : ''}">
+    <div class="static_fire_sob_tc1 sob_temperature {sobTemperatureOutdated ? 'outdated' : ''}">
         <p>{sob_tc1_display}</p>
     </div>
  
@@ -811,12 +811,12 @@
         <p>{sob_tc2_display}</p>
     </div>
  
-    <div class="tc5 sys_state {sysStateOutdated ? 'outdated' : ''}">
-        <p>{tc5_display}</p>
+    <div class="static_fire_tc5 {sysStateOutdated ? 'outdated' : ''}">
+        <p>{static_fire_tc5_display}</p>
     </div>
  
-    <div class="tc4 heartbeat {heartbeatOutdated ? 'outdated' : ''}">
-        <p>{timer_state_display}</p>
+    <div class="static_fire_tc4 {heartbeatOutdated ? 'outdated' : ''}">
+        <p>{static_fire_tc4_display}</p>
     </div>
  
 <style>
@@ -831,13 +831,6 @@
             max-width: 100%;
         }
     }  
- 
-    .next-state-btn {
-        position: absolute;
-        left: 15%;
-        width: 200px;
-        transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1600));
-    }
  
     .arm_button {
         position: absolute;
@@ -1077,8 +1070,8 @@
     .PT6 {
         position: absolute;
         top: calc(var(--container-width) * 0.412);
-        left: 63%;
-        transform: translate(1350%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+        left: 89%;
+        transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
  
@@ -1114,15 +1107,15 @@
         font-size: 14px;
     }
  
-    .tc5 {
+    .static_fire_tc5 {
         position: absolute;
         top: calc(var(--container-width) * 0.349);
         left: 88.9%;
         transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
         font-size: 14px;
     }
-/*tc4**/
-    .tc4 {
+
+    .static_fire_tc4 {
         position: absolute;
         top: calc(var(--container-width) * 0.334);
         left: 78%;
@@ -1137,7 +1130,3 @@
 </style>
 </div>
  
-has context menu
-
-
-has context menu

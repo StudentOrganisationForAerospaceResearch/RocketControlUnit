@@ -8,18 +8,22 @@ import time
 import serial           # You'll need to run `pip install pyserial`
 from cobs import cobs   # pip install cobs
 import google.protobuf.message as Message
+from queue import Queue
 
 # Project specific imports ========================================================================
 import proto.Python.CoreProto_pb2 as ProtoCore
 import proto.Python.TelemetryMessage_pb2 as TelemetryProto
 import proto.Python.ControlMessage_pb2 as ControlProto
 
+
 from src.support.Codec import Codec
 from src.support.ProtobufParser import ProtobufParser
 from src.support.CommonLogger import logger
 
+from src.StateMachineManager import StateMachineManager
 from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_HEARTBEAT_SERIAL, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_VOLTAGE, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
 from src.Utils import Utils as utl
+
 
 # Constants ========================================================================================
 MIN_SERIAL_MESSAGE_LENGTH = 6
@@ -35,7 +39,7 @@ class SerialDevices(enum.Enum):
 
 # Class Definitions ===============================================================================
 class SerialHandler():
-    def __init__(self, thread_name: str, port: str, baudrate: int, message_handler_workq: mp.Queue):
+    def __init__(self, thread_name: str, port: str, baudrate: int, message_handler_workq: mp.Queue, serial_event_queue : mp.Queue, state_change_event_queue: mp.Queue, serial_event: mp.Event, state_change_event: mp.Event):
         """
         This thread class creates threads to handle 
         incoming and outgoing serial messages over 
@@ -57,7 +61,11 @@ class SerialHandler():
         self.thread_name = thread_name
         self.send_message_workq = message_handler_workq    
         self.kill_rx = False
-        
+        self.serial_event_queue = serial_event_queue
+        self.state_change_event_queue = state_change_event_queue
+        self.serial_event = serial_event
+        self.state_change_event = state_change_event
+        self.current_ser_workq_msg = None
         # Open serial serial port
         try:
             self.serial_port = serial.Serial(port=port, baudrate=baudrate, bytesize=8, parity=serial.PARITY_NONE, timeout=None, stopbits=serial.STOPBITS_ONE)
@@ -182,6 +190,13 @@ class SerialHandler():
             logger.debug(f"Received message intended for {utl.get_node_from_enum(received_message.target)}")
             return
         
+        #Check to see if it's nak or ack - Might be a better way to check for ACK vs NAK
+        if received_message.ack:
+            self.serial_event_queue.put("ACK")
+        elif received_message.nack:
+            self.serial_event_queue.put("NAK")
+        self.serial_event.set()
+
         json_str = ProtobufParser.parse_serial_to_json(data, ProtoCore.MessageID.MSG_CONTROL)
 
         self.send_message_workq.put(WorkQ_Message(self.thread_name, 'database', THREAD_MESSAGE_DB_WRITE, (ProtoCore.MessageID.MSG_CONTROL, json_str)))\
@@ -280,9 +295,12 @@ def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler)
             ser_han.send_serial_command_message(command, target, command_param, source_sequence_number)
         elif messageID == THREAD_MESSAGE_HEARTBEAT_SERIAL:
             ser_han.send_serial_control_message(message.message[0])
+        ser_han.current_ser_workq_msg = message
+        ser_han.serial_event_queue.put("WAIT")
+        ser_han.serial_event.set()
         return True
 
-def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread_workq: mp.Queue, message_handler_workq: mp.Queue):
+def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread_workq: mp.Queue, message_handler_workq: mp.Queue, serial_event_queue: mp.Queue, state_change_event_queue: mp.Queue, serial_event: mp.Event, state_change_event: mp.Event):
     """
     Thread function for the incoming serial data listening.
 
@@ -306,7 +324,7 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     # This log line should be removed once the pi core issue is solved
     logger.info(f"{device.name} process: {os.getpid()}")
     serial_workq = thread_workq
-    ser_han = SerialHandler(thread_name, port, baudrate, message_handler_workq)
+    ser_han = SerialHandler(thread_name, port, baudrate, message_handler_workq, serial_event_queue, state_change_event_queue, serial_event, state_change_event)
     if ser_han.serial_port == None:
         return
     
@@ -314,7 +332,14 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     rx_thread.start()
     while (1):
         # then once the queue is empty read the serial port
-        if not process_serial_workq_message(serial_workq.get(), ser_han):
-            ser_han.kill_rx = True
-            rx_thread.join(10)
-            return
+        ser_han.state_change_event.wait()
+        while not ser_han.state_change_event_queue.empty():
+            state_event = ser_han.state_change_event_queue.get()
+            if state_event == ControlProto.SystemState.SYS_SEND_NEXT_CMD:
+                if not process_serial_workq_message(serial_workq.get(), ser_han):
+                    ser_han.kill_rx = True   
+                    rx_thread.join(10)
+                    return
+            if state_event == ControlProto.SystemState.SYS_RETRANSMIT:
+                process_serial_workq_message(ser_han.current_ser_workq_msg, ser_han)
+        ser_han.state_change_event.clear()

@@ -51,4 +51,6 @@ enum RocketState {
     RS_ABORT = 10;
     RS_TEST = 11;
     RS_NONE = 12;
+    RS_LISTENING = 13;
+    RS_READY_FOR_CMD = 14;
 }

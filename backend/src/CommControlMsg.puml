@@ -1,0 +1,14 @@
+@startuml
+[*] -right-> RCUInitialized : start
+[*] -right-> RocketListening : start
+RCUInitialized : RCU is on
+RCUInitialized -right-> RCUWait : send first msg
+RCUWait -up-> RCUTimeout : does not receive ack from rocket
+RCUWait -up-> RCURetransmit : received nak from rocket
+RCUWait -down-> RCUSendNextCMD : received ack from rocket
+RCUWait -down-> RCUSendNextCMD : retransmit twice
+RCUTimeout --> RCURetransmit
+RCURetransmit --> RCUWait
+RocketListening --> RocketInitialized : receive initialization sequence
+RocketInitialized --> RocketReadyForCMD : send ack to rcu
+@enduml

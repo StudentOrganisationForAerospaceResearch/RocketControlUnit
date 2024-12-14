@@ -73,6 +73,11 @@
 			<AppRailAnchor href="/about" selected={$page.url.pathname === "/about"}>
 				<img src="/icons/info.png" class="sideBar-center" alt="Icon" />
 			</AppRailAnchor>
+
+			<AppRailAnchor href="/static-fire" selected={$page.url.pathname === "/static-fire"}>
+				<img src="/icons/flame-light.png" class="sideBar-center" alt="Icon" />
+			</AppRailAnchor>
+			
 		</AppRail>
 	</svelte:fragment>
 	

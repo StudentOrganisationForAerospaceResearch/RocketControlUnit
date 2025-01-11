@@ -79,8 +79,7 @@
 			</AppRailAnchor>
 		</AppRail>
 	</svelte:fragment>
-	
-	<slot>Some Slot</slot>
+	<slot />
 </AppShell>
 
 <style>

@@ -45,12 +45,6 @@
         new_hybrid_sol8a_open,
         new_hybrid_sol8b_open,
 
- 
-
-        vent_open,
-        drain_open,
-        mev_open,
-
         new_hybrid_rcu_tc1_temperature,
         new_hybrid_rcu_tc2_temperature,
         new_hybrid_rcu_tc3_temperature,
@@ -173,8 +167,7 @@
 	$: new_hybrid_sol8b_display = $new_hybrid_sol8b_open === undefined ? 'sol8b N/A' : $new_hybrid_sol8b_open ? 'OPEN' : 'CLOSE';
 
 
-	$: vent_display = $vent_open === undefined ? 'N/A' : $vent_open ? 'OPEN' : 'CLOSED';
-	$: drain_display = $drain_open === undefined ? 'N/A' : $drain_open ? 'OPEN' : 'CLOSED';
+	
 
 	$: new_hybrid_rcu_tc1_display = $new_hybrid_rcu_tc1_temperature === undefined ? 'tc1 N/A' : $new_hybrid_rcu_tc1_temperature;
 	$: new_hybrid_rcu_tc2_display = $new_hybrid_rcu_tc2_temperature === undefined ? 'tc2 N/A' : $new_hybrid_rcu_tc2_temperature;
@@ -182,7 +175,7 @@
     $: new_hybrid_rcu_tc4_display = $new_hybrid_rcu_tc4_temperature === undefined ? 'tc4 N/A' : $new_hybrid_rcu_tc4_temperature;
     $: new_hybrid_rcu_tc5_display = $new_hybrid_rcu_tc5_temperature === undefined ? 'tc5 N/A' : $new_hybrid_rcu_tc5_temperature;
 
-	$: mev_display = $mev_open === undefined ? 'N/A' : $mev_open ? 'OPEN' : 'CLOSED';
+	
 
 	$: battery_display = $battery_voltage === undefined ? 'N/A' : $battery_voltage;
 	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'ROCKET' : 'GROUND';
@@ -419,29 +412,9 @@
 		</SlideToggle>
 	</div>
 
-	<div class="vent_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
-		<SlideToggle
-			name="vent_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$vent_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_VENT', 'RSC_CLOSE_VENT')}
-		>
-			{vent_display}
-		</SlideToggle>
-	</div>
+	
 
-	<div class="drain_slider combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
-		<SlideToggle
-			name="drain_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$drain_open}
-			on:click={(e) => handleSliderChange(e, 'NODE_DMB', 'RSC_OPEN_DRAIN', 'RSC_CLOSE_DRAIN')}
-		>
-			{drain_display}
-		</SlideToggle>
-	</div>
+	
 
 	<div class="power_source_slider battery {batteryOutdated  ? 'outdated' : ''}">
 		<SlideToggle
@@ -579,9 +552,7 @@
 
 	
 
-	<div class="mev_status combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
-		<p>{mev_display}</p>
-	</div>
+	
 
 	<div class="battery_voltage  battery {batteryOutdated ? 'outdated' : ''}">
 		<p>{battery_display}</p>

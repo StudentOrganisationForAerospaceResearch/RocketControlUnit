@@ -51,8 +51,6 @@
         new_hybrid_rcu_tc4_temperature,
         new_hybrid_rcu_tc5_temperature,
 
-        battery_voltage,
-		power_source,
 
 		upper_pv_pressure,
 		rocket_mass,
@@ -174,11 +172,6 @@
     $: new_hybrid_rcu_tc3_display = $new_hybrid_rcu_tc3_temperature === undefined ? 'tc3 N/A' : $new_hybrid_rcu_tc3_temperature;
     $: new_hybrid_rcu_tc4_display = $new_hybrid_rcu_tc4_temperature === undefined ? 'tc4 N/A' : $new_hybrid_rcu_tc4_temperature;
     $: new_hybrid_rcu_tc5_display = $new_hybrid_rcu_tc5_temperature === undefined ? 'tc5 N/A' : $new_hybrid_rcu_tc5_temperature;
-
-	
-
-	$: battery_display = $battery_voltage === undefined ? 'N/A' : $battery_voltage;
-	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'ROCKET' : 'GROUND';
 
 	$: upper_pv_display = $upper_pv_pressure === undefined ? 'DC' : $upper_pv_pressure;
 
@@ -411,29 +404,6 @@
 			{new_hybrid_sol8b_display}
 		</SlideToggle>
 	</div>
-
-	
-
-	
-
-	<div class="power_source_slider battery {batteryOutdated  ? 'outdated' : ''}">
-		<SlideToggle
-			name="power_source_slider"
-			active="bg-primary-500 dark:bg-primary-500"
-			size="sm"
-			bind:checked={$power_source}
-			on:click={(e) =>
-				handleSliderChange(
-					e,
-					'NODE_DMB',
-					'RSC_POWER_TRANSITION_ONBOARD',
-					'RSC_POWER_TRANSITION_EXTERNAL'
-				)}
-		>
-			{power_display}
-		</SlideToggle>
-	</div>
-
 	
 
 	<div class="new_hybrid_nos1_tare_button">
@@ -551,12 +521,6 @@
 	</div>
 
 	
-
-	
-
-	<div class="battery_voltage  battery {batteryOutdated ? 'outdated' : ''}">
-		<p>{battery_display}</p>
-	</div>
 
 	<div class="upper_pv_pressure">
 		<p>{upper_pv_display}</p>

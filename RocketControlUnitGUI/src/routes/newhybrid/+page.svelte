@@ -45,8 +45,7 @@
         new_hybrid_sol8a_open,
         new_hybrid_sol8b_open,
 
-        box1_on,
-        box2_on,
+ 
 
         vent_open,
         drain_open,
@@ -173,8 +172,6 @@
 	$: new_hybrid_sol8a_display = $new_hybrid_sol8a_open === undefined ? 'sol8a N/A' : $new_hybrid_sol8a_open ? 'OPEN' : 'CLOSE';
 	$: new_hybrid_sol8b_display = $new_hybrid_sol8b_open === undefined ? 'sol8b N/A' : $new_hybrid_sol8b_open ? 'OPEN' : 'CLOSE';
 
-	$: box1_display = $box1_on === undefined ? 'N/A' : $box1_on ? 'LIVE' : 'DEAD';
-	$: box2_display = $box2_on === undefined ? 'N/A' : $box2_on ? 'LIVE' : 'DEAD';
 
 	$: vent_display = $vent_open === undefined ? 'N/A' : $vent_open ? 'OPEN' : 'CLOSED';
 	$: drain_display = $drain_open === undefined ? 'N/A' : $drain_open ? 'OPEN' : 'CLOSED';
@@ -242,11 +239,7 @@
 
 	let wasLiveAtAnyPoint = false;
 
-	const pollIgnitors = async () => {
-		if (box1_display === 'LIVE' || box2_display === 'LIVE') {
-			wasLiveAtAnyPoint = true;
-		}
-	}
+	
 
 	const handleLaunchSequence = async () => {
 		await writeArbitraryCommand('NODE_RC', 'RC_IGNITE_PAD_BOX1');
@@ -468,33 +461,7 @@
 		</SlideToggle>
 	</div>
 
-	{#if $currentState === "RS_IGNITION" || $currentState === "RS_TEST" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
-		<div class="box1_slider">
-			<SlideToggle
-				name="box1_slider"
-				active="bg-primary-500 dark:bg-primary-500"
-				size="sm"
-				bind:checked={$box1_on}
-				on:click={handleIgnition}
-				disabled={$currentState === "RS_IGNITION" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
-			>
-				{box1_display}
-			</SlideToggle>
-		</div>
-
-		<div class="box2_slider">
-			<SlideToggle
-				name="box2_slider"
-				active="bg-primary-500 dark:bg-primary-500"
-				size="sm"
-				bind:checked={$box2_on}
-				on:click={handleIgnition}
-				disabled={$currentState === "RS_IGNITION" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
-			>
-				{box2_display}
-			</SlideToggle>
-		</div>
-	{/if}
+	
 
 	<div class="new_hybrid_nos1_tare_button">
 		<button 
@@ -610,11 +577,7 @@
 		<p>{new_hybrid_pt5_pressure_display}</p>
 	</div>
 
-	<div class="box1_continuity">
-	</div>
-
-	<div class="box2_continuity">
-	</div>
+	
 
 	<div class="mev_status combustion_control_status {combustionControlStatusOutdated ? 'outdated' : ''}">
 		<p>{mev_display}</p>

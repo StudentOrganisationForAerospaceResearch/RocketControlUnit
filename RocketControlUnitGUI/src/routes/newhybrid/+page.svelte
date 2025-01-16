@@ -53,11 +53,6 @@
 
 		new_hybrid_nos1_mass,
 		new_hybrid_nos2_mass,
-
-		ib_pressure,
-		lower_pv_pressure,
-
-		pv_temperature,
         
 		new_hybrid_pt1_pressure,
 		new_hybrid_pt2_pressure,
@@ -171,11 +166,6 @@
 
 	$: new_hybrid_nos1_mass_display = $new_hybrid_nos1_mass === undefined ? 'nos1 N/A' : Number($new_hybrid_nos1_mass).toFixed(2);
 	$: new_hybrid_nos2_mass_display = $new_hybrid_nos2_mass === undefined ? 'nos2 N/A' : Number($new_hybrid_nos2_mass).toFixed(2);
-
-	$: ib_pressure_display = $ib_pressure === undefined ? 'N/A' : $ib_pressure;
-	$: lower_pv_display = $lower_pv_pressure === undefined ? 'N/A' : $lower_pv_pressure;
-
-	$: pv_temperature_display = $pv_temperature === undefined ? 'N/A' : $pv_temperature;
 
 	$: new_hybrid_pt1_pressure_display = $new_hybrid_pt1_pressure === undefined ? 'pt1 N/A' : $new_hybrid_pt1_pressure;
 	$: new_hybrid_pt2_pressure_display = $new_hybrid_pt2_pressure === undefined ? 'pt2 N/A' : $new_hybrid_pt2_pressure;
@@ -510,18 +500,6 @@
 
     <div class="new_hybrid_pt5_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
 		<p>{new_hybrid_pt5_pressure_display}</p>
-	</div>
-
-	<div class="ib_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
-		<p>{ib_pressure_display}</p>
-	</div>
-
-	<div class="lower_pv_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">
-		<p>{lower_pv_display}</p>
-	</div>
-
-	<div class="pv_temperature pbb_temperature {pbbTemperatureOutdated ? 'outdated' : ''}">
-		<p>{pv_temperature_display}</p>
 	</div>
 
 	<div class="sob_tc1 sob_temperature {sobTemperatureOutdated ? 'outdated' : ''}">

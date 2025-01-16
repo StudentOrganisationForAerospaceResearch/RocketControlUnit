@@ -185,7 +185,6 @@
 	$: pbbPressureOutdated = Date.now() - timestamps.pbb_pressure > 5000;
 	$: pbbTemperatureOutdated = Date.now() - timestamps.pbb_temperature > 5000;
 	$: rcuPressureOutdated = Date.now() - timestamps.rcu_pressure > 5000;
-	$: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
 	$: sysStateOutdated = Date.now() - timestamps.sys_state > 5000;
 	$: heartbeatOutdated = Date.now() - timestamps.heartbeat > 5000;
 

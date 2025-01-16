@@ -51,10 +51,6 @@
         new_hybrid_rcu_tc4_temperature,
         new_hybrid_rcu_tc5_temperature,
 
-
-		upper_pv_pressure,
-		rocket_mass,
-
 		new_hybrid_nos1_mass,
 		new_hybrid_nos2_mass,
 
@@ -172,10 +168,6 @@
     $: new_hybrid_rcu_tc3_display = $new_hybrid_rcu_tc3_temperature === undefined ? 'tc3 N/A' : $new_hybrid_rcu_tc3_temperature;
     $: new_hybrid_rcu_tc4_display = $new_hybrid_rcu_tc4_temperature === undefined ? 'tc4 N/A' : $new_hybrid_rcu_tc4_temperature;
     $: new_hybrid_rcu_tc5_display = $new_hybrid_rcu_tc5_temperature === undefined ? 'tc5 N/A' : $new_hybrid_rcu_tc5_temperature;
-
-	$: upper_pv_display = $upper_pv_pressure === undefined ? 'DC' : $upper_pv_pressure;
-
-	$: rocket_mass_display = $rocket_mass === undefined ? 'N/A' : Number($rocket_mass).toFixed(2);
 
 	$: new_hybrid_nos1_mass_display = $new_hybrid_nos1_mass === undefined ? 'nos1 N/A' : Number($new_hybrid_nos1_mass).toFixed(2);
 	$: new_hybrid_nos2_mass_display = $new_hybrid_nos2_mass === undefined ? 'nos2 N/A' : Number($new_hybrid_nos2_mass).toFixed(2);
@@ -518,16 +510,6 @@
 
     <div class="new_hybrid_pt5_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
 		<p>{new_hybrid_pt5_pressure_display}</p>
-	</div>
-
-	
-
-	<div class="upper_pv_pressure">
-		<p>{upper_pv_display}</p>
-	</div>
-
-	<div class="rocket_mass launch_rail_load_cell {launchRailLoadCellOutdated ? 'outdated' : ''}">
-		<p>{rocket_mass_display}</p>
 	</div>
 
 	<div class="ib_pressure pbb_pressure {pbbPressureOutdated ? 'outdated' : ''}">

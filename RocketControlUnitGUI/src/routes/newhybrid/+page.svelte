@@ -60,9 +60,6 @@
 		new_hybrid_pt4_pressure,
         new_hybrid_pt5_pressure,
 
-		sob_tc1_temperature,
-		sob_tc2_temperature,
-
 		system_state,
 		timer_state,
 		timer_period,
@@ -172,9 +169,6 @@
 	$: new_hybrid_pt3_pressure_display = $new_hybrid_pt3_pressure === undefined ? 'pt3 N/A' : $new_hybrid_pt3_pressure;
 	$: new_hybrid_pt4_pressure_display = $new_hybrid_pt4_pressure === undefined ? 'pt4 N/A' : $new_hybrid_pt4_pressure;
     $: new_hybrid_pt5_pressure_display = $new_hybrid_pt5_pressure === undefined ? 'pt5 N/A' : $new_hybrid_pt5_pressure;
-
-	$: sob_tc1_display = $sob_tc1_temperature === undefined ? 'N/A' : $sob_tc1_temperature;
-	$: sob_tc2_display = $sob_tc2_temperature === undefined ? 'N/A' : $sob_tc2_temperature;
 
 	$: system_state_display = $system_state === undefined ? 'N/A' : $system_state.replace('SYS_', '');
 
@@ -500,14 +494,6 @@
 
     <div class="new_hybrid_pt5_pressure rcu_pressure {rcuPressureOutdated ? 'outdated' : ''}">
 		<p>{new_hybrid_pt5_pressure_display}</p>
-	</div>
-
-	<div class="sob_tc1 sob_temperature {sobTemperatureOutdated ? 'outdated' : ''}">
-		<p>{sob_tc1_display}</p>
-	</div>
-
-	<div class="sob_tc2 sob_temperature {sobTemperatureOutdated ? 'outdated' : ''}">
-		<p>{sob_tc2_display}</p>
 	</div>
 
 	<div class="system_state sys_state {sysStateOutdated ? 'outdated' : ''}">

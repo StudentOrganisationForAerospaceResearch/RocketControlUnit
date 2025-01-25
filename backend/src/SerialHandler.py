@@ -190,7 +190,7 @@ class SerialHandler():
             msg = None
         elif choice == ProtoCore.MessageID.MSG_CONTROL:
             msg = ControlProto.ControlMessage()
-            mock_control_msg = [0,1]
+            mock_control_msg = [1]
             control_msg_choice = random.choice(mock_control_msg)
             if control_msg_choice == 0:
                 msg.nack.acking_msg_id = 0
@@ -221,12 +221,14 @@ class SerialHandler():
         # else:
         #     logger.debug(f"Received message intended for {utl.get_node_from_enum(received_message.target)}")
         #     return
-        
+        response = None
         #Check to see if it's nak or ack - Might be a better way to check for ACK vs NAK
         if data.ack.acking_msg_id == 1:
-            self.serial_event_queue.put("ACK")
+            response = "ACK"
         elif data.nack.acking_msg_id == 0:
-            self.serial_event_queue.put("NAK")
+            response = "NAK"
+        logger.info(f"Incoming thread received: {response}")
+        self.serial_event_queue.put(response)
         self.serial_event.set()
 
         logger.info(f"Mock sending to database thread")
@@ -306,20 +308,10 @@ def serial_rx_thread(ser_han: SerialHandler):
     """
     counter_for_testing = 0
     # while not ser_han.kill_rx:
-    while counter_for_testing < 3:
+    while counter_for_testing < 10:
         ser_han.handle_serial_message()
-        #Making sure the system is in the waiting state, before checking for timeout
-        if ser_han.timer_start:
-            ser_han.end_time = time.time()
-            time_elapsed = int(ser_han.end_time - ser_han.start_time)
-            print(f"Time elapsed: {time_elapsed}")
-            if time_elapsed > TIME_OUT_PERIOD:
-                print("System Timeout")
-                ser_han.serial_event_queue.put("TIMEOUT")
-                ser_han.serial_event.set()
-            ser_han.timer_start = False
         counter_for_testing += 1
-        time.sleep(10)
+        time.sleep(4)
         # pass
 
 def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler) -> bool:
@@ -351,9 +343,6 @@ def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler)
         ser_han.current_ser_workq_msg = message
         ser_han.serial_event_queue.put("WAIT")
         ser_han.serial_event.set()
-        #Start the timer
-        ser_han.start_time = time.time()
-        ser_han.timer_start = True
         return True
 
 def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread_workq: mp.Queue, message_handler_workq: mp.Queue, serial_event_queue: mp.Queue, state_change_event_queue: mp.Queue, serial_event: mp.Event, state_change_event: mp.Event):
@@ -382,10 +371,11 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     serial_workq = thread_workq
 
     #--------TO BE REMOVED-----------
-    #Add below to test the workflow from receiving msg from the serial workq -> send msg -> wait 
-    #Need to test if the flags and the corresponding queues are updated appropriately
-    test_msg = WorkQ_Message('test1', 'test2', THREAD_MESSAGE_SERIAL_WRITE, ("Hello", "There"))
-    serial_workq.put(test_msg)
+    #Mock putting messages in the workq
+    for i in range(10):
+        test_msg = WorkQ_Message('test1', 'test2', THREAD_MESSAGE_SERIAL_WRITE, (f"Outgoing command: {i}"))
+        serial_workq.put(test_msg)
+        logger.info(f"serial_workq size: {serial_workq.qsize()}")
     #---------END COMMENTS TO BE REMOVED-----------
 
     ser_han = SerialHandler(thread_name, port, baudrate, message_handler_workq, serial_event_queue, state_change_event_queue, serial_event, state_change_event)
@@ -396,17 +386,16 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     rx_thread = threading.Thread(target=serial_rx_thread, args=(ser_han,))
     rx_thread.start()
 
-    #Using the counter to control how many time the workflow will loop through
-    #Making sure workflow is setting/resetting the flags and update the appropriate queues accordingly.
-    #Would need to replace "while counter_for_testing < 3" with "while True"
     counter_for_testing = 0
-    while counter_for_testing < 3:
+    while counter_for_testing < 10:
     # while True: 
         # then once the queue is empty read the serial port
         ser_han.state_change_event.wait()
+        # if ser_han.state_change_event.is_set():
         ser_han.state_change_event.clear()
-        while not ser_han.state_change_event_queue.empty():
+        if not ser_han.state_change_event_queue.empty():
             state_event = ser_han.state_change_event_queue.get()
+            print(f"Outgoing thread sending: {state_event}")
             if state_event == ControlProto.SystemState.SYS_SEND_NEXT_CMD:
                 print("System in SYS_SEND_NEXT_CMD state")
                 if not process_serial_workq_message(serial_workq.get(), ser_han):
@@ -417,5 +406,9 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
                 print("System in SYS_RETRANSMIT state")
                 if ser_han.current_ser_workq_msg:
                     process_serial_workq_message(ser_han.current_ser_workq_msg, ser_han)
-            counter_for_testing += 1
-            print(f"counter_for_testing: {counter_for_testing}")
+            elif state_event == ControlProto.SystemState.SYS_WAIT:
+                print("System is in SYS_WAIT state")
+        counter_for_testing += 1
+        print(f"counter_for_testing: {counter_for_testing}")
+        time.sleep(0.5)
+

@@ -86,8 +86,11 @@ if __name__ == "__main__":
   radio_thread.start()
   serial_state_machine_thread.start()
  
-  time.sleep(120)
+  time.sleep(400)
 
   radio_thread.terminate()
   serial_state_machine_thread.terminate()
+
+  radio_thread.join()
+  serial_state_machine_thread.join()
 

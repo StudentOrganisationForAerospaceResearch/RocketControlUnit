@@ -56,95 +56,43 @@ class StateMachineManager():
         self.serial_event = serial_event 
         self.state_change_event = state_change_event
 
-
-
     def start(self):
-
-        # self.system_state_queue.put(SystemState.SYS_SEND_NEXT_CMD)
-        # self.state_change_event.set()
-        #Using the counter to control how many time the workflow will loop through
-        #Making sure workflow is setting/resetting the flags and update the appropriate queues accordingly.
-        #Would need to replace while counter for testing < 3: with while True
-        counter_for_testing = 0
-        while counter_for_testing < 3:
-        # while True:
+        while True:
             self.serial_event.wait()
             self.serial_event.clear()
-            print(f"Cleared self.serial_event flag to {self.serial_event.is_set()}")
-            while not self.serial_event_queue.empty():
-                self.serial_event.wait()
-                self.serial_event.clear()
-                print(f"Cleared self.serial_event flag to {self.serial_event.is_set()}")
+            if not self.serial_event_queue.empty():
                 queue_serial_event = self.serial_event_queue.get()
-                #Need this so we can start the timer to handle TIMEOUT event
-                if queue_serial_event == "WAIT":
-                    print("SM setting state to: SYS_WAIT")
-                    self.system_state_queue.put(SystemState.SYS_WAIT)
-                elif queue_serial_event == "ACK":
-                    print("SM setting state to: SYS_SEND_NEXT_CMD")
-                    self.system_state_queue.put(SystemState.SYS_SEND_NEXT_CMD)
-                elif queue_serial_event == "NAK":
-                    if self.retransmit_counter < 2:
-                        print("SM setting state to: SYS_RETRANSMIT")
-                        self.system_state_queue.put(SystemState.SYS_RETRANSMIT)
-                        self.retransmit_counter += 1
-                    else:
-                        print("SM setting state to: SYS_SEND_NEXT_CMD")
-                        self.system_state_queue.put(SystemState.SYS_SEND_NEXT_CMD)
-                        self.retransmit_counter = 0
-                elif queue_serial_event == "TIMEOUT":
-                    if self.retransmit_counter < 2:
-                        print("SM setting state to: SYS_RETRANSMIT after TIMEOUT")
-                        self.system_state_queue.put(SystemState.SYS_RETRANSMIT)
-                        self.retransmit_counter += 1
-                    else:
-                        print("SM setting state to: SYS_SEND_NEXT_CMD")
-                        self.system_state_queue.put(SystemState.SYS_SEND_NEXT_CMD)
-                        self.retransmit_counter = 0
-                self.state_change_event.set()
-                print(f"Set self.state_change_event flag to {self.state_change_event.is_set()}")
-                counter_for_testing += 1
+                print(f"State machine process: {queue_serial_event}")
+            #Need this so we can start the timer to handle TIMEOUT event
+            if queue_serial_event == "WAIT":
+                print("State machine sets flag: SYS_WAIT")
+                response = SystemState.SYS_WAIT
+            elif queue_serial_event == "ACK":
+                print("State machine sets flag: SYS_SEND_NEXT_CMD")
+                response = SystemState.SYS_SEND_NEXT_CMD
+            elif queue_serial_event == "NAK":
+                if self.retransmit_counter < 2:
+                    print("State machine sets flag: SYS_RETRANSMIT")
+                    response = SystemState.SYS_RETRANSMIT
+                    self.retransmit_counter += 1
+                else:
+                    print("State machine sets flag: SYS_SEND_NEXT_CMD")
+                    response = SystemState.SYS_SEND_NEXT_CMD
+                    self.retransmit_counter = 0
+            elif queue_serial_event == "TIMEOUT":
+                if self.retransmit_counter < 2:
+                    print("State machine sets flag: SYS_RETRANSMIT after TIMEOUT")
+                    response = SystemState.SYS_RETRANSMIT
+                    self.retransmit_counter += 1
+                else:
+                    print("State machine sets flag: SYS_SEND_NEXT_CMD")
+                    response = SystemState.SYS_SEND_NEXT_CMD
+                    self.retransmit_counter = 0
+            #Put the new state in a shared queue
+            self.system_state_queue.put(response)
+            #Notify the outgoing serial thread
+            self.state_change_event.set()
 
-                          
-        # mock_msg = ["ACK", "NAK", "TIMEOUT", "TIMEOUT", "ACK", "NAK", "WAIT"]
-        # for choice in mock_msg: 
-        #     print("Choice: ", choice)
-        #     if choice == "ACK": 
-        #         self.sys_state = SystemState.SYS_SEND_NEXT_CMD
-        #         self.serial_event_queue.put(self.sys_state)
-        #     elif choice == "NAK":
-        #         #If retransmit counter is less than 2, then resend
-        #         if self.retransmit_counter < 2:
-        #             self.sys_state = SystemState.SYS_RETRANSMIT
-        #             self.serial_event_queue.put(self.sys_state)
-        #             self.retransmit_counter += 1
-        #         #If retransmit twice already, then send the next message and reset the retransmit flag 
-        #         else:
-        #             self.sys_state = SystemState.SYS_SEND_NEXT_CMD
-        #             self.serial_event_queue.put(self.sys_state)
-        #             self.retransmit_counter  = 0
-        #     elif choice == "TIMEOUT":
-        #         if self.retransmit_counter < 2:
-        #             #Send time out event and let the uart thread call retransmit function
-        #             self.sys_state = SystemState.SYS_TIMEOUT
-        #             self.serial_event_queue.put(self.sys_state)
-        #             self.retransmit_counter += 1
-        #             #If retransmit twice already, then send the next message and reset the retransmit flag 
-        #         else:
-        #             self.sys_state = SystemState.SYS_SEND_NEXT_CMD
-        #             # self.uart_queue.put(self.sys_state)
-        #             self.serial_event_queue.put(self.sys_state)
-        #             self.retransmit_counter  = 0
-        #     elif choice == "WAIT":
-        #         self.sys_state = SystemState.SYS_WAIT
-        #         self.serial_event_queue.put(self.sys_state)
-        #     self.serial_event.set()
-
-    # def mock_receive_msg(self):
-    #     mock_msg = ["ACK"]
-    #     choice = random.choice(mock_msg)
-    #     print(choice)
-    #     return choice    
 
 # def state_machine_manager_thread (uart_queue: Queue, radio_queue: Queue, uart_event: mp.Event, radio_event: mp.Event):
 def state_machine_manager_thread (serial_event_queue: Queue, system_state_queue: Queue, serial_event: mp.Event, system_state_event: mp.Event):

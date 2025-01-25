@@ -4,25 +4,31 @@ import os
 import enum
 import multiprocessing as mp
 import threading
-import time
+import time, random
 import serial           # You'll need to run `pip install pyserial`
 from cobs import cobs   # pip install cobs
 import google.protobuf.message as Message
+from queue import Queue
 
 # Project specific imports ========================================================================
 import proto.Python.CoreProto_pb2 as ProtoCore
 import proto.Python.TelemetryMessage_pb2 as TelemetryProto
 import proto.Python.ControlMessage_pb2 as ControlProto
+from proto.Python.ControlMessage_pb2 import AckNack
+
 
 from src.support.Codec import Codec
 from src.support.ProtobufParser import ProtobufParser
 from src.support.CommonLogger import logger
 
+from src.StateMachineManager import StateMachineManager
 from src.ThreadManager import THREAD_MESSAGE_DB_WRITE, THREAD_MESSAGE_HEARTBEAT_SERIAL, THREAD_MESSAGE_KILL, THREAD_MESSAGE_LOAD_CELL_VOLTAGE, THREAD_MESSAGE_SERIAL_WRITE, WorkQ_Message
 from src.Utils import Utils as utl
 
+
 # Constants ========================================================================================
 MIN_SERIAL_MESSAGE_LENGTH = 6
+TIME_OUT_PERIOD = 5
 
 UART_SERIAL_PORT = "/dev/ttyAMA0"
 RADIO_SERIAL_PORT = "/dev/ttyUSB0"
@@ -35,7 +41,7 @@ class SerialDevices(enum.Enum):
 
 # Class Definitions ===============================================================================
 class SerialHandler():
-    def __init__(self, thread_name: str, port: str, baudrate: int, message_handler_workq: mp.Queue):
+    def __init__(self, thread_name: str, port: str, baudrate: int, message_handler_workq: mp.Queue, serial_event_queue : mp.Queue, state_change_event_queue: mp.Queue, serial_event: mp.Event, state_change_event: mp.Event):
         """
         This thread class creates threads to handle 
         incoming and outgoing serial messages over 
@@ -57,7 +63,14 @@ class SerialHandler():
         self.thread_name = thread_name
         self.send_message_workq = message_handler_workq    
         self.kill_rx = False
-        
+        self.serial_event_queue = serial_event_queue
+        self.state_change_event_queue = state_change_event_queue
+        self.serial_event = serial_event
+        self.state_change_event = state_change_event
+        self.current_ser_workq_msg = None
+        self.start_time = 0
+        self.end_time = 0
+        self.timer_start = False
         # Open serial serial port
         try:
             self.serial_port = serial.Serial(port=port, baudrate=baudrate, bytesize=8, parity=serial.PARITY_NONE, timeout=None, stopbits=serial.STOPBITS_ONE)
@@ -85,30 +98,36 @@ class SerialHandler():
                 the data that was received.
         """
         # Read the serial port
-        message = self._get_serial_message()
-        
-        if message == None:
-            return
+        # message = self._get_serial_message()
+        message = self.mock_received_message()
 
-        # Check message length
-        if len(message) < MIN_SERIAL_MESSAGE_LENGTH:
-            logger.warning(f"Message from {self.port} too short: {message}")
+        if message == None:
+            #Simulate not receiving any messages
+            print("No message during this time")
             return
         
-        # Decode, remove 0x00 byte
-        try:
-            msgId, data = Codec.Decode(message[:-1], len(message) - 1)
-        except cobs.DecodeError:
-            logger.warning(f"Invalid cobs message from {self.port}")
-            return
+        #Comment out to debug workflow with the state machine
+        # # Check message length
+        # if len(message) < MIN_SERIAL_MESSAGE_LENGTH:
+        #     logger.warning(f"Message from {self.port} too short: {message}")
+        #     return
         
-        # Process message according to ID
-        if msgId == ProtoCore.MessageID.MSG_TELEMETRY:
-            self.process_telemetry_message(data)
-        elif msgId == ProtoCore.MessageID.MSG_CONTROL:
-            self.process_control_message(data)
-        else:
-            logger.warning(f"Received invalid MessageID from {self.port}")
+        # # Decode, remove 0x00 byte
+        # try:
+        #     msgId, data = Codec.Decode(message[:-1], len(message) - 1)
+        # except cobs.DecodeError:
+        #     logger.warning(f"Invalid cobs message from {self.port}")
+        #     return
+        
+        # # Process message according to ID
+        # if msgId == ProtoCore.MessageID.MSG_TELEMETRY:
+        #     self.process_telemetry_message(data)
+        # elif msgId == ProtoCore.MessageID.MSG_CONTROL:
+        #     self.process_control_message(data)
+        # else:
+        #     logger.warning(f"Received invalid MessageID from {self.port}")
+        self.process_control_message(message)
+
 
     def process_telemetry_message(self, data):
         """
@@ -159,6 +178,26 @@ class SerialHandler():
 
         self.send_message_workq.put(WorkQ_Message(self.thread_name, 'database', THREAD_MESSAGE_DB_WRITE, (ProtoCore.MessageID.MSG_TELEMETRY, json_str)))
         
+    def mock_received_message(self):
+        """
+        Mock receiving message from the DMB. 
+        """
+        msg = None
+        mock_msg = [ProtoCore.MessageID.MSG_CONTROL]
+        choice = random.choice(mock_msg)
+        if choice == ProtoCore.MessageID.MSG_INVALID:
+            print("No message")
+            msg = None
+        elif choice == ProtoCore.MessageID.MSG_CONTROL:
+            msg = ControlProto.ControlMessage()
+            mock_control_msg = [1]
+            control_msg_choice = random.choice(mock_control_msg)
+            if control_msg_choice == 0:
+                msg.nack.acking_msg_id = 0
+            elif control_msg_choice == 1:
+                msg.ack.acking_msg_id = 1
+        return msg
+   
     def process_control_message(self, data):
         """
         Process the incoming control message.
@@ -167,24 +206,37 @@ class SerialHandler():
             data (bytes):
                 The data that was received.
         """
-        received_message = ControlProto.ControlMessage()
+        #-------------UNCOMMENT THE TWO LINES BELOW ONCE THE BOARD IS OBTAINED--------------
+        # received_message = ControlProto.ControlMessage()
         # Ensure we received a valid message
-        try:
-            received_message.ParseFromString(data)
-        except Message.DecodeError:
-            logger.warning(f"Unable to decode control message: {data}")
-            return
-        # Ensure the message is intended for us
-        if received_message.target == ProtoCore.NODE_RCU or received_message.target == ProtoCore.NODE_ANY:
-            control_message_type = received_message.WhichOneof('message')
-            logger.debug(f"Received {control_message_type} from {utl.get_node_from_enum(received_message.source)}")
-        else:
-            logger.debug(f"Received message intended for {utl.get_node_from_enum(received_message.target)}")
-            return
-        
-        json_str = ProtobufParser.parse_serial_to_json(data, ProtoCore.MessageID.MSG_CONTROL)
+        # try:
+        #     received_message.ParseFromString(data)
+        # except Message.DecodeError:
+        #     logger.warning(f"Unable to decode control message: {data}")
+        #     return
+        # # Ensure the message is intended for us
+        # if received_message.target == ProtoCore.NODE_RCU or received_message.target == ProtoCore.NODE_ANY:
+        #     control_message_type = received_message.WhichOneof('message')
+        #     logger.debug(f"Received {control_message_type} from {utl.get_node_from_enum(received_message.source)}")
+        # else:
+        #     logger.debug(f"Received message intended for {utl.get_node_from_enum(received_message.target)}")
+        #     return
+        response = None
+        #Check to see if it's nak or ack - Might be a better way to check for ACK vs NAK
+        if data.ack.acking_msg_id == 1:
+            response = "ACK"
+        elif data.nack.acking_msg_id == 0:
+            response = "NAK"
+        logger.info(f"Incoming thread received: {response}")
+        self.serial_event_queue.put(response)
+        self.serial_event.set()
 
-        self.send_message_workq.put(WorkQ_Message(self.thread_name, 'database', THREAD_MESSAGE_DB_WRITE, (ProtoCore.MessageID.MSG_CONTROL, json_str)))\
+        logger.info(f"Mock sending to database thread")
+        #-------------UNCOMMENT THE TWO LINES BELOW ONCE THE BOARD IS OBTAINED--------------
+
+        # json_str = ProtobufParser.parse_serial_to_json(data, ProtoCore.MessageID.MSG_CONTROL)
+
+        # self.send_message_workq.put(WorkQ_Message(self.thread_name, 'database', THREAD_MESSAGE_DB_WRITE, (ProtoCore.MessageID.MSG_CONTROL, json_str)))\
 
     def send_serial_command_message(self, command: str, target: str, command_param: int, source_sequence_number: int) -> bool:
         """
@@ -254,9 +306,13 @@ def serial_rx_thread(ser_han: SerialHandler):
     """
     Thread function for the incoming serial data listening.
     """
-    while not (ser_han.kill_rx):
+    counter_for_testing = 0
+    # while not ser_han.kill_rx:
+    while counter_for_testing < 10:
         ser_han.handle_serial_message()
-        pass
+        counter_for_testing += 1
+        time.sleep(4)
+        # pass
 
 def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler) -> bool:
         """
@@ -273,16 +329,23 @@ def process_serial_workq_message(message: WorkQ_Message, ser_han: SerialHandler)
             logger.debug(f"Killing {ser_han.thread_name} thread")
             return False
         elif messageID == THREAD_MESSAGE_SERIAL_WRITE:
-            command = message.message[0]
-            target = message.message[1]
-            command_param = message.message[2]
-            source_sequence_number = message.message[3]
-            ser_han.send_serial_command_message(command, target, command_param, source_sequence_number)
+            #-------------UNCOMMENT THE TWO LINES BELOW ONCE THE BOARD IS OBTAINED--------------
+            # command = message.message[0]
+            # target = message.message[1]
+            # command_param = message.message[2]
+            # source_sequence_number = message.message[3]
+            print(f"Mock sending serial command message")
+            # ser_han.send_serial_command_message(command, target, command_param, source_sequence_number)
         elif messageID == THREAD_MESSAGE_HEARTBEAT_SERIAL:
-            ser_han.send_serial_control_message(message.message[0])
+            print(f"Mock sending serial control message")
+            #-------------UNCOMMENT THE TWO LINES BELOW ONCE THE BOARD IS OBTAINED--------------
+            # ser_han.send_serial_control_message(message.message[0])
+        ser_han.current_ser_workq_msg = message
+        ser_han.serial_event_queue.put("WAIT")
+        ser_han.serial_event.set()
         return True
 
-def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread_workq: mp.Queue, message_handler_workq: mp.Queue):
+def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread_workq: mp.Queue, message_handler_workq: mp.Queue, serial_event_queue: mp.Queue, state_change_event_queue: mp.Queue, serial_event: mp.Event, state_change_event: mp.Event):
     """
     Thread function for the incoming serial data listening.
 
@@ -306,15 +369,46 @@ def serial_thread(thread_name: str, device: SerialDevices, baudrate: int, thread
     # This log line should be removed once the pi core issue is solved
     logger.info(f"{device.name} process: {os.getpid()}")
     serial_workq = thread_workq
-    ser_han = SerialHandler(thread_name, port, baudrate, message_handler_workq)
-    if ser_han.serial_port == None:
-        return
+
+    #--------TO BE REMOVED-----------
+    #Mock putting messages in the workq
+    for i in range(10):
+        test_msg = WorkQ_Message('test1', 'test2', THREAD_MESSAGE_SERIAL_WRITE, (f"Outgoing command: {i}"))
+        serial_workq.put(test_msg)
+        logger.info(f"serial_workq size: {serial_workq.qsize()}")
+    #---------END COMMENTS TO BE REMOVED-----------
+
+    ser_han = SerialHandler(thread_name, port, baudrate, message_handler_workq, serial_event_queue, state_change_event_queue, serial_event, state_change_event)
+    #-------------UNCOMMENT THE TWO LINES BELOW ONCE THE BOARD IS OBTAINED--------------
+    # if ser_han.serial_port == None:
+    #     return
     
     rx_thread = threading.Thread(target=serial_rx_thread, args=(ser_han,))
     rx_thread.start()
-    while (1):
+
+    counter_for_testing = 0
+    while counter_for_testing < 10:
+    # while True: 
         # then once the queue is empty read the serial port
-        if not process_serial_workq_message(serial_workq.get(), ser_han):
-            ser_han.kill_rx = True
-            rx_thread.join(10)
-            return
+        ser_han.state_change_event.wait()
+        # if ser_han.state_change_event.is_set():
+        ser_han.state_change_event.clear()
+        if not ser_han.state_change_event_queue.empty():
+            state_event = ser_han.state_change_event_queue.get()
+            print(f"Outgoing thread sending: {state_event}")
+            if state_event == ControlProto.SystemState.SYS_SEND_NEXT_CMD:
+                print("System in SYS_SEND_NEXT_CMD state")
+                if not process_serial_workq_message(serial_workq.get(), ser_han):
+                    ser_han.kill_rx = True   
+                    rx_thread.join(10)
+                    return
+            elif state_event == ControlProto.SystemState.SYS_RETRANSMIT:
+                print("System in SYS_RETRANSMIT state")
+                if ser_han.current_ser_workq_msg:
+                    process_serial_workq_message(ser_han.current_ser_workq_msg, ser_han)
+            elif state_event == ControlProto.SystemState.SYS_WAIT:
+                print("System is in SYS_WAIT state")
+        counter_for_testing += 1
+        print(f"counter_for_testing: {counter_for_testing}")
+        time.sleep(0.5)
+

@@ -6,7 +6,7 @@
 	import { writable } from 'svelte/store';
 	import type { Writable } from 'svelte/store';
 	import PocketBase from 'pocketbase';
-	import BackgroundDark from './background-dark.svelte';
+	import BackgroundDark from './Background-Dark1.svelte';
 	import BackgroundLight from './background-light.svelte';
 	import { auth } from '../store';
 
@@ -1137,7 +1137,7 @@
 	.ac2_slider {
 		position: absolute;
 		top: calc(var(--container-width) * 0.43);
-		left: 24.6%;
+		left: 27.2%;
 		transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 		font-size: 16px;
 	}

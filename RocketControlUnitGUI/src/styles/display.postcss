@@ -93,7 +93,7 @@
 
 .vent_slider {
 	position: absolute;
-	top: calc(var(--container-width) * 0.152);
+	top: calc(var(--container-width) * 0.166);
 	left: 85.3%;
 	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	font-size: 16px;
@@ -113,6 +113,22 @@
 	left: 95.5%;
 	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1900));
 	font-size: 16px;
+}
+
+.upper_pv_heater_slider {
+	position: absolute;
+	top: calc(var(--container-width) * 0.144);
+	left: 90.2%;
+	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2300));
+	font-size: 12px;
+}
+
+.lower_pv_heater_slider {
+	position: absolute;
+	top: calc(var(--container-width) * 0.318);
+	left: 98.15%;
+	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 2300));
+	font-size: 12px;
 }
 
 .box1_slider {
@@ -287,6 +303,30 @@
 	font-size: 14px;
 }
 
+.upper_pv_tc {
+	position: absolute;
+	top: calc(var(--container-width) * 0.114);
+	left: 86.7%;
+	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+	font-size: 12px;
+}
+
+.vent_solenoid_tc {
+	position: absolute;
+	top: calc(var(--container-width) * 0.108);
+	left: 89.6%;
+	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+	font-size: 12px;
+}
+
+.dip_tube_tc {
+	position: absolute;
+	top: calc(var(--container-width) * 0.114);
+	left: 97.4%;
+	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+	font-size: 12px;
+}
+
 .rocket_mass {
 	position: absolute;
 	top: calc(var(--container-width) * 0.09);
@@ -306,17 +346,43 @@
 .lower_pv_pressure {
 	position: absolute;
 	top: calc(var(--container-width) * 0.345);
-	left: 90.3%;
+	left: 91.7%;
 	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 	font-size: 14px;
 }
 
-.pv_temperature {
+.ib_temperature {
+	position: absolute;
+	top: calc(var(--container-width) * 0.391);
+	left: 89.8%;
+	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+	font-size: 12px;
+}
+
+.lower_pv_tc1 {
 	position: absolute;
 	top: calc(var(--container-width) * 0.345);
-	left: 95.5%;
+	left: 93.4%;
 	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
 	font-size: 14px;
+}
+
+.low_solenoid_heater_tc {
+	position: absolute;
+	top: calc(var(--container-width) * 0.356);
+	left: 98.35%;
+	transform: translate(-50%, -50%) scale(calc(var(--container-width-unitless) / 1500));
+	font-size: 12px;
+}
+
+.upper_pv_tc p,
+.vent_solenoid_tc p,
+.dip_tube_tc p,
+.ib_temperature p,
+.low_solenoid_heater_tc p {
+	margin: 0;
+	line-height: 1;
+	white-space: nowrap;
 }
 
 .sob_tc1 {

@@ -2,6 +2,35 @@
 	svg * {
 		transition: all 0.15s ease;
 	}
+
+	.added-sensor text,
+	.added-heater text {
+		fill: var(--diagram-outline-color);
+		font-family: Quicksand, sans-serif;
+		font-size: 13px;
+		text-anchor: middle;
+		dominant-baseline: middle;
+	}
+
+	.added-sensor circle,
+	.added-sensor line,
+	.added-sensor polyline,
+	.added-heater rect,
+	.added-heater path {
+		stroke: var(--diagram-outline-color);
+	}
+
+	#Pressure\ Vessel {
+		display: none;
+	}
+
+	.diagram-label {
+		fill: var(--diagram-outline-color);
+		font-family: Quicksand, sans-serif;
+		font-size: 15px;
+		text-anchor: middle;
+		dominant-baseline: middle;
+	}
 </style>
 
 <svg class="diagram" viewBox="0 0 1920 880" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -564,7 +593,7 @@
 				mask="url(#path-89-inside-33_7_22)"
 			/>
 		</g>
-		<g id="VENT">
+		<g id="VENT" transform="translate(0 25)">
 			<mask id="path-91-inside-34_7_22" fill="white">
 				<path
 					d="M1587.08 260.784C1587.23 260.784 1587.35 260.827 1587.44 260.912C1587.53 260.997 1587.58 261.104 1587.58 261.232C1587.58 261.307 1587.56 261.387 1587.53 261.472L1583.26 271.68C1583.21 271.787 1583.14 271.867 1583.05 271.92C1582.97 271.973 1582.88 272 1582.8 272C1582.7 272 1582.61 271.973 1582.52 271.92C1582.44 271.867 1582.38 271.792 1582.35 271.696L1578.09 261.504C1578.08 261.472 1578.07 261.435 1578.06 261.392C1578.05 261.349 1578.04 261.301 1578.04 261.248C1578.04 261.109 1578.09 260.997 1578.19 260.912C1578.3 260.827 1578.4 260.784 1578.51 260.784C1578.73 260.784 1578.89 260.901 1578.99 261.136L1582.99 270.704H1582.7L1586.64 261.104C1586.74 260.891 1586.89 260.784 1587.08 260.784ZM1590.11 260.8H1595.98C1596.11 260.8 1596.22 260.848 1596.32 260.944C1596.41 261.029 1596.46 261.141 1596.46 261.28C1596.46 261.419 1596.41 261.531 1596.32 261.616C1596.22 261.701 1596.11 261.744 1595.98 261.744H1590.48L1590.64 261.472V265.968L1590.46 265.76H1595.26C1595.39 265.76 1595.5 265.808 1595.6 265.904C1595.69 266 1595.74 266.112 1595.74 266.24C1595.74 266.379 1595.69 266.491 1595.6 266.576C1595.5 266.661 1595.39 266.704 1595.26 266.704H1590.49L1590.64 266.544V271.152L1590.56 271.056H1595.98C1596.11 271.056 1596.22 271.104 1596.32 271.2C1596.41 271.296 1596.46 271.408 1596.46 271.536C1596.46 271.675 1596.41 271.787 1596.32 271.872C1596.22 271.957 1596.11 272 1595.98 272H1590.11C1589.98 272 1589.87 271.952 1589.77 271.856C1589.68 271.76 1589.63 271.648 1589.63 271.52V261.28C1589.63 261.152 1589.68 261.04 1589.77 260.944C1589.87 260.848 1589.98 260.8 1590.11 260.8ZM1606.91 260.8C1607.05 260.8 1607.16 260.843 1607.23 260.928C1607.32 261.013 1607.36 261.12 1607.36 261.248V271.488C1607.36 271.648 1607.31 271.776 1607.2 271.872C1607.11 271.957 1606.99 272 1606.87 272C1606.8 272 1606.73 271.989 1606.66 271.968C1606.58 271.936 1606.53 271.893 1606.48 271.84L1599.35 262.224L1599.62 262.08V271.568C1599.62 271.685 1599.58 271.787 1599.49 271.872C1599.41 271.957 1599.3 272 1599.17 272C1599.03 272 1598.92 271.957 1598.83 271.872C1598.76 271.787 1598.72 271.685 1598.72 271.568V261.28C1598.72 261.12 1598.77 261.003 1598.87 260.928C1598.96 260.843 1599.07 260.8 1599.19 260.8C1599.25 260.8 1599.32 260.816 1599.39 260.848C1599.47 260.869 1599.53 260.912 1599.57 260.976L1606.63 270.48L1606.47 270.768V261.248C1606.47 261.12 1606.51 261.013 1606.59 260.928C1606.69 260.843 1606.8 260.8 1606.91 260.8ZM1613.69 272C1613.54 272 1613.42 271.952 1613.32 271.856C1613.24 271.76 1613.2 271.648 1613.2 271.52V261.328H1614.19V271.52C1614.19 271.648 1614.14 271.76 1614.04 271.856C1613.95 271.952 1613.83 272 1613.69 272ZM1609.88 261.712C1609.76 261.712 1609.64 261.669 1609.55 261.584C1609.45 261.499 1609.4 261.387 1609.4 261.248C1609.4 261.12 1609.45 261.013 1609.55 260.928C1609.64 260.843 1609.76 260.8 1609.88 260.8H1617.5C1617.63 260.8 1617.74 260.843 1617.84 260.928C1617.93 261.013 1617.98 261.125 1617.98 261.264C1617.98 261.403 1617.93 261.515 1617.84 261.6C1617.74 261.675 1617.63 261.712 1617.5 261.712H1609.88Z"
@@ -745,7 +774,7 @@
 		<g id="PT1Line_2" filter="url(#filter2_d_7_22)">
 			<line
 				x1="1783"
-				y1="252.014"
+				y1="300.014"
 				x2="1783"
 				y2="216"
 				stroke="var(--diagram-outline-color)"
@@ -796,7 +825,7 @@
 				stroke-dasharray="4 4"
 			/>
 		</g>
-		<g id="PT6">
+		<g id="PT6" transform="translate(25 0)">
 			<g id="PT6_2">
 				<mask id="path-135-inside-48_7_22" fill="white">
 					<path
@@ -814,16 +843,16 @@
 		</g>
 		<g id="PT1Line_4" filter="url(#filter4_d_7_22)">
 			<line
-				x1="1735"
+				x1="1760"
 				y1="623.014"
-				x2="1735"
-				y2="587"
+				x2="1760"
+				y2="550"
 				stroke="var(--diagram-outline-color)"
 				stroke-width="2"
 				stroke-dasharray="4 4"
 			/>
 		</g>
-		<g id="TC3">
+		<g id="TC3" transform="translate(-40 0)">
 			<g id="TC3_2">
 				<mask id="path-140-inside-49_7_22" fill="white">
 					<path
@@ -873,10 +902,10 @@
 		</g>
 		<g id="PT1Line_5" filter="url(#filter5_d_7_22)">
 			<line
-				x1="1834"
+				x1="1794"
 				y1="623.014"
-				x2="1834"
-				y2="587"
+				x2="1794"
+				y2="550"
 				stroke="var(--diagram-outline-color)"
 				stroke-width="2"
 				stroke-dasharray="4 4"
@@ -1784,7 +1813,7 @@
 		/>
 		<path
 			id="Arrow 57"
-			d="M1598.98 319.5L1608.98 325.274V313.726L1598.98 319.5ZM1705.02 318.5H1607.98V320.5H1705.02V318.5Z"
+			d="M1598.98 344.5L1608.98 350.274V338.726L1598.98 344.5ZM1700.02 343.5H1607.98V345.5H1700.02V343.5Z"
 			fill="var(--diagram-pv-color)"
 		/>
 		<path
@@ -2258,7 +2287,7 @@
 			stroke="var(--diagram-outline-color)"
 			stroke-width="2"
 		/>
-		<rect id="Rectangle 4" x="1705.5" y="252.5" width="157" height="334" stroke="var(--diagram-outline-color)" />
+		<rect id="Rectangle 4" x="1700.5" y="300.5" width="135" height="250" stroke="var(--diagram-outline-color)" />
 		<g id="Pressure Vessel">
 			<mask id="path-389-inside-83_7_22" fill="white">
 				<path
@@ -2324,7 +2353,7 @@
 		</g>
 		<path
 			id="Arrow 58"
-			d="M1598.98 537.5L1608.98 543.274V531.726L1598.98 537.5ZM1705.02 536.5H1607.98V538.5H1705.02V536.5Z"
+			d="M1598.98 537.5L1608.98 543.274V531.726L1598.98 537.5ZM1700.02 536.5H1607.98V538.5H1700.02V536.5Z"
 			fill="var(--diagram-pv-color)"
 		/>
 		<g id="Group 39">
@@ -2363,6 +2392,49 @@
 			d="M469 44L463.226 54H474.774L469 44ZM470 72V53H468V72H470Z"
 			fill="var(--diagram-nos-color)"
 		/>
+		<g id="Added_TC_Upper_PV_1" class="added-sensor">
+			<polyline points="1700,300 1665,300 1665,232" fill="none" stroke-width="2" stroke-dasharray="4 4" />
+			<circle cx="1665" cy="210" r="22" fill="none" />
+			<line x1="1643" y1="210" x2="1687" y2="210" />
+			<text x="1665" y="201">TC4</text>
+		</g>
+		<text class="diagram-label" x="1768" y="425">Pressure Vessel</text>
+		<g id="Added_TC_Upper_PV_Heated" class="added-sensor">
+			<line x1="1720" y1="300" x2="1720" y2="268" stroke-width="2" stroke-dasharray="4 4" />
+			<line x1="1720" y1="244" x2="1720" y2="217" stroke-width="2" stroke-dasharray="4 4" />
+			<circle cx="1720" cy="195" r="22" fill="none" />
+			<line x1="1698" y1="195" x2="1742" y2="195" />
+			<text x="1720" y="186">TC7</text>
+		</g>
+		<g id="Added_TC_Upper_PV_3" class="added-sensor">
+			<polyline points="1835,300 1870,300 1870,232" fill="none" stroke-width="2" stroke-dasharray="4 4" />
+			<circle cx="1870" cy="210" r="22" fill="none" />
+			<line x1="1848" y1="210" x2="1892" y2="210" />
+			<text x="1870" y="201">TC8</text>
+		</g>
+		<g id="Added_TC_Injector_Bulkhead" class="added-sensor">
+			<line x1="1724" y1="804.5" x2="1724" y2="760" stroke-width="2" stroke-dasharray="4 4" />
+			<circle cx="1724" cy="738" r="22" fill="none" />
+			<line x1="1702" y1="738" x2="1746" y2="738" />
+			<text x="1724" y="729">TC9</text>
+		</g>
+		<g id="Added_TC_Lower_PV_Heated" class="added-sensor">
+			<polyline points="1835,550 1890,550 1890,590" fill="none" stroke-width="2" stroke-dasharray="4 4" />
+			<line x1="1890" y1="612" x2="1890" y2="650" stroke-width="2" stroke-dasharray="4 4" />
+			<circle cx="1890" cy="672" r="22" fill="none" />
+			<line x1="1868" y1="672" x2="1912" y2="672" />
+			<text x="1890" y="663">TC10</text>
+		</g>
+		<g id="Added_Upper_PV_Heater" class="added-heater">
+			<rect x="1708" y="244" width="24" height="24" fill="none" />
+			<path d="M1713 262C1718 250 1722 262 1727 250" fill="none" stroke-width="2" />
+			<text x="1720" y="238">HTR</text>
+		</g>
+		<g id="Added_Lower_PV_Heater" class="added-heater">
+			<rect x="1878" y="590" width="24" height="22" fill="none" />
+			<path d="M1883 607C1888 596 1892 607 1897 596" fill="none" stroke-width="2" />
+			<text x="1890" y="583">HTR</text>
+		</g>
 	</g>
 	<defs>
 		<filter

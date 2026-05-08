@@ -50,12 +50,19 @@
         battery_voltage,
 		power_source,
 		upper_pv_pressure,
+		upper_pv_tc_temperature,
+		vent_solenoid_tc_temperature,
+		dip_tube_tc_temperature,
 		rocket_mass,
 		nos1_mass,
 		nos2_mass,
 		ib_pressure,
 		lower_pv_pressure,
-		pv_temperature,
+		ib_temperature,
+		lower_pv_tc1_temperature,
+		low_solenoid_heater_tc_temperature,
+		upper_pv_heater_on,
+		lower_pv_heater_on,
 		pt1_pressure,
 		pt2_pressure,
 		pt3_pressure,
@@ -167,6 +174,9 @@
 	$: power_display = $power_source === undefined ? 'N/A' : $power_source ? 'ROCKET' : 'GROUND';
 
 	$: upper_pv_display = $upper_pv_pressure === undefined ? 'DC' : $upper_pv_pressure;
+	$: upper_pv_tc_display = $upper_pv_tc_temperature === undefined ? 'N/A' : $upper_pv_tc_temperature;
+	$: vent_solenoid_tc_display = $vent_solenoid_tc_temperature === undefined ? 'N/A' : $vent_solenoid_tc_temperature;
+	$: dip_tube_tc_display = $dip_tube_tc_temperature === undefined ? 'N/A' : $dip_tube_tc_temperature;
 
 	$: rocket_mass_display = $rocket_mass === undefined ? 'N/A' : Number($rocket_mass).toFixed(2);
 
@@ -176,7 +186,14 @@
 	$: ib_pressure_display = $ib_pressure === undefined ? 'N/A' : $ib_pressure;
 	$: lower_pv_display = $lower_pv_pressure === undefined ? 'N/A' : $lower_pv_pressure;
 
-	$: pv_temperature_display = $pv_temperature === undefined ? 'N/A' : $pv_temperature;
+	$: ib_temperature_display = $ib_temperature === undefined ? 'N/A' : $ib_temperature;
+	$: lower_pv_tc1_display = $lower_pv_tc1_temperature === undefined ? 'N/A' : $lower_pv_tc1_temperature;
+	$: low_solenoid_heater_tc_display =
+		$low_solenoid_heater_tc_temperature === undefined ? 'N/A' : $low_solenoid_heater_tc_temperature;
+	$: upper_pv_heater_display =
+		$upper_pv_heater_on === undefined ? 'NO CMD' : $upper_pv_heater_on ? 'ON' : 'OFF';
+	$: lower_pv_heater_display =
+		$lower_pv_heater_on === undefined ? 'NO CMD' : $lower_pv_heater_on ? 'ON' : 'OFF';
 
 	$: pt1_pressure_display = $pt1_pressure === undefined ? 'N/A' : $pt1_pressure;
 	$: pt2_pressure_display = $pt2_pressure === undefined ? 'N/A' : $pt2_pressure;
@@ -200,6 +217,8 @@
 	$: nosLoadCellOutdated = Date.now() - timestamps.nos_load_cell > 5000;
 	$: pbbPressureOutdated = Date.now() - timestamps.pbb_pressure > 5000;
 	$: pbbTemperatureOutdated = Date.now() - timestamps.pbb_temperature > 5000;
+	$: fcbTemperatureOutdated = Date.now() - timestamps.fcb_temperature > 5000;
+	$: heaterStatusOutdated = Date.now() - timestamps.heater_status > 5000;
 	$: rcuPressureOutdated = Date.now() - timestamps.rcu_pressure > 5000;
 	$: sobTemperatureOutdated = Date.now() - timestamps.sob_temperature > 5000;
 	$: sysStateOutdated = Date.now() - timestamps.sys_state > 5000;
@@ -419,6 +438,30 @@
 		</SlideToggle>
 	</div>
 
+	<div class="upper_pv_heater_slider heater_status {heaterStatusOutdated ? 'outdated' : ''}">
+		<SlideToggle
+			name="upper_pv_heater_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$upper_pv_heater_on}
+			disabled
+		>
+			{upper_pv_heater_display}
+		</SlideToggle>
+	</div>
+
+	<div class="lower_pv_heater_slider heater_status {heaterStatusOutdated ? 'outdated' : ''}">
+		<SlideToggle
+			name="lower_pv_heater_slider"
+			active="bg-primary-500 dark:bg-primary-500"
+			size="sm"
+			bind:checked={$lower_pv_heater_on}
+			disabled
+		>
+			{lower_pv_heater_display}
+		</SlideToggle>
+	</div>
+
 	{#if $currentState === "RS_IGNITION" || $currentState === "RS_TEST" || $currentState === "RS_ABORT" || $currentState === "RS_LAUNCH" || $currentState === "RS_BURN" || $currentState === "RS_COAST" || $currentState === "RS_RECOVERY"}
 		<div class="box1_slider">
 			<SlideToggle
@@ -563,6 +606,18 @@
 		<p>{upper_pv_display}</p>
 	</div>
 
+	<div class="upper_pv_tc fcb_temperature {fcbTemperatureOutdated ? 'outdated' : ''}">
+		<p>{upper_pv_tc_display}</p>
+	</div>
+
+	<div class="vent_solenoid_tc fcb_temperature {fcbTemperatureOutdated ? 'outdated' : ''}">
+		<p>{vent_solenoid_tc_display}</p>
+	</div>
+
+	<div class="dip_tube_tc fcb_temperature {fcbTemperatureOutdated ? 'outdated' : ''}">
+		<p>{dip_tube_tc_display}</p>
+	</div>
+
 	<div class="rocket_mass launch_rail_load_cell {launchRailLoadCellOutdated ? 'outdated' : ''}">
 		<p>{rocket_mass_display}</p>
 	</div>
@@ -575,8 +630,16 @@
 		<p>{lower_pv_display}</p>
 	</div>
 
-	<div class="pv_temperature pbb_temperature {pbbTemperatureOutdated ? 'outdated' : ''}">
-		<p>{pv_temperature_display}</p>
+	<div class="ib_temperature pbb_temperature {pbbTemperatureOutdated ? 'outdated' : ''}">
+		<p>{ib_temperature_display}</p>
+	</div>
+
+	<div class="lower_pv_tc1 pbb_temperature {pbbTemperatureOutdated ? 'outdated' : ''}">
+		<p>{lower_pv_tc1_display}</p>
+	</div>
+
+	<div class="low_solenoid_heater_tc pbb_temperature {pbbTemperatureOutdated ? 'outdated' : ''}">
+		<p>{low_solenoid_heater_tc_display}</p>
 	</div>
 
 	<div class="sob_tc1 sob_temperature {sobTemperatureOutdated ? 'outdated' : ''}">

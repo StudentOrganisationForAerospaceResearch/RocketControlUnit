@@ -8,6 +8,11 @@ export type PocketbaseHook = ReturnType<typeof usePocketbase>;
 export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 	const pocketbase = new PocketBase('http://192.168.0.69:8090');
 
+	const formatTemperature = (temperature: number | undefined) => {
+		if (temperature === undefined) return undefined;
+		return temperature === 9999 ? 'DC' : Math.round(temperature / 100);
+	};
+
 	const authenticate = async () => {
 		const email = import.meta.env.VITE_EMAIL;
 		const password = import.meta.env.VITE_PASSWORD;
@@ -142,12 +147,30 @@ export const usePocketbase = (timestamps: Timestamps, stores: Stores) => {
 			timestamps.pbb_pressure = Date.now();
 		});
 
+		// Subscribe to changes in the 'fcbtemperature' collection
+		// The protobuf oneof field is currently named fcbtemperature, so the backend writes that table name.
+		pocketbase.collection('fcbtemperature').subscribe('*', (e) => {
+			stores.upper_pv_tc_temperature.set(formatTemperature(e.record.upper_pv_tc));
+			stores.vent_solenoid_tc_temperature.set(formatTemperature(e.record.vent_solenoid_tc));
+			stores.dip_tube_tc_temperature.set(formatTemperature(e.record.dip_tube_tc));
+
+			timestamps.fcb_temperature = Date.now();
+		});
+
 		// Subscribe to changes in the 'PbbTemperature' collection
 		pocketbase.collection('PbbTemperature').subscribe('*', (e) => {
-			stores.pv_temperature.set(
-				e.record.ib_temperature === 9999 ? 'DC' : Math.round(e.record.ib_temperature / 100)
-			);
+			stores.ib_temperature.set(formatTemperature(e.record.ib_temperature));
+			stores.lower_pv_tc1_temperature.set(formatTemperature(e.record.lower_pv_tc1));
+			stores.low_solenoid_heater_tc_temperature.set(formatTemperature(e.record.low_solenoid_heater_tc));
 			timestamps.pbb_temperature = Date.now();
+		});
+
+		// Subscribe to changes in the 'heaterStatus' collection
+		pocketbase.collection('heaterStatus').subscribe('*', (e) => {
+			stores.upper_pv_heater_on.set(e.record.upper_pv_heater_on);
+			stores.lower_pv_heater_on.set(e.record.lower_pv_heater_on);
+
+			timestamps.heater_status = Date.now();
 		});
 
 		// Subscribe to changes in the 'RcuPressure' collection

@@ -5,10 +5,12 @@ export interface Timestamps {
 	pad_box_status: number;
 	battery: number;
 	dmb_pressure: number;
+	fcb_temperature: number;
 	launch_rail_load_cell: number;
 	nos_load_cell: number;
 	pbb_pressure: number;
 	pbb_temperature: number;
+	heater_status: number;
 	rcu_pressure: number;
 	sob_temperature: number;
 	sys_state: number;
@@ -25,10 +27,12 @@ export const initTimestamps = () => {
 		pad_box_status: now,
 		battery: now,
 		dmb_pressure: now,
+		fcb_temperature: now,
 		launch_rail_load_cell: now,
 		nos_load_cell: now,
 		pbb_pressure: now,
 		pbb_temperature: now,
+		heater_status: now,
 		rcu_pressure: now,
 		sob_temperature: now,
 		sys_state: now,

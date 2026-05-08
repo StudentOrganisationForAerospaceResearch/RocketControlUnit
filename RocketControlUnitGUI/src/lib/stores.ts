@@ -26,12 +26,19 @@ export interface Stores {
 	battery_voltage: Writable<any>;
 	power_source: Writable<any>;
 	upper_pv_pressure: Writable<string | number | undefined>;
+	upper_pv_tc_temperature: Writable<string | number | undefined>;
+	vent_solenoid_tc_temperature: Writable<string | number | undefined>;
+	dip_tube_tc_temperature: Writable<string | number | undefined>;
 	rocket_mass: Writable<any>;
 	nos1_mass: Writable<any>;
 	nos2_mass: Writable<any>;
 	ib_pressure: Writable<string | number | undefined>;
 	lower_pv_pressure: Writable<string | number | undefined>;
-	pv_temperature: Writable<string | number | undefined>;
+	ib_temperature: Writable<string | number | undefined>;
+	lower_pv_tc1_temperature: Writable<string | number | undefined>;
+	low_solenoid_heater_tc_temperature: Writable<string | number | undefined>;
+	upper_pv_heater_on: Writable<any>;
+	lower_pv_heater_on: Writable<any>;
 	pt1_pressure: Writable<string | number | undefined>;
 	pt2_pressure: Writable<string | number | undefined>;
 	pt3_pressure: Writable<string | number | undefined>;
@@ -68,12 +75,19 @@ export const initStores = () => {
 		battery_voltage: writable(undefined),
 		power_source: writable(undefined),
 		upper_pv_pressure: writable<string | number | undefined>(undefined),
+		upper_pv_tc_temperature: writable<string | number | undefined>(undefined),
+		vent_solenoid_tc_temperature: writable<string | number | undefined>(undefined),
+		dip_tube_tc_temperature: writable<string | number | undefined>(undefined),
 		rocket_mass: writable(undefined),
 		nos1_mass: writable(undefined),
 		nos2_mass: writable(undefined),
 		ib_pressure: writable<string | number | undefined>(undefined),
 		lower_pv_pressure: writable<string | number | undefined>(undefined),
-		pv_temperature: writable<string | number | undefined>(undefined),
+		ib_temperature: writable<string | number | undefined>(undefined),
+		lower_pv_tc1_temperature: writable<string | number | undefined>(undefined),
+		low_solenoid_heater_tc_temperature: writable<string | number | undefined>(undefined),
+		upper_pv_heater_on: writable(undefined),
+		lower_pv_heater_on: writable(undefined),
 		pt1_pressure: writable<string | number | undefined>(undefined),
 		pt2_pressure: writable<string | number | undefined>(undefined),
 		pt3_pressure: writable<string | number | undefined>(undefined),

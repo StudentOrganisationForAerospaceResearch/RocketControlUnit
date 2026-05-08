@@ -16,10 +16,10 @@ enum Node {
     
     NODE_UNKNOWN = 1;   // This can happen if the node is not yet known at this stage, eg. COBS decode failed
     NODE_ANY = 2;
-    NODE_RCU = 3;
-    NODE_DMB = 4;
+    NODE_FSB = 3;
+    NODE_FCB = 4;
     NODE_PBB = 5;
-    NODE_SOB = 6;
+    NODE_LRB = 6;
 }
 
 enum MessageID {
@@ -35,20 +35,44 @@ enum MessageID {
 
 /* Board Specific Enums ------------------------------------------------------------------*/
 
-enum RocketState {
-    DMB_INVALID = 0;
+enum RocketState { 
 
-    // Current DMB RocketState (these should be kept close to the actual RocketState enum in RocketSM.hpp)
-    RS_PRELAUNCH = 1;
-    RS_FILL = 2;
-    RS_ARM = 3;
-    RS_IGNITION = 4;
-    RS_LAUNCH = 5;
-    RS_BURN = 6;
-    RS_COAST = 7;
-    RS_DESCENT = 8;
-    RS_RECOVERY = 9;
-    RS_ABORT = 10;
-    RS_TEST = 11;
-    RS_NONE = 12;
-}
+        //-- GROUND --
+        // Manual venting allowed at all times
+        RS_PRELAUNCH = 0;   // Idle state, waiting for command to proceeding sequences
+        RS_FILL = 1;
+       	// N2 Prefill/Purge/Leak-check/Load-cell Tare check sub-sequences, full control of valves (except MEV) allowed
+        RS_ARM = 2;         	// We don't allow fill etc. 1-2 minutes before launch : Cannot fill rocket with N2 etc. unless you return to FILL
+                            // Power Transition, Fill-Arm Disconnect Sub-sequences (you should be able to revert the power transition)
+
+        //-- IGNITION -- Manual venting NOT ALLOWED
+        RS_IGNITION = 3;   	// Ignition of the ignitors
+        RS_LAUNCH = 4;      	// Launch triggered by confirmation of ignition (from ignitor) is nominal : MEV Open Sequence
+
+        //-- BURN --
+        // Vents should stay closed, manual venting NOT ALLOWED
+        // ! Vents open is definitely not ideal for abort! Best to keep it closed with manual override if we fail here
+        // (can we maybe have the code change the true default state by overwriting EEPROM?)
+        // Ideally we don't want to EVER exceed 7 seconds of burn time (we should store this time at the very least - split into 1 sub-stage for each second if necessary).
+        // For timing we want ~1/10th of a second or better.
+        RS_BURN = 5;        	// Main burn (vents closed MEV open) - Transition to coast based on timer
+
+
+        //-- COAST --
+        // Manual venting NOT ALLOWED -- Note: MEV never closes!
+        RS_COAST = 6;       	// Coasting (MEV open, vents closed) - Transition to Braking, dependant on DAQ board running the altitude algorithm
+
+        RS_BRAKING = 7;		// Air Brakes Open - Transition to Descent after apogee event
+
+        //-- DESCENT / POSTAPOGEE --
+        RS_DESCENT = 8;  		// Vents open (well into the descent)
+        RS_TOUCHDOWN = 9;  		// Vents open, transmit all data over radio and accept vent commands
+                        // Supports general commands (e.g. venting) and logs/transmits slowly (maybe stop logging after close to full memory?)
+
+        //-- RECOVERY / TECHNICAL --
+        RS_ABORT = 10;       	// Abort sequence, vents open, MEV closed, ignitors off
+        RS_TEST = 11;      	// Test, between ABORT and PRE-LAUNCH, has full control of all GPIOs
+
+        RS_NONE = 12;         	// Invalid state, must be last
+
+    }

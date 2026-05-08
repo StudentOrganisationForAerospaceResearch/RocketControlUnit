@@ -7,7 +7,7 @@ from typing import ClassVar as _ClassVar, Mapping as _Mapping, Optional as _Opti
 DESCRIPTOR: _descriptor.FileDescriptor
 
 class ControlMessage(_message.Message):
-    __slots__ = ("source", "target", "source_sequence_num", "ack", "nack", "ping", "hb", "sys_state", "sys_ctrl", "hb_state")
+    __slots__ = ("source", "target", "source_sequence_num", "ack", "nack", "ping", "hb", "sys_state", "sys_ctrl", "hb_state", "fast_log")
     SOURCE_FIELD_NUMBER: _ClassVar[int]
     TARGET_FIELD_NUMBER: _ClassVar[int]
     SOURCE_SEQUENCE_NUM_FIELD_NUMBER: _ClassVar[int]
@@ -18,6 +18,7 @@ class ControlMessage(_message.Message):
     SYS_STATE_FIELD_NUMBER: _ClassVar[int]
     SYS_CTRL_FIELD_NUMBER: _ClassVar[int]
     HB_STATE_FIELD_NUMBER: _ClassVar[int]
+    FAST_LOG_FIELD_NUMBER: _ClassVar[int]
     source: _CoreProto_pb2.Node
     target: _CoreProto_pb2.Node
     source_sequence_num: int
@@ -28,7 +29,8 @@ class ControlMessage(_message.Message):
     sys_state: SystemState
     sys_ctrl: SystemControl
     hb_state: HeartbeatState
-    def __init__(self, source: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., target: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., source_sequence_num: _Optional[int] = ..., ack: _Optional[_Union[AckNack, _Mapping]] = ..., nack: _Optional[_Union[AckNack, _Mapping]] = ..., ping: _Optional[_Union[Ping, _Mapping]] = ..., hb: _Optional[_Union[Heartbeat, _Mapping]] = ..., sys_state: _Optional[_Union[SystemState, _Mapping]] = ..., sys_ctrl: _Optional[_Union[SystemControl, _Mapping]] = ..., hb_state: _Optional[_Union[HeartbeatState, _Mapping]] = ...) -> None: ...
+    fast_log: FastLog
+    def __init__(self, source: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., target: _Optional[_Union[_CoreProto_pb2.Node, str]] = ..., source_sequence_num: _Optional[int] = ..., ack: _Optional[_Union[AckNack, _Mapping]] = ..., nack: _Optional[_Union[AckNack, _Mapping]] = ..., ping: _Optional[_Union[Ping, _Mapping]] = ..., hb: _Optional[_Union[Heartbeat, _Mapping]] = ..., sys_state: _Optional[_Union[SystemState, _Mapping]] = ..., sys_ctrl: _Optional[_Union[SystemControl, _Mapping]] = ..., hb_state: _Optional[_Union[HeartbeatState, _Mapping]] = ..., fast_log: _Optional[_Union[FastLog, _Mapping]] = ...) -> None: ...
 
 class AckNack(_message.Message):
     __slots__ = ("acking_msg_source", "acking_msg_id", "acking_sequence_num")
@@ -127,3 +129,19 @@ class HeartbeatState(_message.Message):
     timer_period: int
     timer_remaining: int
     def __init__(self, timer_state: _Optional[_Union[HeartbeatState.TimerState, str]] = ..., timer_period: _Optional[int] = ..., timer_remaining: _Optional[int] = ...) -> None: ...
+
+class FastLog(_message.Message):
+    __slots__ = ("cmd",)
+    class FastLogCommand(int, metaclass=_enum_type_wrapper.EnumTypeWrapper):
+        __slots__ = ()
+        FL_PEND: _ClassVar[FastLog.FastLogCommand]
+        FL_START: _ClassVar[FastLog.FastLogCommand]
+        FL_SEND: _ClassVar[FastLog.FastLogCommand]
+        FL_RESET: _ClassVar[FastLog.FastLogCommand]
+    FL_PEND: FastLog.FastLogCommand
+    FL_START: FastLog.FastLogCommand
+    FL_SEND: FastLog.FastLogCommand
+    FL_RESET: FastLog.FastLogCommand
+    CMD_FIELD_NUMBER: _ClassVar[int]
+    cmd: FastLog.FastLogCommand
+    def __init__(self, cmd: _Optional[_Union[FastLog.FastLogCommand, str]] = ...) -> None: ...

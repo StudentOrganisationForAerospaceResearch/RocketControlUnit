@@ -31,18 +31,20 @@ message CommandMessage {
     // Message Data
     oneof message {
         // Command Messages
-        DmbCommand dmb_command = 4;
+        FcbCommand fcb_command = 4;
         PbbCommand pbb_command = 5;
-        RcuCommand rcu_command = 6;
-        SobCommand sob_command = 7;
+        FsbCommand fsb_command = 6;
+        LrbCommand lrb_command = 7;
     }
 
 }
 
-message DmbCommand {
+message FcbCommand {
     enum Command {
+        
         RSC_FIRST_INVALID = 0;
 
+        //-- PRE-IGNITION and RECOVERY --
         RSC_ANY_TO_ABORT = 1;       // Transition to ABORT state - available from all states except for IGNITION/LAUNCH/BURN
         RSC_OPEN_VENT = 2;   // Open the vent valve
         RSC_CLOSE_VENT = 3;  // Close the vent valve
@@ -62,39 +64,47 @@ message DmbCommand {
         //-- ARM/IGNITION/LAUNCH/BURN --
 
         //-- ARM --
-        RSC_POWER_TRANSITION_ONBOARD = 12;      // Change power source to onboard
-        RSC_POWER_TRANSITION_EXTERNAL = 13;     // Change power source to external power
-        //RSC_GOTO_FILL, // Transition back
-        RSC_GOTO_IGNITION = 14; // Ready for ignition sequence - Transition to IGNITION state
+        // DEPRACTED Power Transitions for Aegis
+        // RSC_POWER_TRANSITION_ONBOARD = 12;      // Change power source to onboard
+        // RSC_POWER_TRANSITION_EXTERNAL = 13;     // Change power source to external power
+        // RSC_GOTO_FILL, // Transition back
+        RSC_GOTO_IGNITION = 12; // Ready for ignition sequence - Transition to IGNITION state
 
         //-- IGNITION --
-        RSC_IGNITION_TO_LAUNCH = 15;   // Confirm igniter actuation - Transition to LAUNCH state (MEV OPEN)
-        //RSC_GOTO_ARM      // Non-confirm igniter actuation - Transition back to ARM state   
+        RSC_IGNITION_TO_LAUNCH = 13;   // Confirm igniter actuation - Transition to LAUNCH state (MEV OPEN)
+        // RSC_GOTO_ARM      // Non-confirm igniter actuation - Transition back to ARM state   
 
         //-- LAUNCH --
         // * These flight sequence commands can be replaced with direct calls to transition state IF possible
-        RSC_LAUNCH_TO_BURN = 16; // Internal command, should not be triggered externally
+        RSC_LAUNCH_TO_BURN = 14; // Internal command, should not be triggered externally
+        
         //-- BURN --
-        RSC_BURN_TO_COAST = 17; // Internal command, should not be triggered externally
+        RSC_BURN_TO_COAST = 15; // Internal command, should not be triggered externally
+        
         //-- COAST --
-        RSC_COAST_TO_DESCENT = 18; // Internal command, should not be triggered externally
-        //-- DESCENT --
-        RSC_DESCENT_TO_RECOVERY = 19; // Internal command, should not be triggered externally
+        RSC_COAST_TO_BRAKING = 16; // Internal command, should not be triggered externally
+        RSC_COAST_TO_DESCENT = 17; // Skip braking if rocket is undershooting its target apogee
 
-        //-- ABORT --
-        //RSC_GOTO_PRELAUNCH, // Confirm transition back into prelaunch state
+        //-- DESCENT --
+        RSC_BRAKING_TO_DESCENT = 18; // Internal command, should not be triggered externally
+
+        //-- TOUCHDOWN --
+        RSC_DESCENT_TO_TOUCHDOWN = 19; // Internal command, should not be triggered externally
 
         //-- GENERAL --
-       
+        RSC_MANUAL_IGNITION_CONFIRMED = 20; // NOTE: THIS IS UNUSED WHEN IGNITION SEQUENCE IS BYPASSED, we use the RSC_IGNITION_TO_LAUNCH command instead
+
         //-- TEST --
-        RSC_GOTO_TEST = 20;
-        RSC_TEST_MEV_OPEN = 21;
-        //RSC_MEV_CLOSE
-        RSC_TEST_MEV_ENABLE = 22;
-        RSC_TEST_MEV_DISABLE = 23;
+        RSC_GOTO_TEST = 21;
+    //    RSC_MEV_CLOSE;
+        RSC_TEST_MEV_OPEN = 22;
+        RSC_TEST_MEV_ENABLE = 23;
+        RSC_TEST_MEV_DISABLE = 24;
 
         //-- TECHNICAL --
-        RSC_NONE = 24;  // Invalid command, must be last
+        RSC_NONE = 25;   // Invalid command, must be last
+
+        // TODO NEW : ADD NEW COMMANDS FOR HEATER? OR AIRBRAKES AND STUFF. OR CREATE A NEW MESSAGE TYPE FOR NON-FLIGHT-SEQUENCE COMMANDS?
     }
     
     Command command_enum = 1;
@@ -107,75 +117,75 @@ message PbbCommand {
         PBB_OPEN_MEV = 1;
         PBB_CLOSE_MEV = 2;
 
-        PMB_LAST = 5;
+        PBB_OPEN_DRAIN = 3;
+        PBB_CLOSE_DRAIN = 4;
+
+        PBB_LAST = 5;
     }
     
     Command command_enum = 1;
 }
 
 // Not used in GUI V2
-message SobCommand {
+message LrbCommand {
     enum Command {
         
-        SOB_NONE = 0;
-
-        SOB_SLOW_SAMPLE_IR = 1;
-        SOB_FAST_SAMPLE_IR = 2;
+        LRB_NONE = 0;
         
-        SOB_TARE_LOAD_CELL = 3;
-        SOB_CALIBRATE_LOAD_CELL = 4;
+        LRB_TARE_LOAD_CELL = 1;
+        LRB_CALIBRATE_LOAD_CELL = 2;
 
-        SOB_LAST = 5;
+        LRB_LAST = 3;
     }
     
     Command command_enum = 1;
     int32 command_param = 2; //for mass calibration
 }
 
-message RcuCommand {
+message FsbCommand {
     enum Command {
-        RCU_NONE = 0;
+        FSB_NONE = 0;
 
-        RCU_OPEN_AC1 = 3;
-        RCU_CLOSE_AC1 = 4;
-        RCU_OPEN_AC2 = 5;   // Unused
-        RCU_CLOSE_AC2 = 6;  // Unused
+        FSB_OPEN_AC1 = 3;
+        FSB_CLOSE_AC1 = 4;
+        FSB_OPEN_AC2 = 5;   // Unused
+        FSB_CLOSE_AC2 = 6;  // Unused
 
-        // RCU Valve Controls
-        RCU_OPEN_PBV1 = 7; 
-        RCU_CLOSE_PBV1 = 8;
-        RCU_OPEN_PBV2 = 9;
-        RCU_CLOSE_PBV2 = 10;
-        RCU_OPEN_PBV3 = 11;
-        RCU_CLOSE_PBV3 = 12;
-        RCU_OPEN_PBV4 = 13;
-        RCU_CLOSE_PBV4 = 14;
+        // FSB Valve Controls
+        FSB_OPEN_PBV1 = 7; 
+        FSB_CLOSE_PBV1 = 8;
+        FSB_OPEN_PBV2 = 9;
+        FSB_CLOSE_PBV2 = 10;
+        FSB_OPEN_PBV3 = 11;
+        FSB_CLOSE_PBV3 = 12;
+        FSB_OPEN_PBV4 = 13;
+        FSB_CLOSE_PBV4 = 14;
 
-        // RCU Solenoid Controls
-        RCU_OPEN_SOL5 = 21;
-        RCU_CLOSE_SOL5 = 22;
-        RCU_OPEN_SOL6 = 23;
-        RCU_CLOSE_SOL6 = 24;
-        RCU_OPEN_SOL7 = 25;
-        RCU_CLOSE_SOL7 = 26;
-        RCU_OPEN_SOL8A = 27;
-        RCU_CLOSE_SOL8A = 28;
-        RCU_OPEN_SOL8B = 29;
-        RCU_CLOSE_SOL8B = 30;
+        // FSB Solenoid Controls
+        FSB_OPEN_SOL5 = 21;
+        FSB_CLOSE_SOL5 = 22;
+        FSB_OPEN_SOL6 = 23;
+        FSB_CLOSE_SOL6 = 24;
+        FSB_OPEN_SOL7 = 25;
+        FSB_CLOSE_SOL7 = 26;
+        FSB_OPEN_SOL8A = 27;
+        FSB_CLOSE_SOL8A = 28;
+        FSB_OPEN_SOL8B = 29;
+        FSB_CLOSE_SOL8B = 30;
 
-        // RCU LOAD CELL Control (Not used in GUI V2)
-        RCU_TARE_NOS1_LOAD_CELL = 33;
-        RCU_TARE_NOS2_LOAD_CELL = 34;
-        RCU_CALIBRATE_NOS1_LOAD_CELL = 35;
-        RCU_CALIBRATE_NOS2_LOAD_CELL = 36;
+        // FSB LOAD CELL Control (Not used in GUI V2)
+        FSB_TARE_NOS1_LOAD_CELL = 33;
+        FSB_TARE_NOS2_LOAD_CELL = 34;
+        FSB_CALIBRATE_NOS1_LOAD_CELL = 35;
+        FSB_CALIBRATE_NOS2_LOAD_CELL = 36;
 
-        // RCU PAD BOX Control
-        RCU_IGNITE_PAD_BOX1 = 31;
-        RCU_IGNITE_PAD_BOX2 = 32;
-        RCU_KILL_PAD_BOX1 = 37;
-        RCU_KILL_PAD_BOX2 = 38;
+        // FSB PAD BOX Control
+        FSB_IGNITE_PAD_BOX1 = 31;
+        FSB_IGNITE_PAD_BOX2 = 32;
+        FSB_KILL_PAD_BOX1 = 37;
+        FSB_KILL_PAD_BOX2 = 38;
 
-        RCU_LAST = 39;
+        FSB_LAST = 39;
     }
     
     Command command_enum = 1;

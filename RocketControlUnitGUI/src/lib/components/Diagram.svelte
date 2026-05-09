@@ -825,7 +825,7 @@
 				stroke-dasharray="4 4"
 			/>
 		</g>
-		<g id="PT6" transform="translate(25 0)">
+		<g id="PT6" transform="translate(10 0)">
 			<g id="PT6_2">
 				<mask id="path-135-inside-48_7_22" fill="white">
 					<path
@@ -843,16 +843,16 @@
 		</g>
 		<g id="PT1Line_4" filter="url(#filter4_d_7_22)">
 			<line
-				x1="1760"
+				x1="1745"
 				y1="623.014"
-				x2="1760"
+				x2="1745"
 				y2="550"
 				stroke="var(--diagram-outline-color)"
 				stroke-width="2"
 				stroke-dasharray="4 4"
 			/>
 		</g>
-		<g id="TC3" transform="translate(-40 0)">
+		<g id="TC3" transform="translate(-25 0)">
 			<g id="TC3_2">
 				<mask id="path-140-inside-49_7_22" fill="white">
 					<path
@@ -902,9 +902,9 @@
 		</g>
 		<g id="PT1Line_5" filter="url(#filter5_d_7_22)">
 			<line
-				x1="1794"
+				x1="1809"
 				y1="623.014"
-				x2="1794"
+				x2="1809"
 				y2="550"
 				stroke="var(--diagram-outline-color)"
 				stroke-width="2"

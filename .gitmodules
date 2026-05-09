@@ -1,0 +1,4 @@
+[submodule "SoarCommunications"]
+	path = SoarCommunications
+	url = https://github.com/UCSOAR/CommunicationSystemsSubmodule.git
+	branch = master
